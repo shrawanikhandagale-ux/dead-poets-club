@@ -1,8 +1,7 @@
 import React from 'react';
 import { Book, ShelfStatus } from '../../types/book';
-import { Star, Bookmark, Check, BookOpen } from 'lucide-react';
+import { Star, Bookmark, BookOpen } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { triggerInkSplatter } from '../../lib/animeAnimations';
 
 interface BookCardProps {
   book: Book;
@@ -10,7 +9,7 @@ interface BookCardProps {
 }
 
 export const BookCard: React.FC<BookCardProps> = ({ book, onSelect }) => {
-  const { shelves, updateBookShelf, user } = useAuth();
+  const { shelves, updateBookShelf } = useAuth();
 
   const currentShelf = shelves.find(s => s.book_id === book.id);
   const status = currentShelf?.status;
@@ -20,64 +19,65 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onSelect }) => {
     const newStatus = e.target.value as ShelfStatus;
     if (newStatus) {
       updateBookShelf(book.id, newStatus);
-      triggerInkSplatter(window.innerWidth / 2, window.innerHeight / 2);
     }
   };
 
   return (
     <div
       onClick={() => onSelect?.(book)}
-      className="parchment-card book-item-card flex flex-col justify-between p-4 cursor-pointer group transition-all duration-300 hover:border-[#d3a66d]/60 rounded-xl bg-[#1b1714]/90"
+      className="catalog-card flex flex-col justify-between p-4 cursor-pointer group transition-all duration-200 border-2 border-[#443223] shadow-[4px_4px_0px_#443223] bg-[#FCF8F2] hover:-translate-y-1 hover:shadow-[6px_6px_0px_#443223]"
     >
       <div>
-        {/* Cover Image with 3D Spine Sheen */}
-        <div className="book-cover-wrap w-full h-64 mb-4 relative overflow-hidden rounded-md bg-[#241f1c]">
+        {/* Cover Image with Heavy Outline */}
+        <div className="w-full h-64 mb-4 relative overflow-hidden rounded border-2 border-[#443223] bg-[#DBC4A5]">
           <img
             src={book.cover_url}
             alt={book.title}
-            className="book-cover w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
           />
           {book.featured && (
-            <span className="absolute top-2 right-2 bg-[#784743]/90 text-[#f0eae1] border border-[#d3a66d]/50 text-[10px] font-serif uppercase tracking-wider px-2 py-0.5 rounded shadow">
-              Club Select
+            <span className="absolute top-2 right-2 starburst-badge text-[9px] py-0.5 px-2 bg-[#755151]">
+              CLUB SELECT
             </span>
           )}
         </div>
 
         {/* Title & Author */}
         <div className="mb-2">
-          <h3 className="font-serif text-base font-semibold text-[#f0eae1] group-hover:text-[#e8c18e] transition-colors leading-snug line-clamp-1">
+          <h3 className="font-editorial text-base font-bold text-[#443223] group-hover:text-[#755151] transition-colors leading-snug line-clamp-1">
             {book.title}
           </h3>
-          <p className="text-xs font-sans text-[#a39b8f] mt-0.5">{book.author} · {book.publication_year}</p>
+          <p className="font-typewriter text-xs text-[#72583E] mt-0.5">
+            {book.author} · {book.publication_year}
+          </p>
         </div>
 
         {/* Rating and Genre Tags */}
         <div className="flex items-center gap-2 mb-3">
-          <div className="flex items-center gap-1 text-[#d3a66d] text-xs font-mono">
-            <Star className="w-3.5 h-3.5 fill-current text-[#d3a66d]" />
+          <div className="flex items-center gap-1 text-[#755151] text-xs font-typewriter font-bold">
+            <Star className="w-3.5 h-3.5 fill-current text-[#755151]" />
             <span>{book.rating_avg.toFixed(1)}</span>
-            <span className="text-[#6e665a] text-[10px]">({book.rating_count})</span>
+            <span className="text-[#A08670] text-[10px]">({book.rating_count})</span>
           </div>
-          <span className="text-[#3e362e]">•</span>
-          <span className="text-[11px] font-sans text-[#8e9c82] px-2 py-0.5 rounded-full bg-[#75816a]/15 border border-[#75816a]/30 truncate">
+          <span className="text-[#A08670]">•</span>
+          <span className="text-[10px] font-typewriter font-bold text-[#443223] px-2 py-0.5 rounded bg-[#DBC4A5]/50 border border-[#A08670] truncate">
             {book.genres[0]}
           </span>
         </div>
 
         {/* Quote if available */}
         {book.quote && (
-          <div className="p-2.5 rounded bg-[#151210] border-l-2 border-[#d3a66d]/40 mb-3 text-xs italic text-[#c7beaf] font-serif line-clamp-2">
+          <div className="p-2.5 rounded bg-[#FFF9F3] border-l-3 border-[#755151] border-t border-r border-b border-[#A08670] mb-3 text-xs italic text-[#443223] font-typewriter line-clamp-2">
             "{book.quote.text}"
           </div>
         )}
       </div>
 
       {/* Shelf Action Selector */}
-      <div className="pt-3 border-t border-[#d3a66d]/15 flex items-center justify-between mt-auto">
-        <span className="text-[11px] font-mono uppercase tracking-wider text-[#7a7164] flex items-center gap-1">
-          <Bookmark className="w-3 h-3 text-[#d3a66d]" />
+      <div className="pt-3 border-t-2 border-dashed border-[#A08670] flex items-center justify-between mt-auto">
+        <span className="text-[10px] font-typewriter uppercase tracking-wider text-[#72583E] flex items-center gap-1 font-bold">
+          <Bookmark className="w-3 h-3 text-[#755151]" />
           {status ? status.replace(/_/g, ' ') : 'Not shelved'}
         </span>
 
@@ -85,12 +85,12 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onSelect }) => {
           value={status || ''}
           onChange={handleShelfChange}
           onClick={e => e.stopPropagation()}
-          className="text-xs bg-[#241e1a] text-[#e8c18e] border border-[#d3a66d]/30 rounded px-2 py-1 outline-none focus:border-[#d3a66d] cursor-pointer hover:bg-[#2c2520] transition-colors"
+          className="text-xs font-typewriter font-bold bg-[#FFF9F3] text-[#443223] border border-[#443223] rounded px-2 py-1 outline-none cursor-pointer hover:bg-[#DBC4A5]/30 transition-colors"
         >
-          <option value="" disabled>Add to Shelf</option>
+          <option value="" disabled>Shelve</option>
           <option value="want_to_read">Want to Read</option>
-          <option value="currently_reading">Currently Reading</option>
-          <option value="read">Finished / Read</option>
+          <option value="currently_reading">Reading</option>
+          <option value="read">Finished</option>
           <option value="abandoned">Abandoned</option>
         </select>
       </div>

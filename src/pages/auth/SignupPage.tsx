@@ -95,7 +95,7 @@ export const SignupPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       await signup(email, username, displayName);
-      navigate('/clubhouse');
+      navigate('/character-creator?onboarding=true');
     } catch (err: any) {
       setError(err?.message || 'Initiation failed. Please try again.');
     } finally {

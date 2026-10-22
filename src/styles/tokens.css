@@ -1,88 +1,52 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper-light: #E9E0CE;
-  --color-paper: #E9E0CE;
-  --color-paper-dark: #141210;
-  --color-paper-card: #1c1815;
-  --color-paper-card-hover: #26211d;
-  --color-paper-border: rgba(211, 166, 109, 0.22);
-  --color-paper-border-strong: rgba(211, 166, 109, 0.45);
+  --color-linen: #FFF9F3;
+  --color-latte: #DBC4A5;
+  --color-cafenoir: #443223;
+  --color-clockwork: #72583E;
+  --color-deepolive: #44422D;
+  --color-mauve: #755151;
+  --color-cedar: #7C7960;
+  --color-weathered: #A08670;
 
-  --color-ink-dark: #2B2620;
-  --color-ink: #2B2620;
-  --color-ink-light: #F0EAE1;
-  --color-ink-muted: #A39B8F;
-  --color-ink-faint: #6A6258;
-
-  --color-wine: #784743;
-  --color-wine-dark: #4F2D2A;
-  --color-wine-light: #9B5E59;
-  --color-wine-glow: rgba(120, 71, 67, 0.35);
-
-  --color-moss: #75816A;
-  --color-moss-dark: #4B5542;
-  --color-moss-light: #8E9C82;
-  --color-moss-glow: rgba(117, 129, 106, 0.3);
-
-  --color-amber: #D3A66D;
-  --color-amber-dark: #9E743F;
-  --color-amber-light: #E8C18E;
-  --color-amber-glow: rgba(211, 166, 109, 0.35);
-
-  --font-serif: 'Cinzel', 'Playfair Display', Georgia, serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
   --font-editorial: 'Playfair Display', Georgia, serif;
+  --font-typewriter: 'Courier Prime', Courier, monospace;
+  --font-mono: 'Courier Prime', Courier, monospace;
   --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-handwritten: 'Caveat', cursive;
 }
 
 /* ==========================================================================
-   DEAD POETS CLUB — DESIGN SYSTEM TOKENS
-   Aesthetic: Dark Academia, Editorial Magazine, Indie Grunge & Cottagecore Warmth
+   DEAD POETS CLUB (DPC) — DESIGN SYSTEM TOKENS & SIGNATURE ELEMENTS
+   Aesthetic: Light Academia + Y2K Grunge + Library Vibes
+   PRD Specification Draft v2
    ========================================================================== */
 
 :root {
-  /* Color Palette Tokens (PRD Specification) */
-  --color-paper-light: #E9E0CE;
-  --color-paper-dark: #141210;
-  --color-paper-card: #1c1815;
-  --color-paper-card-hover: #26211d;
-  --color-paper-border: rgba(211, 166, 109, 0.22);
-  --color-paper-border-strong: rgba(211, 166, 109, 0.45);
+  /* Color Palette Tokens */
+  --linen: #FFF9F3;
+  --latte: #DBC4A5;
+  --cafe-noir: #443223;
+  --clockwork: #72583E;
+  --deep-olive: #44422D;
+  --mauve: #755151;
+  --cedar: #7C7960;
+  --weathered: #A08670;
 
-  --color-ink-dark: #2B2620;
-  --color-ink-light: #F0EAE1;
-  --color-ink-muted: #A39B8F;
-  --color-ink-faint: #6A6258;
-
-  --color-wine: #784743;
-  --color-wine-dark: #4F2D2A;
-  --color-wine-light: #9B5E59;
-  --color-wine-glow: rgba(120, 71, 67, 0.35);
-
-  --color-moss: #75816A;
-  --color-moss-dark: #4B5542;
-  --color-moss-light: #8E9C82;
-  --color-moss-glow: rgba(117, 129, 106, 0.3);
-
-  --color-amber: #D3A66D;
-  --color-amber-dark: #9E743F;
-  --color-amber-light: #E8C18E;
-  --color-amber-glow: rgba(211, 166, 109, 0.35);
-
-  /* Typography Stacks */
-  --font-serif-display: 'Cinzel', serif;
+  /* Typography */
+  --font-serif-display: 'Playfair Display', Georgia, serif;
   --font-serif-editorial: 'Playfair Display', Georgia, serif;
-  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono-typewriter: 'Courier Prime', Courier, monospace;
+  --font-sans-clean: 'Outfit', sans-serif;
   --font-handwritten: 'Caveat', cursive;
 
-  /* Shadows & Glassmorphism */
-  --shadow-parchment: 0 4px 20px -2px rgba(0, 0, 0, 0.45), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
-  --shadow-book: 8px 12px 28px -4px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-glow-amber: 0 0 25px rgba(211, 166, 109, 0.25);
-  --shadow-glow-wine: 0 0 25px rgba(120, 71, 67, 0.35);
+  /* Shadows */
+  --shadow-stamped: 3px 3px 0px var(--cafe-noir);
+  --shadow-stamped-lg: 5px 5px 0px var(--cafe-noir);
+  --shadow-book-spine: 4px 6px 14px rgba(68, 50, 35, 0.35);
 
-  /* Transitions */
   --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -90,198 +54,246 @@
 /* Base Reset & Core Styles */
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 body {
-  background-color: var(--color-paper-dark);
-  color: var(--color-ink-light);
-  font-family: var(--font-sans);
+  background-color: var(--linen);
+  color: var(--cafe-noir);
+  font-family: var(--font-sans-clean);
   line-height: 1.6;
   overflow-x: hidden;
+  /* Halftone paper texture */
   background-image: 
-    radial-gradient(circle at 15% 10%, rgba(120, 71, 67, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 85% 80%, rgba(117, 129, 106, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(211, 166, 109, 0.05) 0%, transparent 60%);
-  background-attachment: fixed;
+    radial-gradient(circle, rgba(68, 50, 35, 0.08) 1px, transparent 1px);
+  background-size: 18px 18px;
   min-height: 100vh;
 }
 
-/* Custom Scrollbar for Dark Academia feel */
+/* Scrollbar with light academia feel */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #141210;
+  background: var(--linen);
+  border-left: 1px solid var(--latte);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #39332D;
+  background: var(--weathered);
   border-radius: 4px;
-  border: 2px solid #141210;
+  border: 2px solid var(--linen);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-amber-dark);
+  background: var(--clockwork);
 }
 
 /* Typography Utility Classes */
-.font-display {
-  font-family: var(--font-serif-display);
-}
-
 .font-editorial {
   font-family: var(--font-serif-editorial);
 }
 
-.font-sans {
-  font-family: var(--font-sans);
+.font-typewriter {
+  font-family: var(--font-mono-typewriter);
 }
 
 .font-handwritten {
   font-family: var(--font-handwritten);
 }
 
-/* Dark Academia Parchment Cards */
-.parchment-card {
-  background: var(--color-paper-card);
-  border: 1px solid var(--color-paper-border);
-  border-radius: 8px;
-  box-shadow: var(--shadow-parchment);
-  position: relative;
-  transition: all 0.3s var(--ease-editorial);
+/* Signature Element: 2-3px Heavy Ink Outlines */
+.border-ink {
+  border: 2px solid var(--cafe-noir);
 }
 
-.parchment-card:hover {
-  border-color: var(--color-paper-border-strong);
-  box-shadow: var(--shadow-parchment), var(--shadow-glow-amber);
-  transform: translateY(-2px);
+.border-ink-thick {
+  border: 3px solid var(--cafe-noir);
 }
 
-/* Gold/Amber foil badge */
-.amber-badge {
-  background: rgba(211, 166, 109, 0.12);
-  color: var(--color-amber-light);
-  border: 1px solid rgba(211, 166, 109, 0.3);
-  padding: 2px 10px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+.border-dashed-catalog {
+  border: 1.5px dashed var(--weathered);
+}
+
+.border-double-ink {
+  border: 3px double var(--cafe-noir);
+}
+
+/* Signature Element: Stamped Starburst Badges */
+.starburst-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--mauve);
+  color: var(--linen);
+  font-family: var(--font-mono-typewriter);
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
-}
-
-/* Wine pill */
-.wine-pill {
-  background: rgba(120, 71, 67, 0.2);
-  color: #E8A8A4;
-  border: 1px solid rgba(120, 71, 67, 0.4);
-}
-
-/* Moss pill */
-.moss-pill {
-  background: rgba(117, 129, 106, 0.2);
-  color: #B5C4AA;
-  border: 1px solid rgba(117, 129, 106, 0.4);
-}
-
-/* Book Cover 3D Sheen */
-.book-cover-wrap {
-  perspective: 1000px;
-}
-
-.book-cover {
-  box-shadow: var(--shadow-book);
-  border-radius: 2px 6px 6px 2px;
-  transition: transform 0.4s var(--ease-editorial), box-shadow 0.4s var(--ease-editorial);
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border: 1.5px solid var(--cafe-noir);
+  box-shadow: 2px 2px 0px var(--cafe-noir);
   position: relative;
-  overflow: hidden;
 }
 
-.book-cover::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 12px;
-  height: 100%;
-  background: linear-gradient(to right, rgba(0,0,0,0.5), rgba(0,0,0,0.1) 60%, transparent);
-  pointer-events: none;
-}
-
-.book-cover:hover {
-  transform: rotateY(-8deg) scale(1.02);
-  box-shadow: 12px 16px 36px -4px rgba(0, 0, 0, 0.75), 0 0 15px rgba(211, 166, 109, 0.2);
-}
-
-/* Interactive Button Styling */
+/* Signature Element: Stamped Buttons */
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-wine) 0%, var(--color-wine-dark) 100%);
-  color: var(--color-ink-light);
-  border: 1px solid rgba(211, 166, 109, 0.3);
+  background-color: var(--mauve);
+  color: var(--linen);
+  border: 2.5px solid var(--cafe-noir);
+  box-shadow: 3px 3px 0px var(--cafe-noir);
   font-family: var(--font-serif-editorial);
+  font-weight: 600;
   padding: 0.65rem 1.4rem;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  transition: all 0.25s var(--ease-editorial);
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease-out;
   text-decoration: none;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--color-wine-light) 0%, var(--color-wine) 100%);
-  border-color: var(--color-amber);
-  box-shadow: var(--shadow-glow-wine), 0 4px 15px rgba(0, 0, 0, 0.4);
-  transform: translateY(-1px);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px var(--cafe-noir);
+  background-color: #855d5d;
+}
+
+.btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--cafe-noir);
 }
 
 .btn-secondary {
-  background: rgba(28, 24, 21, 0.85);
-  color: var(--color-ink-light);
-  border: 1px solid var(--color-paper-border);
-  font-family: var(--font-sans);
-  padding: 0.65rem 1.3rem;
-  border-radius: 6px;
+  background-color: var(--latte);
+  color: var(--cafe-noir);
+  border: 2px solid var(--cafe-noir);
+  box-shadow: 2px 2px 0px var(--cafe-noir);
+  font-family: var(--font-mono-typewriter);
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: 4px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: 500;
-  transition: all 0.25s var(--ease-editorial);
+  transition: all 0.15s ease-out;
   text-decoration: none;
 }
 
 .btn-secondary:hover {
-  border-color: var(--color-amber);
-  background: #25201C;
-  color: var(--color-amber-light);
+  background-color: #e5cfb3;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--cafe-noir);
 }
 
-/* Handwritten annotation notes */
-.annotation-note {
-  font-family: var(--font-handwritten);
-  color: var(--color-amber-light);
-  font-size: 1.25rem;
-  line-height: 1.2;
-  transform: rotate(-2deg);
+.btn-secondary:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--cafe-noir);
 }
 
-/* Subtle photocopied texture overlay */
-.texture-overlay {
+/* Signature Element: Catalog Paper Cards */
+.catalog-card {
+  background-color: #FCF8F2;
+  border: 2px solid var(--cafe-noir);
+  box-shadow: 3px 3px 0px var(--cafe-noir);
+  border-radius: 4px;
+  position: relative;
+  transition: transform 0.2s var(--ease-editorial), box-shadow 0.2s var(--ease-editorial);
+}
+
+.catalog-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px var(--cafe-noir);
+}
+
+/* Signature Element: Ticker Strip Marquee */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 35s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+/* Signature Element: Wooden Bookshelf Base */
+.wooden-shelf {
+  position: relative;
+  background: linear-gradient(180deg, #58432D 0%, #443223 50%, #2A1D13 100%);
+  border-top: 3px solid #72583E;
+  border-bottom: 4px solid #23170D;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), inset 0 2px 3px rgba(255, 255, 255, 0.15);
+}
+
+.wooden-shelf::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: #3B2A1C;
+  box-shadow: inset 0 3px 5px rgba(0,0,0,0.5);
+}
+
+/* Signature Element: 3D Book Spine */
+.book-spine {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform-origin: bottom center;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: -2px 0 6px rgba(0,0,0,0.3), inset 2px 0 4px rgba(255,255,255,0.15), inset -2px 0 4px rgba(0,0,0,0.3);
+  cursor: pointer;
+  border-radius: 3px 3px 0 0;
+  border: 1px solid rgba(0,0,0,0.25);
+  user-select: none;
+}
+
+.book-spine:hover {
+  transform: translateY(-24px) scale(1.03);
+  box-shadow: -4px 0 14px rgba(0,0,0,0.45), 0 10px 20px rgba(0,0,0,0.25);
+  z-index: 20;
+}
+
+.book-spine.active {
+  transform: translateY(-32px) scale(1.06);
+  box-shadow: 0 15px 30px rgba(68, 50, 35, 0.5), 0 0 0 2px var(--cafe-noir);
+  z-index: 25;
+}
+
+/* Stacked Note Cards (Fan-out effect) */
+.note-stack-container {
+  position: relative;
+  perspective: 1000px;
+}
+
+.note-card {
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  border: 1.5px solid var(--cafe-noir);
+  box-shadow: 2px 2px 0px var(--cafe-noir);
+}
+
+/* Photocopy Grunge Overlay */
+.grunge-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  opacity: 0.03;
+  opacity: 0.035;
   z-index: 9999;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }

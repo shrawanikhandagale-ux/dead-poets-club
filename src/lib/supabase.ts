@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { SEED_BOOKS } from '../data/seedBooks';
 import { Book, ShelfItem, ShelfStatus } from '../types/book';
-import { Profile } from '../types/profile';
+import { Profile, DEFAULT_AVATAR_CONFIG } from '../types/profile';
 import { User, Session } from '../types/auth';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -86,8 +86,11 @@ const DEFAULT_DEMO_PROFILE: Profile = {
     stats_public: false,
   },
   avatar_config: {
-    baseId: 'classic_scholar',
-    pose: 'reading',
+    ...DEFAULT_AVATAR_CONFIG,
+    configured: true,
+    mbti: 'INTJ',
+    heldItem: 'antique_book',
+    equippedBadge: 'secret_society_key',
   },
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
@@ -211,8 +214,8 @@ class LocalService {
         stats_public: false,
       },
       avatar_config: {
-        baseId: 'classic_scholar',
-        pose: 'reading',
+        ...DEFAULT_AVATAR_CONFIG,
+        configured: false,
       },
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -262,7 +265,7 @@ class LocalService {
         books_read_count: 0,
         favorite_genres: ['Dark Academia'],
         privacy_settings: { profile_public: true, shelves_public: true, stats_public: false },
-        avatar_config: { baseId: 'classic_scholar', pose: 'reading' },
+        avatar_config: { ...DEFAULT_AVATAR_CONFIG, configured: false },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -284,7 +287,14 @@ class LocalService {
   // --- Profile Operations ---
   public getProfiles(): Profile[] {
     try {
-      return JSON.parse(safeStorage.getItem(STORAGE_KEYS.PROFILES) || '[]');
+      const raw = JSON.parse(safeStorage.getItem(STORAGE_KEYS.PROFILES) || '[]');
+      return raw.map((p: Profile) => ({
+        ...p,
+        avatar_config: {
+          ...DEFAULT_AVATAR_CONFIG,
+          ...(p.avatar_config || {}),
+        },
+      }));
     } catch {
       return [];
     }
@@ -300,7 +310,15 @@ class LocalService {
 
   public async getProfile(userIdOrUsername: string): Promise<Profile | null> {
     const profiles = this.getProfiles();
-    return profiles.find(p => p.id === userIdOrUsername || p.username.toLowerCase() === userIdOrUsername.toLowerCase()) || null;
+    const found = profiles.find(p => p.id === userIdOrUsername || p.username.toLowerCase() === userIdOrUsername.toLowerCase());
+    if (!found) return null;
+    return {
+      ...found,
+      avatar_config: {
+        ...DEFAULT_AVATAR_CONFIG,
+        ...(found.avatar_config || {}),
+      },
+    };
   }
 
   public async updateProfile(userId: string, updates: Partial<Profile>): Promise<Profile> {
@@ -308,12 +326,34 @@ class LocalService {
     const index = profiles.findIndex(p => p.id === userId);
     if (index === -1) throw new Error('Profile not found');
 
+    const existing = profiles[index];
+    const mergedAvatar = updates.avatar_config
+      ? { ...DEFAULT_AVATAR_CONFIG, ...existing.avatar_config, ...updates.avatar_config }
+      : existing.avatar_config;
+
     profiles[index] = {
-      ...profiles[index],
+      ...existing,
       ...updates,
+      avatar_config: mergedAvatar,
       updated_at: new Date().toISOString(),
     };
     safeStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(profiles));
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase
+          .from('profiles')
+          .update({
+            ...updates,
+            avatar_config: mergedAvatar,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', userId);
+      } catch (err) {
+        console.warn('Supabase profile remote update warning:', err);
+      }
+    }
+
     return profiles[index];
   }
 

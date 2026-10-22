@@ -1,81 +1,72 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
-  Compass,
   BookOpen,
   Coffee,
   Grid3X3,
   Bookmark,
   User,
-  LogOut,
   Sparkles,
-  ChevronRight,
-  BookMarked,
+  ScrollText,
   Feather,
+  Compass,
+  LogOut,
+  Flame,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
 import { SEED_BOOKS } from '../../data/seedBooks';
-import { triggerInkSplatter } from '../../lib/animeAnimations';
+import { PixelAvatar } from '../avatar/PixelAvatar';
 
 export const SidebarNav: React.FC = () => {
   const { user, profile, shelves, logout } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  // Find currently reading book
-  const currentlyReadingShelf = shelves.find(s => s.status === 'currently_reading');
-  const currentBook = currentlyReadingShelf
-    ? SEED_BOOKS.find(b => b.id === currentlyReadingShelf.book_id) || SEED_BOOKS[0]
-    : SEED_BOOKS[0];
-
-  const progressPercent = currentBook && currentlyReadingShelf?.progress_pages
-    ? Math.min(100, Math.round((currentlyReadingShelf.progress_pages / currentBook.pages) * 100))
-    : 56;
 
   const navItems = [
-    { name: 'Clubhouse', path: '/clubhouse', icon: Compass, badge: 'Home' },
-    { name: 'Library', path: '/library', icon: BookOpen, badge: '30+ Books' },
-    { name: 'The Café', path: '/cafe', icon: Coffee, badge: 'Cozy Room' },
+    { name: 'Home Shelf', path: '/', icon: Compass, badge: 'Main' },
+    { name: 'Grand Library', path: '/library', icon: BookOpen, badge: 'Archive' },
+    { name: 'Author Spotlight', path: '/authors', icon: Feather, badge: 'Murakami' },
+    { name: 'The Poem Jar', path: '/poems', icon: ScrollText, badge: '50¢' },
     { name: 'Daily Crossword', path: '/crossword', icon: Grid3X3, badge: 'Streak' },
-    { name: 'My Shelves', path: '/shelves', icon: Bookmark, badge: `${shelves.length} Saved` },
+    { name: 'Virtual Café', path: '/cafe', icon: Coffee, badge: 'Lounge' },
+    { name: 'My Shelves', path: '/shelves', icon: Bookmark, badge: `${shelves.length}` },
     {
-      name: 'Poet Profile',
+      name: 'Character Atelier',
+      path: '/character-creator',
+      icon: Sparkles,
+      badge: '8-Bit',
+    },
+    {
+      name: 'Library Card',
       path: user ? `/profile/${user.username}` : '/login',
       icon: User,
-      badge: 'You',
+      badge: 'Identity',
     },
   ];
 
-  const handleLinkClick = (e: React.MouseEvent) => {
-    triggerInkSplatter(e.clientX, e.clientY);
-  };
 
   return (
-    <aside className="hidden lg:flex flex-col w-72 h-screen fixed left-0 top-0 bg-[#14110f]/95 border-r border-[#d3a66d]/20 backdrop-blur-md z-40 text-[#f0eae1] select-none p-5 justify-between">
-      {/* Club Brand Seal Header */}
+    <aside className="hidden lg:flex flex-col w-72 h-screen fixed left-0 top-0 bg-[#FCF8F2] border-r-2 border-[#443223] z-40 text-[#443223] select-none p-5 justify-between shadow-[4px_0px_0px_rgba(68,50,35,0.06)]">
+      {/* Header Club Seal */}
       <div>
         <NavLink
           to="/"
-          onClick={handleLinkClick}
-          className="group flex items-center gap-3.5 pb-6 border-b border-[#d3a66d]/15 cursor-pointer text-decoration-none"
+          className="group flex items-center gap-3 pb-5 border-b-2 border-[#443223] cursor-pointer text-decoration-none"
         >
-          <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-[#784743] to-[#401f1c] border border-[#d3a66d]/50 flex items-center justify-center shadow-lg group-hover:border-[#d3a66d] transition-all duration-300">
-            <Feather className="w-6 h-6 text-[#e8c18e] group-hover:rotate-12 transition-transform duration-300" />
+          <div className="w-10 h-10 rounded bg-[#755151] border-2 border-[#443223] flex items-center justify-center shadow-[2px_2px_0px_#443223] group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-all">
+            <Feather className="w-5 h-5 text-[#FFF9F3]" />
           </div>
           <div>
-            <h1 className="font-serif text-lg tracking-wider font-semibold text-[#f0eae1] group-hover:text-[#e8c18e] transition-colors leading-tight">
+            <h1 className="font-editorial text-base tracking-wide font-bold text-[#443223] leading-tight">
               DEAD POETS CLUB
             </h1>
-            <p className="text-[11px] font-sans text-[#a39b8f] tracking-widest uppercase">
-              Literary Sanctuary
+            <p className="text-[10px] font-typewriter text-[#72583E] tracking-widest uppercase">
+              Living in the books
             </p>
           </div>
         </NavLink>
 
         {/* Primary Navigation Links */}
-        <nav className="mt-6 flex flex-col gap-1.5">
+        <nav className="mt-5 flex flex-col gap-1.5">
           {navItems.map(item => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -84,104 +75,76 @@ export const SidebarNav: React.FC = () => {
               <NavLink
                 key={item.path}
                 to={item.path}
-                onClick={handleLinkClick}
-                className={({ isActive }) =>
-                  `flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group text-decoration-none ${
-                    isActive
-                      ? 'bg-gradient-to-r from-[#784743]/40 to-[#784743]/15 text-[#e8c18e] border-l-4 border-[#d3a66d] shadow-sm pl-4'
-                      : 'text-[#a39b8f] hover:text-[#f0eae1] hover:bg-[#201b17]'
-                  }`
-                }
+                className={`flex items-center justify-between px-3 py-2 rounded font-typewriter text-xs font-bold transition-all text-decoration-none border-2 ${
+                  isActive
+                    ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[3px_3px_0px_#443223]'
+                    : 'text-[#443223] border-transparent hover:bg-[#DBC4A5]/40 hover:border-[#A08670]'
+                }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <Icon
-                    className={`w-4 h-4 transition-transform group-hover:scale-110 ${
-                      isActive ? 'text-[#d3a66d]' : 'text-[#8e8578]'
+                    className={`w-4 h-4 ${
+                      isActive ? 'text-[#FFF9F3]' : 'text-[#755151]'
                     }`}
                   />
-                  <span className="font-sans tracking-wide">{item.name}</span>
+                  <span>{item.name}</span>
                 </div>
-                {item.badge && (
-                  <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-mono ${
-                      isActive
-                        ? 'bg-[#d3a66d]/20 text-[#e8c18e] border border-[#d3a66d]/40'
-                        : 'bg-[#1f1b18] text-[#7a7266] border border-[#2e2722]'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
+
+                <span
+                  className={`text-[9px] px-1.5 py-0.5 rounded font-mono uppercase ${
+                    isActive
+                      ? 'bg-white/20 text-[#FFF9F3]'
+                      : 'bg-[#DBC4A5]/40 text-[#72583E]'
+                  }`}
+                >
+                  {item.badge}
+                </span>
               </NavLink>
             );
           })}
         </nav>
       </div>
 
-      {/* Bottom Section: Currently Reading Card & User Badge */}
-      <div className="flex flex-col gap-4">
-        {/* Mini "Currently Reading" Drawer Card */}
-        {currentBook && (
-          <div className="p-3.5 rounded-lg bg-[#1a1614] border border-[#d3a66d]/25 shadow-md relative overflow-hidden">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] uppercase font-mono tracking-widest text-[#d3a66d] flex items-center gap-1.5">
-                <BookMarked className="w-3 h-3 text-[#d3a66d]" /> CURRENTLY READING
-              </span>
-              <span className="text-[11px] font-mono text-[#a39b8f]">{progressPercent}%</span>
-            </div>
-
-            <div className="flex gap-3 items-center">
-              <img
-                src={currentBook.cover_url}
-                alt={currentBook.title}
-                className="w-10 h-14 object-cover rounded shadow border border-[#39332d]"
-              />
-              <div className="flex-1 min-w-0">
-                <h4 className="text-xs font-serif font-medium text-[#f0eae1] truncate">
-                  {currentBook.title}
-                </h4>
-                <p className="text-[11px] text-[#8e8578] truncate">{currentBook.author}</p>
-                {/* Progress bar */}
-                <div className="w-full bg-[#2a241f] h-1.5 rounded-full mt-2 overflow-hidden border border-[#3e342b]">
-                  <div
-                    className="bg-gradient-to-r from-[#784743] to-[#d3a66d] h-full rounded-full transition-all duration-500"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* User Profile Card / Login Button */}
+      {/* Footer: Mini Borrower Identity */}
+      <div className="border-t-2 border-[#443223] pt-4">
         {user ? (
-          <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#181412] border border-[#2e2722]">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-[#784743] border border-[#d3a66d]/50 flex items-center justify-center font-serif text-xs font-bold text-[#e8c18e]">
-                {user.displayName.substring(0, 2).toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-medium text-[#f0eae1] truncate">{user.displayName}</p>
-                <p className="text-[10px] text-[#8e8578] truncate">@{user.username}</p>
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                logout();
-                navigate('/');
-              }}
-              className="p-1.5 text-[#8e8578] hover:text-[#d3a66d] hover:bg-[#25201b] rounded transition-colors"
-              title="Sign Out"
+          <div className="p-3 bg-[#FFF9F3] border-2 border-[#443223] shadow-[2px_2px_0px_#443223] rounded flex items-center justify-between">
+            <NavLink
+              to={`/profile/${user.username}`}
+              className="flex items-center gap-2.5 text-decoration-none group"
             >
-              <LogOut className="w-4 h-4" />
+              <div className="w-9 h-9 rounded border-2 border-[#1A1614] bg-[#FCF8F2] flex items-center justify-center shadow-[2px_2px_0px_#1A1614] overflow-hidden flex-shrink-0 relative group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-all">
+                <PixelAvatar
+                  config={profile?.avatar_config}
+                  size="xs"
+                  viewMode="bust"
+                />
+                <span className="w-2 h-2 rounded-full bg-green-600 border border-[#1A1614] absolute bottom-0 right-0" />
+              </div>
+              <div className="truncate max-w-[120px]">
+                <span className="font-typewriter text-xs font-bold text-[#443223] block truncate group-hover:text-[#755151]">
+                  {profile?.display_name || user.username}
+                </span>
+                <span className="text-[10px] font-mono text-[#755151]">
+                  * {profile?.avatar_config?.mbti || 'INTJ'}
+                </span>
+              </div>
+            </NavLink>
+
+            <button
+              onClick={() => logout()}
+              title="Sign Out"
+              className="p-1.5 hover:bg-[#DBC4A5]/40 rounded text-[#72583E] cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
             </button>
           </div>
         ) : (
           <NavLink
             to="/login"
-            className="w-full py-2.5 px-4 bg-[#784743] hover:bg-[#91544f] text-[#f0eae1] font-serif text-sm text-center rounded-lg border border-[#d3a66d]/30 shadow-md transition-all text-decoration-none block"
+            className="btn-primary w-full justify-center text-xs py-2 uppercase"
           >
-            Enter Sanctuary (Sign In)
+            <span>Sign In / Join Club</span>
           </NavLink>
         )}
       </div>

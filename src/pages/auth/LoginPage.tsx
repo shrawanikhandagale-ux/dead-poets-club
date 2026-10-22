@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { localService } from '../../lib/supabase';
 import { Feather, Lock, Mail, ArrowRight, Sparkles, AlertCircle, BookOpen } from 'lucide-react';
 import { triggerInkSplatter } from '../../lib/animeAnimations';
 
@@ -26,7 +27,12 @@ export const LoginPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       await login(identifier);
-      navigate(returnTo);
+      const p = await localService.getProfile(identifier);
+      if (p && p.avatar_config && p.avatar_config.configured === false) {
+        navigate('/character-creator?onboarding=true');
+      } else {
+        navigate(returnTo);
+      }
     } catch (err: any) {
       setError(err?.message || 'Failed to authenticate. Please verify your credentials.');
     } finally {

@@ -4,30 +4,28 @@ import { SidebarNav } from '../navigation/SidebarNav';
 import { MobileNav } from '../navigation/MobileNav';
 import { Feather, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { triggerInkSplatter } from '../../lib/animeAnimations';
 
 export const AppLayout: React.FC = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-[#141210] text-[#f0eae1] flex flex-col">
-      {/* Photocopied texture overlay */}
-      <div className="texture-overlay" />
+    <div className="min-h-screen bg-[#FFF9F3] text-[#443223] flex flex-col antialiased">
+      {/* Subtle halftone grunge paper texture overlay */}
+      <div className="grunge-overlay" />
 
       {/* Desktop Persistent Sidebar */}
       <SidebarNav />
 
       {/* Mobile Top Header */}
-      <header className="lg:hidden sticky top-0 z-30 bg-[#14110f]/95 border-b border-[#d3a66d]/20 backdrop-blur-md px-4 py-3 flex items-center justify-between">
+      <header className="lg:hidden sticky top-0 z-30 bg-[#FCF8F2]/95 border-b-2 border-[#443223] backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-sm">
         <NavLink
           to="/"
-          onClick={(e) => triggerInkSplatter(e.clientX, e.clientY)}
-          className="flex items-center gap-2.5 text-decoration-none"
+          className="flex items-center gap-2 text-decoration-none"
         >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#784743] to-[#401f1c] border border-[#d3a66d]/50 flex items-center justify-center shadow">
-            <Feather className="w-4 h-4 text-[#e8c18e]" />
+          <div className="w-8 h-8 rounded bg-[#755151] border-2 border-[#443223] flex items-center justify-center shadow-[1.5px_1.5px_0px_#443223]">
+            <Feather className="w-4 h-4 text-[#FFF9F3]" />
           </div>
-          <span className="font-serif text-sm font-bold tracking-wider text-[#f0eae1]">
+          <span className="font-editorial text-sm font-bold tracking-wider text-[#443223]">
             DEAD POETS CLUB
           </span>
         </NavLink>
@@ -35,15 +33,15 @@ export const AppLayout: React.FC = () => {
         {user ? (
           <NavLink
             to={`/profile/${user.username}`}
-            className="flex items-center gap-2 p-1 pl-2 pr-3 rounded-full bg-[#1e1916] border border-[#39322c] text-xs font-mono text-[#e8c18e]"
+            className="flex items-center gap-2 px-2.5 py-1 rounded bg-[#FFF9F3] border border-[#443223] text-xs font-mono text-[#755151]"
           >
-            <span className="w-2 h-2 rounded-full bg-[#8e9c82] animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-green-600 animate-pulse" />
             <span>@{user.username}</span>
           </NavLink>
         ) : (
           <NavLink
             to="/login"
-            className="text-xs font-serif text-[#e8c18e] bg-[#784743] px-3 py-1.5 rounded border border-[#d3a66d]/30"
+            className="text-xs font-typewriter font-bold text-[#FFF9F3] bg-[#755151] px-3 py-1 rounded border border-[#443223] shadow-[1px_1px_0px_#443223]"
           >
             Sign In
           </NavLink>

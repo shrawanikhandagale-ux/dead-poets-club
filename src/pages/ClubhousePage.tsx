@@ -5,6 +5,7 @@ import { SEED_BOOKS } from '../data/seedBooks';
 import { BookCard } from '../components/books/BookCard';
 import { BookDetailModal } from '../components/books/BookDetailModal';
 import { Book } from '../types/book';
+import { PixelAvatar } from '../components/avatar/PixelAvatar';
 import {
   Compass,
   BookOpen,
@@ -17,6 +18,8 @@ import {
   Quote,
   ArrowRight,
   TrendingUp,
+  Palette,
+  Users,
 } from 'lucide-react';
 import { triggerInkSplatter } from '../lib/animeAnimations';
 
@@ -39,36 +42,48 @@ export const ClubhousePage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
-      {/* Editorial Header Greeting */}
-      <div className="border-b border-[#d3a66d]/20 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#784743]/20 border border-[#d3a66d]/40 mb-3 text-xs font-mono text-[#e8c18e]">
-            <Sparkles className="w-3.5 h-3.5 text-[#d3a66d]" />
-            <span>Poet's Quarters</span>
+      {/* Editorial Header Greeting with Pixel RPG Avatar */}
+      <div className="border-b border-[#d3a66d]/20 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          {/* Active Pixel Avatar Stamp */}
+          <div className="w-16 h-20 rounded-lg border-2 border-[#d3a66d] bg-[#1a1614] flex flex-col items-center justify-center p-1 shadow-lg relative flex-shrink-0 group">
+            <PixelAvatar
+              config={profile?.avatar_config}
+              size="sm"
+              viewMode="full"
+            />
+            <span className="w-2.5 h-2.5 rounded-full bg-green-500 border border-[#141210] absolute -bottom-1 -right-1" />
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#f0eae1]">
-            Greetings, {profile?.display_name || user?.displayName || 'Fellow Poet'}
-          </h1>
-          <p className="font-sans text-sm text-[#a39b8f] mt-1 max-w-xl">
-            "{profile?.bio || 'Haunting dusty libraries, listening for echoes in the margins.'}"
-          </p>
+
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-[#784743]/20 border border-[#d3a66d]/40 mb-1.5 text-xs font-mono text-[#e8c18e]">
+              <Sparkles className="w-3.5 h-3.5 text-[#d3a66d]" />
+              <span>Poet's Quarters · * {profile?.avatar_config?.mbti || 'INTJ'}</span>
+            </div>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#f0eae1]">
+              Greetings, {profile?.display_name || user?.displayName || 'Fellow Poet'}
+            </h1>
+            <p className="font-sans text-xs sm:text-sm text-[#a39b8f] mt-0.5 max-w-xl">
+              "{profile?.bio || 'Haunting dusty libraries, listening for echoes in the margins.'}"
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <NavLink
+            to="/character-creator"
+            className="btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5"
+          >
+            <Palette className="w-3.5 h-3.5" />
+            <span>Edit Avatar</span>
+          </NavLink>
           <NavLink
             to="/library"
             onClick={(e) => triggerInkSplatter(e.clientX, e.clientY)}
-            className="btn-primary text-xs py-2 px-4"
+            className="btn-primary text-xs py-2 px-3.5"
           >
             <BookOpen className="w-3.5 h-3.5" />
             Browse Stacks
-          </NavLink>
-          <NavLink
-            to="/shelves"
-            className="btn-secondary text-xs py-2 px-4"
-          >
-            <Bookmark className="w-3.5 h-3.5" />
-            My Shelves ({shelves.length})
           </NavLink>
         </div>
       </div>
@@ -208,6 +223,181 @@ export const ClubhousePage: React.FC = () => {
             </p>
             <p className="text-[11px] font-sans text-[#a39b8f] mt-1.5">— Aldous Huxley</p>
           </div>
+        </div>
+      </div>
+
+      {/* Midnight Study Room · Live Society Presence Grid */}
+      <div className="parchment-card p-6 rounded-2xl bg-[#1a1614] border border-[#d3a66d]/30">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-[#d3a66d]/15">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-[#d3a66d]" />
+            <h2 className="font-serif text-lg font-bold text-[#f0eae1]">
+              Midnight Study Room · Live Society Presence
+            </h2>
+          </div>
+          <span className="text-xs font-mono text-[#8e9c82] flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span>5 Members Currently Reading</span>
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Member 1: Current User */}
+          <div className="p-3.5 rounded-xl bg-[#241e1a] border border-[#d3a66d]/60 flex items-center justify-between shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded border border-[#d3a66d] bg-[#141210] overflow-hidden flex items-center justify-center relative">
+                <PixelAvatar
+                  config={profile?.avatar_config}
+                  size="xs"
+                  viewMode="bust"
+                />
+                <span className="w-2 h-2 rounded-full bg-green-500 border border-[#141210] absolute bottom-0 right-0" />
+              </div>
+              <div className="truncate">
+                <span className="font-serif text-xs font-bold text-[#f0eae1] block truncate">
+                  {profile?.display_name || user?.displayName || 'You'} (You)
+                </span>
+                <span className="text-[10px] font-mono text-[#8e9c82] block truncate">
+                  * Active in Quarters Desk
+                </span>
+              </div>
+            </div>
+            <span className="text-[9px] font-mono text-[#d3a66d] border border-[#d3a66d]/40 px-2 py-0.5 rounded">
+              ONLINE
+            </span>
+          </div>
+
+          {/* Member 2: Eleanor Vance */}
+          <NavLink
+            to="/profile/eleanor_v"
+            className="p-3.5 rounded-xl bg-[#201a17] border border-[#3e342b] hover:border-[#d3a66d]/60 transition-all flex items-center justify-between text-decoration-none group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded border border-[#3e342b] bg-[#141210] overflow-hidden flex items-center justify-center relative group-hover:scale-105 transition-transform">
+                <PixelAvatar
+                  config={{
+                    skinTone: '#FFF0E5',
+                    hairStyle: 'classic_bob',
+                    hairColor: '#443223',
+                    accessories: ['round_spectacles'],
+                  }}
+                  size="xs"
+                  viewMode="bust"
+                />
+                <span className="w-2 h-2 rounded-full bg-green-500 border border-[#141210] absolute bottom-0 right-0" />
+              </div>
+              <div className="truncate">
+                <span className="font-serif text-xs font-bold text-[#f0eae1] block truncate group-hover:text-[#d3a66d]">
+                  Eleanor Vance
+                </span>
+                <span className="text-[10px] font-mono text-[#a39b8f] block truncate">
+                  Emma by Jane Austen
+                </span>
+              </div>
+            </div>
+            <span className="text-[9px] font-mono text-[#8e8578] uppercase">
+              Café Corner
+            </span>
+          </NavLink>
+
+          {/* Member 3: Julian Morrow */}
+          <NavLink
+            to="/profile/julian_m"
+            className="p-3.5 rounded-xl bg-[#201a17] border border-[#3e342b] hover:border-[#d3a66d]/60 transition-all flex items-center justify-between text-decoration-none group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded border border-[#3e342b] bg-[#141210] overflow-hidden flex items-center justify-center relative group-hover:scale-105 transition-transform">
+                <PixelAvatar
+                  config={{
+                    skinTone: '#EAD4BA',
+                    hairStyle: 'shaggy_mess',
+                    hairColor: '#1A1614',
+                    accessories: ['wire_rims'],
+                  }}
+                  size="xs"
+                  viewMode="bust"
+                />
+                <span className="w-2 h-2 rounded-full bg-green-500 border border-[#141210] absolute bottom-0 right-0" />
+              </div>
+              <div className="truncate">
+                <span className="font-serif text-xs font-bold text-[#f0eae1] block truncate group-hover:text-[#d3a66d]">
+                  Julian Morrow
+                </span>
+                <span className="text-[10px] font-mono text-[#a39b8f] block truncate">
+                  The Secret History
+                </span>
+              </div>
+            </div>
+            <span className="text-[9px] font-mono text-[#8e8578] uppercase">
+              Classics Desk
+            </span>
+          </NavLink>
+
+          {/* Member 4: Beatrix Keene */}
+          <NavLink
+            to="/profile/beatrix_k"
+            className="p-3.5 rounded-xl bg-[#201a17] border border-[#3e342b] hover:border-[#d3a66d]/60 transition-all flex items-center justify-between text-decoration-none group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded border border-[#3e342b] bg-[#141210] overflow-hidden flex items-center justify-center relative group-hover:scale-105 transition-transform">
+                <PixelAvatar
+                  config={{
+                    skinTone: '#D4AA7D',
+                    hairStyle: 'wavy_locks',
+                    hairColor: '#8D3F37',
+                    accessories: ['french_beret'],
+                  }}
+                  size="xs"
+                  viewMode="bust"
+                />
+                <span className="w-2 h-2 rounded-full bg-green-500 border border-[#141210] absolute bottom-0 right-0" />
+              </div>
+              <div className="truncate">
+                <span className="font-serif text-xs font-bold text-[#f0eae1] block truncate group-hover:text-[#d3a66d]">
+                  Beatrix Keene
+                </span>
+                <span className="text-[10px] font-mono text-[#a39b8f] block truncate">
+                  Wuthering Heights
+                </span>
+              </div>
+            </div>
+            <span className="text-[9px] font-mono text-[#8e8578] uppercase">
+              Fireplace
+            </span>
+          </NavLink>
+
+          {/* Member 5: Theodore Finch */}
+          <NavLink
+            to="/profile/theodore_p"
+            className="p-3.5 rounded-xl bg-[#201a17] border border-[#3e342b] hover:border-[#d3a66d]/60 transition-all flex items-center justify-between text-decoration-none group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded border border-[#3e342b] bg-[#141210] overflow-hidden flex items-center justify-center relative group-hover:scale-105 transition-transform">
+                <PixelAvatar
+                  config={{
+                    skinTone: '#EAD4BA',
+                    hairStyle: 'side_part',
+                    hairColor: '#72583E',
+                    accessories: ['round_spectacles'],
+                  }}
+                  size="xs"
+                  viewMode="bust"
+                />
+                <span className="w-2 h-2 rounded-full bg-amber-400 border border-[#141210] absolute bottom-0 right-0" />
+              </div>
+              <div className="truncate">
+                <span className="font-serif text-xs font-bold text-[#f0eae1] block truncate group-hover:text-[#d3a66d]">
+                  Theodore Finch
+                </span>
+                <span className="text-[10px] font-mono text-[#a39b8f] block truncate">
+                  Crime & Punishment
+                </span>
+              </div>
+            </div>
+            <span className="text-[9px] font-mono text-[#8e8578] uppercase">
+              Idle 4m
+            </span>
+          </NavLink>
         </div>
       </div>
 
