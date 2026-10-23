@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { SEED_BOOKS } from '../data/seedBooks';
 import { Book } from '../types/book';
 import { BookDetailModal } from '../components/books/BookDetailModal';
+import { PixelAvatar } from '../components/avatar/PixelAvatar';
 import {
   BookOpen,
   Coffee,
@@ -19,6 +20,7 @@ import {
   Heart,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { ScrapbookQuoteCard, ScrapbookCardData, SCRAPBOOK_THEMES } from '../components/books/ScrapbookQuoteCard';
 
 // Chapter-style genre column definitions (PRD Section 6.2 & wireframe)
 const GENRE_CHAPTERS = [
@@ -31,38 +33,48 @@ const GENRE_CHAPTERS = [
 ];
 
 // Stacked Typewriter Quote Cards (PRD Section 6.3 & wireframe reference)
-const STACKED_QUOTES = [
+const SCRAPBOOK_CARDS: ScrapbookCardData[] = [
   {
-    id: 1,
-    title: 'Paul on... FINDING INSPIRATION EVERYWHERE',
-    text: 'The good thing about looking through the viewfinder of a film camera is it really helps you look and see. I think one of my best points over the years has been the ability to see.',
-    book: 'Camera Lucida by Roland Barthes',
-    color: '#DBC4A5',
-    rotation: -4,
+    id: 'quote-1',
+    book: SEED_BOOKS[0], // The Secret History
+    tagline: 'Julian on... THE TERROR OF BEAUTY',
+    themeColor: SCRAPBOOK_THEMES[0], // Dusty Mauve
+    rotation: -3,
   },
   {
-    id: 2,
-    title: 'Donna on... THE TERROR OF BEAUTY',
-    text: 'Beauty is terror. Whatever we call beautiful, we quiver before it. And what could be more terrifying and beautiful, to souls like the Greeks or our own, than to lose control completely?',
-    book: 'The Secret History by Donna Tartt',
-    color: '#FCF8F2',
-    rotation: 3,
+    id: 'quote-2',
+    book: SEED_BOOKS[1], // Dead Poets Society
+    tagline: 'Keating on... WORDS AND IDEAS',
+    themeColor: SCRAPBOOK_THEMES[1], // Aged Parchment
+    rotation: 2.5,
   },
   {
-    id: 3,
-    title: 'Keating on... WORDS AND IDEAS',
-    text: 'We don’t read and write poetry because it’s cute. We read and write poetry because we are members of the human race. And the human race is filled with passion.',
-    book: 'Dead Poets Society by N.H. Kleinbaum',
-    color: '#F5ECE1',
+    id: 'quote-3',
+    book: SEED_BOOKS[2], // The Picture of Dorian Gray
+    tagline: 'Wilde on... SINS OF BEAUTY',
+    themeColor: SCRAPBOOK_THEMES[2], // Deep Burgundy
     rotation: -2,
   },
   {
-    id: 4,
-    title: 'Wilde on... THE SINS OF BEAUTY',
-    text: 'Those who find ugly meanings in beautiful things are corrupt without being charming. This is a fault. Those who find beautiful meanings in beautiful things are the cultivated.',
-    book: 'The Picture of Dorian Gray by Oscar Wilde',
-    color: '#EAD4BA',
-    rotation: 5,
+    id: 'quote-4',
+    book: SEED_BOOKS[3], // If We Were Villains
+    tagline: 'Oliver on... TRAGEDY & TIME',
+    themeColor: SCRAPBOOK_THEMES[3], // Forest Green
+    rotation: 4,
+  },
+  {
+    id: 'quote-5',
+    book: SEED_BOOKS[4], // Norwegian Wood
+    tagline: 'Toru on... GRIEF & MEMORY',
+    themeColor: SCRAPBOOK_THEMES[4], // Muted Rose
+    rotation: -3.5,
+  },
+  {
+    id: 'quote-6',
+    book: SEED_BOOKS[5], // Beloved
+    tagline: 'Sethe on... CLAIMING ONESELF',
+    themeColor: SCRAPBOOK_THEMES[5], // Warm Brown
+    rotation: 1.5,
   },
 ];
 
@@ -71,6 +83,7 @@ export const LandingPage: React.FC = () => {
   const [selectedBookIndex, setSelectedBookIndex] = useState<number>(0);
   const [modalBook, setModalBook] = useState<Book | null>(null);
   const [activeQuoteIndex, setActiveQuoteIndex] = useState<number>(0);
+  const [quoteLayout, setQuoteLayout] = useState<'stack' | 'grid'>('stack');
 
   // Shelf books
   const shelfBooks = shelfMode === 'suggested' ? SEED_BOOKS.slice(0, 10) : SEED_BOOKS.slice(3, 13);
@@ -127,6 +140,11 @@ export const LandingPage: React.FC = () => {
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
+              <NavLink to="/character-creator" className="btn-primary text-xs py-3 px-5 bg-[#1A1614] border-[#1A1614] shadow-[3px_3px_0px_#755151]">
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>Pixel RPG Atelier</span>
+              </NavLink>
+
               <NavLink to="/library" className="btn-primary text-xs py-3 px-5">
                 <BookOpen className="w-4 h-4" />
                 <span>Browse Grand Library</span>
@@ -144,21 +162,28 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Stamp Seal */}
+          {/* Right Stamp Seal with Live Pixel RPG Avatar */}
           <div className="lg:col-span-4 flex justify-center">
-            <div className="catalog-card p-6 bg-[#FCF8F2] border-3 border-[#443223] shadow-[6px_6px_0px_#443223] rotate-2 max-w-xs text-center">
-              <div className="w-16 h-16 mx-auto rounded-full bg-[#755151] border-2 border-[#443223] flex items-center justify-center text-white mb-3 shadow-sm">
-                <Feather className="w-8 h-8" />
+            <div className="catalog-card p-6 bg-[#FCF8F2] border-3 border-[#443223] shadow-[6px_6px_0px_#443223] rotate-2 max-w-xs text-center flex flex-col items-center">
+              <div className="w-24 h-32 rounded border-2 border-[#1A1614] bg-[#FFF9F3] flex flex-col items-center justify-center mb-3 shadow-[2px_2px_0px_#1A1614] overflow-hidden p-1 relative">
+                <PixelAvatar size="md" viewMode="full" />
+                <span className="absolute bottom-1 bg-[#1A1614] text-[#FFF9F3] text-[8px] font-mono px-1 rounded uppercase font-bold">
+                  8-Bit Sprite
+                </span>
               </div>
               <h3 className="font-editorial text-lg font-bold text-[#443223]">
                 DEAD POETS SOCIETY
               </h3>
               <p className="font-typewriter text-xs text-[#755151] font-bold uppercase tracking-wider mb-2">
-                ESTABLISHED 1889
+                CLASS OF 1889
               </p>
-              <p className="font-typewriter text-[11px] text-[#72583E] italic leading-snug">
-                “Words and ideas can change the world.”
-              </p>
+              <NavLink
+                to="/character-creator"
+                className="btn-secondary text-[11px] py-1.5 px-3 uppercase mt-1 inline-flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#755151]" />
+                <span>Craft Your Avatar</span>
+              </NavLink>
             </div>
           </div>
         </div>
@@ -368,69 +393,124 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. Stacked Typewriter Quote Cards (PRD Section 6.3 & wireframe reference) */}
+      {/* 5. Goodreads-Inspired Scrapbook Quote Flashcards (Interactive 3D Flipping) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 border-b-2 border-[#443223]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-5">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
+          <div>
             <span className="font-typewriter text-xs font-bold text-[#755151] uppercase tracking-wider">
-              PRD SECTION 6.3 · MARGINALIA
+              SECTION 6.3 · MARGINALIA & FLASHCARDS
             </span>
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#443223] mb-3">
-              Stacked Typewriter Index Cards
+            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#443223] mt-1 mb-2">
+              Goodreads-Inspired Scrapbook Quote Cards
             </h2>
-            <p className="font-typewriter text-xs sm:text-sm text-[#72583E] leading-relaxed mb-6">
-              Like index cards pinned in a researcher’s study. Click or tap any card in the stack to bring it to the top.
+            <p className="font-typewriter text-xs sm:text-sm text-[#72583E] max-w-2xl leading-relaxed">
+              Tactile literary keepsakes. Click or tap any card (or press Space/Enter) to flip between the memorable quote and the book’s archival dossier.
             </p>
-            <div className="inline-flex items-center gap-2 starburst-badge">
-              <Quote className="w-3.5 h-3.5 text-[#FFF9F3]" />
-              <span>FAN-OUT INTERACTION ENABLED</span>
-            </div>
           </div>
 
-          {/* Interactive Stacked Note Cards */}
-          <div className="lg:col-span-7 flex justify-center py-8">
-            <div className="relative w-full max-w-md h-72">
-              {STACKED_QUOTES.map((q, idx) => {
-                const isActive = activeQuoteIndex === idx;
-                const offset = (idx - activeQuoteIndex) * 12;
-
-                return (
-                  <motion.div
-                    key={q.id}
-                    onClick={() => setActiveQuoteIndex(idx)}
-                    animate={{
-                      y: isActive ? -10 : offset,
-                      rotate: isActive ? 0 : q.rotation,
-                      scale: isActive ? 1.03 : 0.98,
-                      zIndex: isActive ? 30 : 20 - Math.abs(idx - activeQuoteIndex),
-                    }}
-                    transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                    className="note-card absolute inset-0 p-6 rounded cursor-pointer select-none border-2 border-[#443223] shadow-[4px_4px_0px_#443223] flex flex-col justify-between"
-                    style={{ backgroundColor: q.color }}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between border-b border-[#443223] pb-2 mb-3">
-                        <span className="font-typewriter text-[10px] font-bold text-[#755151] uppercase tracking-widest">
-                          {q.title}
-                        </span>
-                        <span className="font-mono text-xs text-[#443223]">#{idx + 1}</span>
-                      </div>
-
-                      <p className="font-typewriter text-xs sm:text-sm text-[#443223] leading-relaxed italic">
-                        “{q.text}”
-                      </p>
-                    </div>
-
-                    <div className="border-t border-dashed border-[#A08670] pt-2 flex items-center justify-between text-[11px] font-typewriter text-[#72583E]">
-                      <span>{q.book}</span>
-                      <span className="text-[10px] font-bold uppercase">Click to flip</span>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+          {/* Layout Toggle & Stack Controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setQuoteLayout('stack')}
+              className={`px-3 py-1.5 rounded font-typewriter text-xs font-bold border-2 transition-all cursor-pointer ${
+                quoteLayout === 'stack'
+                  ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[2px_2px_0px_#443223]'
+                  : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]/40'
+              }`}
+            >
+              Fan-Out Stack
+            </button>
+            <button
+              onClick={() => setQuoteLayout('grid')}
+              className={`px-3 py-1.5 rounded font-typewriter text-xs font-bold border-2 transition-all cursor-pointer ${
+                quoteLayout === 'grid'
+                  ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[2px_2px_0px_#443223]'
+                  : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]/40'
+              }`}
+            >
+              All Cards ({SCRAPBOOK_CARDS.length})
+            </button>
           </div>
         </div>
+
+        {quoteLayout === 'stack' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Stack Index Selector */}
+            <div className="lg:col-span-5 space-y-3">
+              <span className="font-typewriter text-[11px] font-bold text-[#72583E] uppercase tracking-wider block">
+                SELECT VOLUME FROM STACK:
+              </span>
+              <div className="space-y-2">
+                {SCRAPBOOK_CARDS.map((card, idx) => {
+                  const isActive = activeQuoteIndex === idx;
+                  return (
+                    <button
+                      key={card.id}
+                      onClick={() => setActiveQuoteIndex(idx)}
+                      className={`w-full text-left p-2.5 rounded border-2 font-typewriter text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                        isActive
+                          ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[3px_3px_0px_#443223] translate-x-1'
+                          : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]/30'
+                      }`}
+                    >
+                      <div className="truncate pr-2">
+                        <span className="text-[10px] opacity-75 block">{card.book.title}</span>
+                        <span>{card.tagline}</span>
+                      </div>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded border border-current font-mono">
+                        #{idx + 1}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Interactive Fan-Out Stack Area */}
+            <div className="lg:col-span-7 flex justify-center items-center py-6">
+              <div className="relative w-full max-w-lg h-84">
+                {SCRAPBOOK_CARDS.map((card, idx) => {
+                  const isActive = activeQuoteIndex === idx;
+                  const offset = (idx - activeQuoteIndex) * 14;
+
+                  return (
+                    <motion.div
+                      key={card.id}
+                      animate={{
+                        y: isActive ? -8 : offset,
+                        x: isActive ? 0 : (idx - activeQuoteIndex) * 6,
+                        rotate: isActive ? 0 : card.rotation || 0,
+                        scale: isActive ? 1.02 : 0.96,
+                        zIndex: isActive ? 30 : 20 - Math.abs(idx - activeQuoteIndex),
+                      }}
+                      transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+                      className="absolute inset-0"
+                    >
+                      <ScrapbookQuoteCard
+                        card={card}
+                        isStacked={true}
+                        isActiveInStack={isActive}
+                        onStackSelect={() => setActiveQuoteIndex(idx)}
+                        onOpenBookModal={setModalBook}
+                      />
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Grid view showing all 6 color variants */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {SCRAPBOOK_CARDS.map(card => (
+              <ScrapbookQuoteCard
+                key={card.id}
+                card={card}
+                onOpenBookModal={setModalBook}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 6. Feature Teasers: Crossword, Poem Jar, Author Spotlight */}

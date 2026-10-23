@@ -55,19 +55,11 @@ export const App: React.FC = () => {
             />
             <Route
               path="/character-creator"
-              element={
-                <ProtectedRoute>
-                  <CharacterCreatorPage />
-                </ProtectedRoute>
-              }
+              element={<CharacterCreatorPage />}
             />
             <Route
               path="/avatar"
-              element={
-                <ProtectedRoute>
-                  <CharacterCreatorPage />
-                </ProtectedRoute>
-              }
+              element={<CharacterCreatorPage />}
             />
             <Route path="/profile/:username" element={<ProfilePage />} />
             <Route path="/profile" element={<ProfilePage />} />

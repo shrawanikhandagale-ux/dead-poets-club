@@ -14,6 +14,9 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
+    watch: {
+      ignored: ['**/imgs/**', '**/.git/**'],
+    },
   },
   preview: {
     port: 3000,
