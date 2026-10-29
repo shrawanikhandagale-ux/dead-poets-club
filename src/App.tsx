@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AppLayout } from './components/layout/AppLayout';
@@ -59,6 +60,7 @@ export const App: React.FC = () => {
           </Routes>
         </AuthProvider>
       </ThemeProvider>
+      <SpeedInsights />
     </BrowserRouter>
   );
 };
