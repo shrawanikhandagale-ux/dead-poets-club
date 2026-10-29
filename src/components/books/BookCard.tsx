@@ -2,6 +2,7 @@ import React from 'react';
 import { Book, ShelfStatus } from '../../types/book';
 import { Star, Bookmark, BookOpen } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { BookCoverImage } from './BookCoverImage';
 
 interface BookCardProps {
   book: Book;
@@ -29,15 +30,10 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onSelect }) => {
     >
       <div>
         {/* Cover Image with Heavy Outline */}
-        <div className="w-full h-64 mb-4 relative overflow-hidden rounded border-2 border-[#443223] bg-[#DBC4A5]">
-          <img
-            src={book.cover_url}
-            alt={book.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
+        <div className="w-full mb-4 relative overflow-hidden rounded border-2 border-[#443223] bg-[#2A231E]">
+          <BookCoverImage book={book} className="w-full" />
           {book.featured && (
-            <span className="absolute top-2 right-2 starburst-badge text-[9px] py-0.5 px-2 bg-[#755151]">
+            <span className="absolute top-2 right-2 starburst-badge text-[9px] py-0.5 px-2 bg-[#755151] z-20">
               CLUB SELECT
             </span>
           )}

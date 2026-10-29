@@ -33,6 +33,7 @@ interface CafeRoom {
   tagline: string;
   readersCount: number;
   bgUrl: string;
+  videoUrl?: string;
   soundPreset: RoomSoundPreset;
   atmosphereDescription: string;
 }
@@ -50,20 +51,22 @@ const ROOMS: CafeRoom[] = [
   {
     id: 'writers_den',
     title: "The Writers' Den",
-    tagline: 'Rich bohemian loft, overflowing bookshelves, lush plants, fairy lights, rugs, and shared creative fervor.',
+    tagline: 'Warm coffeehouse patrons, hanging amber pendant lamp, books, and gentle rain outside the grand window.',
     readersCount: 17,
     bgUrl: '/cafeteria/writers-den.jpg',
+    videoUrl: '/cafeteria/cafe-patrons-rain.mp4',
     soundPreset: 'writers_den',
-    atmosphereDescription: 'Warm burgundy tones, fairy lights & typewriter clatter',
+    atmosphereDescription: 'Warm coffeehouse patrons, hanging amber pendant lamp & rainy street window',
   },
   {
     id: 'quiet_reading',
     title: 'The Quiet Reading Room',
-    tagline: 'Midnight blue, muted slate teal, soft pendant illumination, and peaceful silence for deep uninterrupted focus.',
+    tagline: 'Cinematic night street, warm glowing theater marquee, umbrellas in the rain, and peaceful silence for deep focus.',
     readersCount: 9,
     bgUrl: '/cafeteria/quiet-reading-room.jpg',
+    videoUrl: '/cafeteria/rainy-street-theater.mp4',
     soundPreset: 'quiet_reading',
-    atmosphereDescription: 'Warm pendant lights, calm indie pixel stillness & room tone',
+    atmosphereDescription: 'Cinematic night street, Citizen Kane marquee, umbrellas & gentle rain',
   },
 ];
 
@@ -404,11 +407,29 @@ export const CafePage: React.FC = () => {
         {/* Left Column: Atmospheric Room Scene */}
         <div className="lg:col-span-8 flex flex-col gap-4">
           <div
-            className="w-full h-[460px] sm:h-[530px] rounded-lg border-3 border-[#443223] shadow-[5px_5px_0px_#443223] relative overflow-hidden bg-cover bg-center select-none bg-neutral-900"
-            style={{
-              backgroundImage: `url("${activeRoom.bgUrl}")`,
-            }}
+            className="w-full h-[460px] sm:h-[530px] rounded-lg border-3 border-[#443223] shadow-[5px_5px_0px_#443223] relative overflow-hidden select-none bg-neutral-900"
           >
+            {/* Background Media: Looping Video for positions 2 & 3, authentic GIF for position 1 */}
+            {activeRoom.videoUrl ? (
+              <video
+                key={activeRoom.videoUrl}
+                src={activeRoom.videoUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                poster={activeRoom.bgUrl}
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+              />
+            ) : (
+              <div
+                className="absolute inset-0 w-full h-full bg-cover bg-center pointer-events-none"
+                style={{
+                  backgroundImage: `url("${activeRoom.bgUrl}")`,
+                }}
+              />
+            )}
+
             {/* Room-Specific Atmosphere Overlays */}
             {activeRoom.id === 'gazing_out' && (
               <>

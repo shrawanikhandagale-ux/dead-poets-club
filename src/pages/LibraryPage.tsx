@@ -28,10 +28,13 @@ export const LibraryPage: React.FC = () => {
   // Filter & sort books
   const filteredBooks = useMemo(() => {
     return SEED_BOOKS.filter(book => {
+      const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
-        book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        book.description.toLowerCase().includes(searchQuery.toLowerCase());
+        !q ||
+        book.title.toLowerCase().includes(q) ||
+        book.author.toLowerCase().includes(q) ||
+        book.description.toLowerCase().includes(q) ||
+        (book.isbn && book.isbn.toLowerCase().includes(q));
 
       const matchesGenre =
         selectedGenre === 'All' || book.genres.some(g => g.toLowerCase().includes(selectedGenre.toLowerCase()));

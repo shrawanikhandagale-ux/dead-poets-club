@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { Book, ShelfStatus } from '../../types/book';
-import { X, Star, Bookmark, BookOpen, Quote, Calendar, Layers } from 'lucide-react';
+import { X, Star, Bookmark, BookOpen, Quote, Calendar, Layers, Feather, Share2, PenTool, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
 import { PixelAvatar } from '../avatar/PixelAvatar';
+import { BookCoverImage } from './BookCoverImage';
 
 interface BookDetailModalProps {
   book: Book | null;
@@ -13,6 +15,8 @@ interface BookDetailModalProps {
 
 export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose }) => {
   const { shelves, updateBookShelf } = useAuth();
+  const [annotationText, setAnnotationText] = useState('');
+  const [annotationSaved, setAnnotationSaved] = useState(false);
 
   if (!book) return null;
 
@@ -21,6 +25,28 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
 
   const handleShelfChange = (newStatus: ShelfStatus) => {
     updateBookShelf(book.id, newStatus);
+  };
+
+  const handleSaveAnnotation = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!annotationText.trim()) return;
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('dpc_user_annotations') || '[]');
+      const newNote = {
+        id: `note-${Date.now()}`,
+        book_id: book.id,
+        book_title: book.title,
+        note: annotationText.trim(),
+        created_at: new Date().toISOString(),
+      };
+      localStorage.setItem('dpc_user_annotations', JSON.stringify([newNote, ...existing]));
+      setAnnotationSaved(true);
+      setTimeout(() => setAnnotationSaved(false), 2500);
+      setAnnotationText('');
+    } catch {
+      // Storage error
+    }
   };
 
   return (
@@ -36,7 +62,8 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 p-2 rounded bg-[#FFF9F3] border-2 border-[#443223] text-[#443223] hover:bg-[#DBC4A5] shadow-[2px_2px_0px_#443223] transition-all"
+            aria-label="Close Book Dossier"
+            className="absolute top-5 right-5 p-2 rounded bg-[#FFF9F3] border-2 border-[#443223] text-[#443223] hover:bg-[#DBC4A5] shadow-[2px_2px_0px_#443223] transition-all cursor-pointer z-10"
           >
             <X className="w-5 h-5" />
           </button>
@@ -44,12 +71,8 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Book Cover & Shelf Status */}
             <div className="flex flex-col items-center">
-              <div className="w-48 h-72 rounded border-2 border-[#443223] overflow-hidden shadow-[4px_4px_0px_#443223] mb-4 bg-[#DBC4A5]">
-                <img
-                  src={book.cover_url}
-                  alt={book.title}
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-48 mb-4">
+                <BookCoverImage book={book} className="w-48" />
               </div>
 
               {/* Shelf Selector Buttons */}
@@ -64,7 +87,7 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                       <button
                         key={s}
                         onClick={() => handleShelfChange(s)}
-                        className={`py-1.5 px-3 rounded text-xs font-typewriter font-bold tracking-wide transition-all border-2 ${
+                        className={`py-1.5 px-3 rounded text-xs font-typewriter font-bold tracking-wide transition-all border-2 cursor-pointer ${
                           isSelected
                             ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[2px_2px_0px_#443223]'
                             : 'bg-[#FFF9F3] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]'
@@ -76,6 +99,16 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                     );
                   }
                 )}
+
+                {/* Direct Action: Leave This Book for Someone */}
+                <NavLink
+                  to={`/margins?section=leave-book&bookId=${book.id}`}
+                  onClick={onClose}
+                  className="mt-2 py-2 px-3 rounded text-xs font-typewriter font-bold text-center bg-[#755151] text-[#FFF9F3] border-2 border-[#443223] shadow-[2px_2px_0px_#443223] flex items-center justify-center gap-1.5 text-decoration-none hover:bg-[#855d5d]"
+                >
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span>Leave for Someone</span>
+                </NavLink>
               </div>
             </div>
 
@@ -95,12 +128,23 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
               <h2 className="font-editorial text-2xl md:text-3xl font-bold text-[#443223] leading-tight">
                 {book.title}
               </h2>
-              <p className="font-editorial text-lg text-[#755151] font-semibold mt-1 mb-4">
-                by {book.author}
-              </p>
 
-              {/* Stats Bar */}
-              <div className="flex items-center gap-4 py-3 border-y-2 border-dashed border-[#A08670] mb-5 text-xs font-typewriter">
+              {/* Author link */}
+              <div className="mt-1 mb-4 flex items-center gap-2">
+                <span className="font-editorial text-lg text-[#755151] font-semibold">
+                  by
+                </span>
+                <NavLink
+                  to={`/authors?author=${encodeURIComponent(book.author)}`}
+                  onClick={onClose}
+                  className="font-editorial text-lg text-[#755151] font-bold underline decoration-[#755151] hover:text-[#443223] transition-colors"
+                >
+                  {book.author}
+                </NavLink>
+              </div>
+
+              {/* Bibliographic Details Bar */}
+              <div className="flex flex-wrap items-center gap-3 py-3 border-y-2 border-dashed border-[#A08670] mb-5 text-xs font-typewriter">
                 <div className="flex items-center gap-1.5 font-bold text-[#755151]">
                   <Star className="w-4 h-4 fill-current text-[#755151]" />
                   <span>{book.rating_avg.toFixed(1)} / 5.0</span>
@@ -116,6 +160,18 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                   <Layers className="w-4 h-4" />
                   <span>{book.pages} pages</span>
                 </div>
+                {book.isbn && (
+                  <>
+                    <span>•</span>
+                    <span className="text-[#A08670]">ISBN {book.isbn}</span>
+                  </>
+                )}
+                {book.publisher && (
+                  <>
+                    <span>•</span>
+                    <span className="text-[#72583E] italic">{book.publisher}</span>
+                  </>
+                )}
               </div>
 
               {/* Description */}
@@ -144,15 +200,55 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                   </div>
                 )}
 
-                {/* Member Reviews & Marginalia with Pixel Avatars */}
+                {/* Private Marginalia Note Form (Section 10: User Created Annotation) */}
+                <div className="p-4 bg-[#FAF4EB] border-2 border-[#443223] rounded shadow-[2px_2px_0px_#443223]">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-typewriter text-xs font-bold text-[#755151] uppercase flex items-center gap-1.5">
+                      <PenTool className="w-3.5 h-3.5" /> Private Marginalia & Notes
+                    </span>
+                    <span className="text-[10px] font-typewriter text-[#A08670] italic">
+                      Saved to your personal shelf
+                    </span>
+                  </div>
+                  <form onSubmit={handleSaveAnnotation} className="space-y-2">
+                    <textarea
+                      value={annotationText}
+                      onChange={e => setAnnotationText(e.target.value)}
+                      placeholder="Write your private note, reflections, or page quotes on this book..."
+                      className="w-full p-2.5 text-xs font-typewriter border border-[#A08670] rounded bg-[#FFF9F3] text-[#443223] focus:outline-none focus:border-[#755151] min-h-[60px]"
+                    />
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        disabled={!annotationText.trim()}
+                        className="btn-secondary text-[11px] py-1 px-3 disabled:opacity-50"
+                      >
+                        {annotationSaved ? (
+                          <>
+                            <Check className="w-3 h-3 text-green-700" />
+                            <span>Saved to My Shelf!</span>
+                          </>
+                        ) : (
+                          <span>Save Private Note</span>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Borrower Reviews & Marginalia */}
                 <div className="pt-4 border-t-2 border-dashed border-[#A08670]">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="text-xs font-typewriter uppercase tracking-wider text-[#72583E] font-bold">
-                      BORROWER REVIEWS & MARGINALIA:
+                      BORROWER REVIEWS:
                     </h4>
-                    <span className="font-mono text-[10px] text-[#755151] font-bold">
-                      ARCHIVAL VERIFIED
-                    </span>
+                    <NavLink
+                      to={`/reviews?bookId=${book.id}`}
+                      onClick={onClose}
+                      className="font-typewriter text-[11px] text-[#755151] font-bold hover:underline"
+                    >
+                      Browse All Reviews →
+                    </NavLink>
                   </div>
 
                   <div className="space-y-3">
@@ -176,7 +272,7 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                             <span className="font-typewriter text-xs font-bold text-[#443223] block leading-tight">
                               Eleanor Vance
                             </span>
-                            <span className="font-mono text-[9px] text-[#755151]">@eleanor_v · Oct 1889</span>
+                            <span className="font-mono text-[9px] text-[#755151]">@eleanor_v · Welton Fellow</span>
                           </div>
                         </div>
 
@@ -185,40 +281,7 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                         </div>
                       </div>
                       <p className="font-typewriter text-xs text-[#443223] italic leading-relaxed">
-                        "The tension is palpable from the first lecture. Unputdownable prose that echoes through the corridors."
-                      </p>
-                    </div>
-
-                    {/* Review Slip 2 */}
-                    <div className="p-3 bg-[#FCF8F2] border-2 border-[#443223] rounded shadow-[2px_2px_0px_#443223]">
-                      <div className="flex items-center justify-between border-b border-dashed border-[#A08670] pb-2 mb-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded border border-[#1A1614] bg-[#FFF9F3] overflow-hidden flex items-center justify-center">
-                            <PixelAvatar
-                              config={{
-                                skinTone: '#EAD4BA',
-                                hairStyle: 'shaggy_mess',
-                                hairColor: '#1A1614',
-                                accessories: ['wire_rims'],
-                              }}
-                              size="xs"
-                              viewMode="bust"
-                            />
-                          </div>
-                          <div>
-                            <span className="font-typewriter text-xs font-bold text-[#443223] block leading-tight">
-                              Julian Morrow
-                            </span>
-                            <span className="font-mono text-[9px] text-[#755151]">@julian_m · Nov 1889</span>
-                          </div>
-                        </div>
-
-                        <div className="flex text-amber-700 text-xs">
-                          ★★★★☆
-                        </div>
-                      </div>
-                      <p className="font-typewriter text-xs text-[#443223] italic leading-relaxed">
-                        "Morality dissolves like sugar in tea. A haunting tribute to Greek tragedy in modern attire."
+                        "Unputdownable prose that echoes through the corridors. An essential piece of literature for anyone living between lines."
                       </p>
                     </div>
                   </div>
