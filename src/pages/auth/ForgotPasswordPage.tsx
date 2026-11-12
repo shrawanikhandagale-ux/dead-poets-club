@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Feather, Mail, ArrowRight, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Feather, Mail, ArrowRight, CheckCircle, ArrowLeft, AlertCircle } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { triggerInkSplatter } from '../../lib/animeAnimations';
 
 export const ForgotPasswordPage: React.FC = () => {
+  const { resetPassword } = useAuth();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
 
+    setError(null);
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await resetPassword(email.trim());
       setSent(true);
-    }, 600);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to dispatch restoration missive. Please verify the address.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -28,7 +36,7 @@ export const ForgotPasswordPage: React.FC = () => {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-[#784743] to-[#401f1c] border border-[#d3a66d]/60 mb-4 shadow-lg">
             <Feather className="w-7 h-7 text-[#e8c18e]" />
           </div>
-          <h1 className="font-serif text-2xl font-bold text-[#f0eae1]">
+          <h1 className="font-editorial text-3xl font-normal text-[#f0eae1]">
             Recover Secret Scroll
           </h1>
           <p className="font-sans text-xs sm:text-sm text-[#a39b8f] mt-1.5">
@@ -36,18 +44,25 @@ export const ForgotPasswordPage: React.FC = () => {
           </p>
         </div>
 
+        {error && (
+          <div className="mb-6 p-3.5 rounded-lg bg-[#784743]/25 border border-[#784743]/50 flex items-start gap-3 text-xs text-[#f2b8b5]">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#e8a8a4]" />
+            <span>{error}</span>
+          </div>
+        )}
+
         {sent ? (
           <div className="text-center p-6 bg-[#1f281e]/60 border border-[#75816a]/50 rounded-xl space-y-4">
             <CheckCircle className="w-10 h-10 text-[#8e9c82] mx-auto" />
-            <h3 className="font-serif text-base font-semibold text-[#f0eae1]">
+            <h3 className="font-editorial text-xl font-normal text-[#f0eae1]">
               Missive Dispatched
             </h3>
-            <p className="text-xs text-[#b8afa3] leading-relaxed">
+            <p className="text-xs font-sans text-[#b8afa3] leading-relaxed">
               If a sanctuary account exists for <strong className="text-[#e8c18e]">{email}</strong>, a reset parchment has been sent. Follow its instructions to set a new passphrase.
             </p>
             <NavLink
               to="/login"
-              className="inline-flex items-center gap-2 text-xs font-serif text-[#d3a66d] hover:text-[#e8c18e] pt-2"
+              className="inline-flex items-center gap-2 text-xs font-sans font-medium text-[#d3a66d] hover:text-[#e8c18e] pt-2"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Return to Sanctuary Login
             </NavLink>
@@ -57,7 +72,7 @@ export const ForgotPasswordPage: React.FC = () => {
             <div>
               <label
                 htmlFor="reset-email"
-                className="block font-mono text-[11px] uppercase tracking-wider text-[#d3a66d] mb-1.5"
+                className="block font-sans text-xs font-medium text-[#d3a66d] mb-1.5"
               >
                 Poet Address (Email)
               </label>
@@ -69,7 +84,7 @@ export const ForgotPasswordPage: React.FC = () => {
                   onChange={e => setEmail(e.target.value)}
                   placeholder="poet@sanctuary.org"
                   required
-                  className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
+                  className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] font-sans text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
                 />
                 <Mail className="w-4 h-4 text-[#8e8578] absolute left-3.5 top-3" />
               </div>
@@ -79,7 +94,7 @@ export const ForgotPasswordPage: React.FC = () => {
               type="submit"
               disabled={isSubmitting}
               onClick={e => triggerInkSplatter(e.clientX, e.clientY)}
-              className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[#784743] to-[#5a2e2b] hover:from-[#8f5550] hover:to-[#6d3835] border border-[#d3a66d]/40 text-[#f0eae1] font-serif text-sm font-semibold tracking-wide flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[#784743] to-[#5a2e2b] hover:from-[#8f5550] hover:to-[#6d3835] border border-[#d3a66d]/40 text-[#f0eae1] font-sans text-sm font-semibold tracking-wide flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? (
                 <span>Dispatching Owl...</span>

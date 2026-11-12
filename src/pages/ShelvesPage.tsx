@@ -110,10 +110,10 @@ export const ShelvesPage: React.FC = () => {
                 <Award className="w-3 h-3 text-[#FFF9F3]" />
                 <span>OFFICIAL ARCHIVES PASSPORT</span>
               </div>
-              <h1 className="font-editorial text-2xl sm:text-3xl font-bold text-[#443223]">
+              <h1 className="type-page-title text-[#443223]">
                 {profile?.display_name || user?.displayName || user?.username || 'Member'}’s Reading Hub
               </h1>
-              <p className="font-typewriter text-xs text-[#72583E] mt-0.5">
+              <p className="font-mono text-xs text-[#72583E] mt-0.5">
                 Card No: DPC-{user?.id?.slice(0, 6).toUpperCase() || '1889-X'} · Welton Academy Borrower
               </p>
             </div>
@@ -124,10 +124,10 @@ export const ShelvesPage: React.FC = () => {
             {/* Reading Hours */}
             <div className="p-3 bg-[#FFF9F3] border-2 border-[#443223] rounded shadow-[2px_2px_0px_#443223]">
               <Clock className="w-4 h-4 text-[#755151] mx-auto mb-1" />
-              <span className="font-editorial text-lg font-bold block text-[#443223]">
+              <span className="font-editorial text-2xl block text-[#443223]">
                 {loggedReadingHours} hrs
               </span>
-              <span className="font-typewriter text-[9px] uppercase tracking-wider text-[#72583E] block">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#72583E] block">
                 Reading Time
               </span>
             </div>
@@ -135,10 +135,10 @@ export const ShelvesPage: React.FC = () => {
             {/* Crossword Streak */}
             <div className="p-3 bg-[#FFF9F3] border-2 border-[#443223] rounded shadow-[2px_2px_0px_#443223]">
               <Grid3X3 className="w-4 h-4 text-pink-700 mx-auto mb-1" />
-              <span className="font-editorial text-lg font-bold block text-[#443223]">
+              <span className="font-editorial text-2xl block text-[#443223]">
                 {crosswordStreak} Days
               </span>
-              <span className="font-typewriter text-[9px] uppercase tracking-wider text-[#72583E] block">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#72583E] block">
                 Crossword Streak
               </span>
             </div>
@@ -146,10 +146,10 @@ export const ShelvesPage: React.FC = () => {
             {/* Marginalia Streak */}
             <div className="p-3 bg-[#FFF9F3] border-2 border-[#443223] rounded shadow-[2px_2px_0px_#443223]">
               <Flame className="w-4 h-4 text-amber-600 mx-auto mb-1" />
-              <span className="font-editorial text-lg font-bold block text-[#443223]">
+              <span className="font-editorial text-2xl block text-[#443223]">
                 {marginaliaStreak} Days
               </span>
-              <span className="font-typewriter text-[9px] uppercase tracking-wider text-[#72583E] block">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#72583E] block">
                 Marginalia Streak
               </span>
             </div>
@@ -162,7 +162,7 @@ export const ShelvesPage: React.FC = () => {
         <div className="flex items-center gap-2 overflow-x-auto">
           <button
             onClick={() => setActiveMainTab('shelves')}
-            className={`px-4 py-2 rounded text-xs font-typewriter font-bold transition-all border-2 cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded text-xs font-sans font-semibold transition-all border-2 cursor-pointer flex items-center gap-2 ${
               activeMainTab === 'shelves'
                 ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[3px_3px_0px_#443223]'
                 : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]'
@@ -170,12 +170,12 @@ export const ShelvesPage: React.FC = () => {
           >
             <Bookmark className="w-3.5 h-3.5" />
             <span>Shelved Volumes</span>
-            <span className="text-[10px] font-mono opacity-80">({shelves.length})</span>
+            <span className="text-[11px] font-mono opacity-80">({shelves.length})</span>
           </button>
 
           <button
             onClick={() => setActiveMainTab('annotations')}
-            className={`px-4 py-2 rounded text-xs font-typewriter font-bold transition-all border-2 cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded text-xs font-sans font-semibold transition-all border-2 cursor-pointer flex items-center gap-2 ${
               activeMainTab === 'annotations'
                 ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[3px_3px_0px_#443223]'
                 : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]'
@@ -183,12 +183,12 @@ export const ShelvesPage: React.FC = () => {
           >
             <PenTool className="w-3.5 h-3.5" />
             <span>Private Annotations</span>
-            <span className="text-[10px] font-mono opacity-80">({annotations.length})</span>
+            <span className="text-[11px] font-mono opacity-80">({annotations.length})</span>
           </button>
 
           <button
             onClick={() => setActiveMainTab('milestones')}
-            className={`px-4 py-2 rounded text-xs font-typewriter font-bold transition-all border-2 cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded text-xs font-sans font-semibold transition-all border-2 cursor-pointer flex items-center gap-2 ${
               activeMainTab === 'milestones'
                 ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[3px_3px_0px_#443223]'
                 : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]'
@@ -219,7 +219,7 @@ export const ShelvesPage: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveShelfStatus(tab.id)}
-                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded text-xs font-typewriter font-bold transition-all border-2 cursor-pointer ${
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded text-xs font-sans font-semibold transition-all border-2 cursor-pointer ${
                     isActive
                       ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[2px_2px_0px_#443223]'
                       : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]'
@@ -247,9 +247,9 @@ export const ShelvesPage: React.FC = () => {
           ) : (
             <div className="catalog-card p-12 text-center bg-[#FCF8F2] border-2 border-dashed border-[#A08670]">
               <Bookmark className="w-12 h-12 text-[#A08670] mx-auto mb-3" />
-              <h3 className="font-editorial text-xl font-bold text-[#443223]">This shelf is currently quiet</h3>
-              <p className="font-typewriter text-xs text-[#72583E] mt-1 max-w-sm mx-auto">
-                No volumes are placed in your "{activeShelfStatus.replace(/_/g, ' ')}" stack.
+              <h3 className="font-editorial text-2xl text-[#443223]">Nothing stacked here yet</h3>
+              <p className="font-sans text-sm text-[#72583E] mt-1 max-w-sm mx-auto">
+                Another shelf waiting for the ever-growing pile of things we swear we’ll read.
               </p>
               <NavLink to="/library" className="btn-secondary text-xs mt-4 inline-flex">
                 Browse the Grand Library
@@ -263,10 +263,10 @@ export const ShelvesPage: React.FC = () => {
       {activeMainTab === 'annotations' && (
         <div className="space-y-6">
           <div className="pb-3 border-b border-dashed border-[#A08670]">
-            <h3 className="font-editorial text-xl font-bold text-[#443223]">
-              Private Reading Notes & Marginalia
+            <h3 className="type-section-title text-[#443223]">
+              Private Reading Notes &amp; Marginalia
             </h3>
-            <p className="font-typewriter text-xs text-[#72583E]">
+            <p className="font-sans text-sm text-[#72583E] mt-0.5">
               These thoughts belong only to your eyes. Kept strictly distinct from public reviews and community walls.
             </p>
           </div>
@@ -280,16 +280,16 @@ export const ShelvesPage: React.FC = () => {
                 >
                   <div>
                     <div className="flex items-center justify-between border-b border-dashed border-[#A08670] pb-2 mb-3">
-                      <span className="font-typewriter text-xs font-bold text-[#755151] flex items-center gap-1.5">
+                      <span className="font-sans text-xs font-semibold text-[#755151] flex items-center gap-1.5">
                         <BookOpen className="w-3.5 h-3.5" />
                         {ann.book_title}
                       </span>
-                      <span className="text-[10px] font-mono text-[#A08670]">
+                      <span className="text-[11px] font-mono text-[#A08670]">
                         {ann.created_at}
                       </span>
                     </div>
 
-                    <p className="font-handwritten text-xl text-[#3D2B1F] leading-relaxed mb-3">
+                    <p className="font-handwritten text-2xl text-[#3D2B1F] leading-snug mb-3">
                       "{ann.note}"
                     </p>
                   </div>
@@ -297,7 +297,7 @@ export const ShelvesPage: React.FC = () => {
                   <div className="flex justify-end pt-2 border-t border-dashed border-[#A08670]">
                     <button
                       onClick={() => handleDeleteAnnotation(ann.id)}
-                      className="text-xs font-typewriter text-red-700 hover:text-red-900 flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-sans font-medium text-red-700 hover:text-red-900 flex items-center gap-1 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Remove Note</span>
@@ -309,10 +309,10 @@ export const ShelvesPage: React.FC = () => {
           ) : (
             <div className="catalog-card p-10 text-center bg-[#FCF8F2] border-2 border-dashed border-[#A08670]">
               <PenTool className="w-10 h-10 text-[#A08670] mx-auto mb-2" />
-              <h4 className="font-editorial text-lg font-bold text-[#443223]">
+              <h4 className="font-editorial text-2xl text-[#443223]">
                 No private annotations recorded yet
               </h4>
-              <p className="font-typewriter text-xs text-[#72583E] mt-1 max-w-sm mx-auto">
+              <p className="font-sans text-sm text-[#72583E] mt-1 max-w-sm mx-auto">
                 Open any book dossier from the Library and inscribe private notes in the marginalia box.
               </p>
             </div>
@@ -324,10 +324,10 @@ export const ShelvesPage: React.FC = () => {
       {activeMainTab === 'milestones' && (
         <div className="space-y-6">
           <div className="pb-3 border-b border-dashed border-[#A08670]">
-            <h3 className="font-editorial text-xl font-bold text-[#443223]">
-              Archival Reading Passports & Milestones
+            <h3 className="type-section-title text-[#443223]">
+              Archival Reading Passports &amp; Milestones
             </h3>
-            <p className="font-typewriter text-xs text-[#72583E]">
+            <p className="font-sans text-sm text-[#72583E] mt-0.5">
               Authentic accomplishments earned through literary devotion.
             </p>
           </div>
@@ -337,10 +337,10 @@ export const ShelvesPage: React.FC = () => {
               <div className="w-10 h-10 rounded bg-[#755151]/20 border border-[#755151] flex items-center justify-center mb-3 text-[#755151]">
                 <BookOpen className="w-5 h-5" />
               </div>
-              <h4 className="font-editorial text-base font-bold text-[#443223]">
+              <h4 className="font-editorial text-xl text-[#443223]">
                 Welton Scholar
               </h4>
-              <p className="font-typewriter text-xs text-[#72583E] mt-1">
+              <p className="font-sans text-sm text-[#72583E] mt-1">
                 Completed {completedBooksCount} volumes from the club repository.
               </p>
             </div>
@@ -349,10 +349,10 @@ export const ShelvesPage: React.FC = () => {
               <div className="w-10 h-10 rounded bg-[#72583E]/20 border border-[#72583E] flex items-center justify-center mb-3 text-[#72583E]">
                 <Clock className="w-5 h-5" />
               </div>
-              <h4 className="font-editorial text-base font-bold text-[#443223]">
+              <h4 className="font-editorial text-xl text-[#443223]">
                 Nocturnal Reader
               </h4>
-              <p className="font-typewriter text-xs text-[#72583E] mt-1">
+              <p className="font-sans text-sm text-[#72583E] mt-1">
                 {loggedReadingHours} confirmed hours spent between the lines.
               </p>
             </div>
@@ -361,10 +361,10 @@ export const ShelvesPage: React.FC = () => {
               <div className="w-10 h-10 rounded bg-pink-700/20 border border-pink-700 flex items-center justify-center mb-3 text-pink-700">
                 <Grid3X3 className="w-5 h-5" />
               </div>
-              <h4 className="font-editorial text-base font-bold text-[#443223]">
+              <h4 className="font-editorial text-xl text-[#443223]">
                 Sunday Lexicographer
               </h4>
-              <p className="font-typewriter text-xs text-[#72583E] mt-1">
+              <p className="font-sans text-sm text-[#72583E] mt-1">
                 {crosswordStreak} consecutive literary crosswords solved.
               </p>
             </div>

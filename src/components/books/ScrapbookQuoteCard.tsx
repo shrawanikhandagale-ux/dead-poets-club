@@ -160,7 +160,7 @@ export const ScrapbookQuoteCard: React.FC<ScrapbookQuoteCardProps> = ({
           <div className="flex items-center justify-between border-b pb-2.5 pt-1" style={{ borderColor: `${themeColor.accent}40` }}>
             <div className="flex items-center gap-2">
               <span
-                className="px-2 py-0.5 rounded text-[10px] font-typewriter font-bold uppercase tracking-wider"
+                className="px-2 py-0.5 rounded text-[10px] font-mono font-medium uppercase tracking-wider"
                 style={{ backgroundColor: themeColor.badgeBg, color: themeColor.badgeText }}
               >
                 {tagline}
@@ -176,27 +176,27 @@ export const ScrapbookQuoteCard: React.FC<ScrapbookQuoteCardProps> = ({
 
           {/* Main Book Quote Body */}
           <div className="my-auto py-2">
-            <p className="font-typewriter text-xs sm:text-sm leading-relaxed tracking-wide font-medium italic">
+            <p className="font-editorial text-lg sm:text-xl leading-snug italic">
               “{book.quote?.text || book.description.slice(0, 140) + '...'}”
             </p>
             {book.quote?.speaker && (
-              <p className="font-handwritten text-sm sm:text-base mt-2.5 opacity-90 text-right tracking-wide">
+              <p className="font-handwritten text-base mt-2.5 opacity-90 text-right">
                 — {book.quote.speaker}
               </p>
             )}
           </div>
 
           {/* Front Footer: Source & Flip Prompt */}
-          <div className="border-t border-dashed pt-2.5 flex items-center justify-between text-[11px] font-typewriter" style={{ borderColor: `${themeColor.accent}40` }}>
+          <div className="border-t border-dashed pt-2.5 flex items-center justify-between text-xs font-sans" style={{ borderColor: `${themeColor.accent}40` }}>
             <div className="truncate max-w-[200px]">
-              <span className="font-bold underline decoration-dotted">{book.title}</span>
-              <span className="opacity-75"> by {book.author}</span>
+              <span className="font-semibold underline decoration-dotted">{book.title}</span>
+              <span className="opacity-80"> by {book.author}</span>
             </div>
 
             <button
               type="button"
               onClick={handleFlip}
-              className="inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider py-1 px-2 rounded hover:brightness-110 transition-all border border-current"
+              className="inline-flex items-center gap-1 text-[11px] font-sans font-semibold py-1 px-2 rounded hover:brightness-110 transition-all border border-current"
               title="Flip to read volume reflection"
             >
               <RotateCw className="w-3 h-3" />
@@ -222,11 +222,11 @@ export const ScrapbookQuoteCard: React.FC<ScrapbookQuoteCardProps> = ({
           {/* Header on Reverse */}
           <div>
             <div className="flex items-center justify-between border-b-2 border-dashed border-[#A08670] pb-2 mb-2">
-              <span className="font-typewriter text-[10px] font-bold text-[#755151] uppercase tracking-widest flex items-center gap-1.5">
+              <span className="font-mono text-[10px] font-medium text-[#755151] uppercase tracking-wider flex items-center gap-1.5">
                 <BookOpen className="w-3 h-3 text-[#755151]" />
-                ARCHIVAL VOLUME DOSSIER
+                Archival Dossier
               </span>
-              <div className="flex items-center gap-1 text-xs font-typewriter font-bold text-[#755151]">
+              <div className="flex items-center gap-1 text-xs font-mono font-medium text-[#755151]">
                 <Star className="w-3 h-3 fill-current text-[#755151]" />
                 <span>{book.rating_avg.toFixed(1)}</span>
                 <span className="text-[#A08670] text-[10px]">({book.rating_count})</span>
@@ -234,11 +234,11 @@ export const ScrapbookQuoteCard: React.FC<ScrapbookQuoteCardProps> = ({
             </div>
 
             {/* Title & Author */}
-            <h4 className="font-editorial text-base sm:text-lg font-bold text-[#443223] leading-tight line-clamp-1">
+            <h4 className="font-editorial text-xl text-[#443223] leading-tight line-clamp-1">
               {book.title}
             </h4>
-            <p className="font-typewriter text-[11px] text-[#72583E] mb-2">
-              {book.author} · Published {book.publication_year} · {book.pages} pages
+            <p className="font-mono text-[11px] text-[#72583E] mb-2">
+              {book.author} · {book.publication_year} · {book.pages}p
             </p>
 
             {/* Genres */}
@@ -246,7 +246,7 @@ export const ScrapbookQuoteCard: React.FC<ScrapbookQuoteCardProps> = ({
               {book.genres.slice(0, 3).map(genre => (
                 <span
                   key={genre}
-                  className="px-1.5 py-0.5 rounded text-[9px] font-typewriter font-bold bg-[#DBC4A5]/40 text-[#443223] border border-[#A08670]"
+                  className="px-1.5 py-0.5 rounded text-[10px] font-sans font-medium bg-[#DBC4A5]/40 text-[#443223] border border-[#A08670]"
                 >
                   {genre}
                 </span>
@@ -254,7 +254,7 @@ export const ScrapbookQuoteCard: React.FC<ScrapbookQuoteCardProps> = ({
             </div>
 
             {/* Editorial Reflection / Synopsis */}
-            <p className="font-typewriter text-[11px] text-[#443223] leading-relaxed line-clamp-3 bg-[#FFF9F3] p-2.5 rounded border border-[#DBC4A5]">
+            <p className="font-sans text-xs text-[#443223] leading-relaxed line-clamp-3 bg-[#FFF9F3] p-2.5 rounded border border-[#DBC4A5]">
               {book.description}
             </p>
           </div>
@@ -269,7 +269,7 @@ export const ScrapbookQuoteCard: React.FC<ScrapbookQuoteCardProps> = ({
                   onOpenBookModal(book);
                 }
               }}
-              className="text-[10px] font-typewriter font-bold text-[#FFF9F3] bg-[#755151] px-2.5 py-1 rounded border border-[#443223] shadow-[1px_1px_0px_#443223] hover:brightness-110 flex items-center gap-1"
+              className="text-[11px] font-sans font-semibold text-[#FFF9F3] bg-[#755151] px-2.5 py-1 rounded border border-[#443223] shadow-[1px_1px_0px_#443223] hover:brightness-110 flex items-center gap-1 cursor-pointer"
             >
               <BookOpen className="w-3 h-3" />
               <span>Full Dossier</span>
@@ -278,7 +278,7 @@ export const ScrapbookQuoteCard: React.FC<ScrapbookQuoteCardProps> = ({
             <button
               type="button"
               onClick={handleFlip}
-              className="inline-flex items-center gap-1 text-[10px] font-typewriter uppercase font-bold tracking-wider py-1 px-2.5 rounded bg-[#DBC4A5]/50 hover:bg-[#DBC4A5] text-[#443223] border border-[#443223] shadow-[1px_1px_0px_#443223]"
+              className="inline-flex items-center gap-1 text-[11px] font-sans font-semibold py-1 px-2.5 rounded bg-[#DBC4A5]/50 hover:bg-[#DBC4A5] text-[#443223] border border-[#443223] shadow-[1px_1px_0px_#443223] cursor-pointer"
               title="Return to quote face"
             >
               <RotateCw className="w-3 h-3" />

@@ -19,6 +19,7 @@ import { LoginPage } from './pages/auth/LoginPage';
 import { SignupPage } from './pages/auth/SignupPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { CharacterCreatorPage } from './pages/CharacterCreatorPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 export const App: React.FC = () => {
   return (
@@ -48,14 +49,16 @@ export const App: React.FC = () => {
               <Route path="/poems" element={<PoemJarPage />} />
               <Route path="/character-creator" element={<CharacterCreatorPage />} />
               <Route path="/avatar" element={<CharacterCreatorPage />} />
-              <Route path="/clubhouse" element={<ClubhousePage />} />
+              <Route path="/atrium" element={<LandingPage />} />
+              <Route path="/clubhouse" element={<LandingPage />} />
               <Route path="/profile/:username" element={<ProfilePage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/me" element={<ProfilePage />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
 
-            {/* Catch-all redirect to Home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Fallback */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AuthProvider>
       </ThemeProvider>

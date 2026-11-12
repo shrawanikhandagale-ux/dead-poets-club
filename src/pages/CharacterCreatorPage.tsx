@@ -144,10 +144,10 @@ export const CharacterCreatorPage: React.FC = () => {
 
       setSaveSuccess(true);
 
-      // If user came from onboarding, route to Clubhouse or profile
+      // If user came from onboarding, route to The Atrium or profile
       if (isOnboarding) {
         setTimeout(() => {
-          navigate('/clubhouse');
+          navigate('/');
         }, 1200);
       }
     } catch (err: any) {
@@ -202,10 +202,10 @@ export const CharacterCreatorPage: React.FC = () => {
                 : 'MEMBER PASSPORT · SPRITE CONFIGURATION'}
             </span>
           </div>
-          <h1 className="font-editorial text-3xl sm:text-4xl font-bold text-[#1A1614] tracking-tight">
+          <h1 className="type-page-title text-[#1A1614] tracking-tight">
             Pixel RPG Character Atelier
           </h1>
-          <p className="font-typewriter text-xs sm:text-sm text-[#72583E]">
+          <p className="font-sans text-sm text-[#72583E] mt-1">
             Handcraft your 8-bit literary persona, equipment slots, and reading relics.
           </p>
         </div>
@@ -262,21 +262,21 @@ export const CharacterCreatorPage: React.FC = () => {
 
       {/* Notifications / Alerts */}
       {saveError && (
-        <div className="mb-6 p-4 rounded bg-[#755151]/20 border-2 border-[#755151] flex items-center gap-3 text-xs font-typewriter text-[#443223]">
+        <div className="mb-6 p-4 rounded bg-[#755151]/20 border-2 border-[#755151] flex items-center gap-3 text-xs font-sans text-[#443223]">
           <AlertCircle className="w-4 h-4 text-[#755151] flex-shrink-0" />
           <span>{saveError}</span>
         </div>
       )}
 
       {saveSuccess && (
-        <div className="mb-6 p-4 rounded bg-green-50 border-2 border-green-800 flex items-center justify-between text-xs font-typewriter text-green-900 shadow-[2px_2px_0px_#1A1614]">
+        <div className="mb-6 p-4 rounded bg-green-50 border-2 border-green-800 flex items-center justify-between text-xs font-sans text-green-900 shadow-[2px_2px_0px_#1A1614]">
           <div className="flex items-center gap-2.5">
             <Check className="w-4 h-4 text-green-800" />
             <span>Character saved to your identity! Ready for the cafeteria and shelves.</span>
           </div>
           {isOnboarding && (
             <span className="font-bold flex items-center gap-1 text-green-900">
-              Entering Clubhouse <ArrowRight className="w-3.5 h-3.5" />
+              Entering The Atrium <ArrowRight className="w-3.5 h-3.5" />
             </span>
           )}
         </div>
@@ -375,7 +375,7 @@ export const CharacterCreatorPage: React.FC = () => {
                     key={cat.id}
                     type="button"
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded font-mono text-xs font-bold border-2 transition-all whitespace-nowrap cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded font-sans text-xs font-semibold border-2 transition-all whitespace-nowrap cursor-pointer ${
                       isActive
                         ? 'bg-[#1A1614] text-[#FFF9F3] border-[#1A1614] shadow-[2px_2px_0px_#755151]'
                         : 'bg-[#FFF9F3] text-[#1A1614] border-[#1A1614]/60 hover:border-[#1A1614] hover:bg-[#DBC4A5]/30'
@@ -832,7 +832,7 @@ export const CharacterCreatorPage: React.FC = () => {
                 <label className="font-mono text-xs font-bold text-[#1A1614] uppercase tracking-wider block mb-1">
                   Spectacles, Headwear & Accents:
                 </label>
-                <p className="font-typewriter text-[11px] text-[#72583E] mb-3">
+                <p className="font-sans text-xs text-[#72583E] mb-3">
                   Equip up to 3 accessories. Click an active accessory to unequip.
                 </p>
 

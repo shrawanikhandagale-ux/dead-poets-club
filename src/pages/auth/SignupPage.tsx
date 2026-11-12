@@ -94,7 +94,7 @@ export const SignupPage: React.FC = () => {
     setError(null);
     setIsSubmitting(true);
     try {
-      await signup(email, username, displayName);
+      await signup(email, username, displayName, password);
       navigate('/character-creator?onboarding=true');
     } catch (err: any) {
       setError(err?.message || 'Initiation failed. Please try again.');
@@ -118,7 +118,7 @@ export const SignupPage: React.FC = () => {
           >
             <Feather className="w-7 h-7 text-[#e8c18e] group-hover:rotate-12 transition-transform duration-300" />
           </NavLink>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#f0eae1] tracking-tight">
+          <h1 className="font-editorial text-3xl sm:text-4xl font-normal text-[#f0eae1] tracking-tight">
             Claim Your Quill
           </h1>
           <p className="font-sans text-xs sm:text-sm text-[#a39b8f] mt-1">
@@ -127,7 +127,7 @@ export const SignupPage: React.FC = () => {
         </div>
 
         {error && (
-          <div className="mb-6 p-3.5 rounded-lg bg-[#784743]/25 border border-[#784743]/50 flex items-start gap-3 text-xs text-[#f2b8b5]">
+          <div className="mb-6 p-3.5 rounded-lg bg-[#784743]/25 border border-[#784743]/50 flex items-start gap-3 font-sans text-xs text-[#f2b8b5]">
             <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#e8a8a4]" />
             <span>{error}</span>
           </div>
@@ -138,7 +138,7 @@ export const SignupPage: React.FC = () => {
           <div>
             <label
               htmlFor="displayName"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#d3a66d] mb-1"
+              className="block font-sans text-xs font-medium text-[#d3a66d] mb-1"
             >
               Pen Name / Display Name
             </label>
@@ -150,7 +150,7 @@ export const SignupPage: React.FC = () => {
                 onChange={e => setDisplayName(e.target.value)}
                 placeholder="e.g. Lord Byron's Raven"
                 required
-                className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
+                className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] font-sans text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
               />
               <User className="w-4 h-4 text-[#8e8578] absolute left-3.5 top-3" />
             </div>
@@ -161,7 +161,7 @@ export const SignupPage: React.FC = () => {
             <div className="flex items-center justify-between mb-1">
               <label
                 htmlFor="username"
-                className="block font-mono text-[11px] uppercase tracking-wider text-[#d3a66d]"
+                className="block font-sans text-xs font-medium text-[#d3a66d]"
               >
                 Poet Handle (@username)
               </label>
@@ -210,7 +210,7 @@ export const SignupPage: React.FC = () => {
           <div>
             <label
               htmlFor="email"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#d3a66d] mb-1"
+              className="block font-sans text-xs font-medium text-[#d3a66d] mb-1"
             >
               Sanctuary Missive Address (Email)
             </label>
@@ -223,7 +223,7 @@ export const SignupPage: React.FC = () => {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="poet@sanctuary.org"
                 required
-                className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
+                className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] font-sans text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
               />
               <Mail className="w-4 h-4 text-[#8e8578] absolute left-3.5 top-3" />
             </div>
@@ -233,7 +233,7 @@ export const SignupPage: React.FC = () => {
           <div>
             <label
               htmlFor="password"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#d3a66d] mb-1"
+              className="block font-sans text-xs font-medium text-[#d3a66d] mb-1"
             >
               Secret Passphrase
             </label>
@@ -247,7 +247,7 @@ export const SignupPage: React.FC = () => {
                 placeholder="At least 6 characters"
                 required
                 minLength={6}
-                className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
+                className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] font-sans text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
               />
               <Lock className="w-4 h-4 text-[#8e8578] absolute left-3.5 top-3" />
             </div>
@@ -255,7 +255,7 @@ export const SignupPage: React.FC = () => {
 
           {/* Choose Archetype */}
           <div className="pt-2">
-            <label className="block font-mono text-[11px] uppercase tracking-wider text-[#d3a66d] mb-2">
+            <label className="block font-sans text-xs font-medium text-[#d3a66d] mb-2">
               Choose Initial Persona Archetype
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -270,8 +270,8 @@ export const SignupPage: React.FC = () => {
                       : 'border-[#382f28] bg-[#221c19] hover:border-[#d3a66d]/40'
                   }`}
                 >
-                  <p className="font-serif text-xs font-semibold text-[#f0eae1]">{preset.name}</p>
-                  <p className="text-[10px] text-[#8e8578] mt-0.5 leading-tight">{preset.desc}</p>
+                  <p className="font-editorial text-sm font-normal text-[#f0eae1]">{preset.name}</p>
+                  <p className="font-sans text-[11px] text-[#8e8578] mt-0.5 leading-tight">{preset.desc}</p>
                 </button>
               ))}
             </div>
@@ -281,7 +281,7 @@ export const SignupPage: React.FC = () => {
             type="submit"
             disabled={isSubmitting || isLoading}
             onClick={e => triggerInkSplatter(e.clientX, e.clientY)}
-            className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[#784743] to-[#5a2e2b] hover:from-[#8f5550] hover:to-[#6d3835] border border-[#d3a66d]/40 text-[#f0eae1] font-serif text-sm font-semibold tracking-wide flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer mt-4 disabled:opacity-50"
+            className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[#784743] to-[#5a2e2b] hover:from-[#8f5550] hover:to-[#6d3835] border border-[#d3a66d]/40 text-[#f0eae1] font-sans text-sm font-semibold tracking-wide flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer mt-4 disabled:opacity-50"
           >
             {isSubmitting ? (
               <span>Inscribing Registry...</span>

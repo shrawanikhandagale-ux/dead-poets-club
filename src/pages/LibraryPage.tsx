@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SEED_BOOKS } from '../data/seedBooks';
+import { localService } from '../lib/supabase';
 import { BookCard } from '../components/books/BookCard';
 import { BookDetailModal } from '../components/books/BookDetailModal';
 import { Book } from '../types/book';
@@ -13,21 +14,34 @@ export const LibraryPage: React.FC = () => {
   const currentTab = searchParams.get('tab') || 'books';
   const initialGenre = searchParams.get('genre') || 'All';
 
+  const [books, setBooks] = useState<Book[]>(SEED_BOOKS);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState<string>(initialGenre);
   const [sortBy, setSortBy] = useState<'title' | 'year' | 'rating'>('rating');
 
+  useEffect(() => {
+    let isMounted = true;
+    localService.getBooks().then(data => {
+      if (isMounted && data && data.length > 0) {
+        setBooks(data);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Extract all unique genres
   const genres = useMemo(() => {
     const set = new Set<string>();
-    SEED_BOOKS.forEach(b => b.genres.forEach(g => set.add(g)));
+    books.forEach(b => b.genres.forEach(g => set.add(g)));
     return ['All', ...Array.from(set).sort()];
-  }, []);
+  }, [books]);
 
   // Filter & sort books
   const filteredBooks = useMemo(() => {
-    return SEED_BOOKS.filter(book => {
+    return books.filter(book => {
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
         !q ||
@@ -45,7 +59,7 @@ export const LibraryPage: React.FC = () => {
       if (sortBy === 'year') return b.publication_year - a.publication_year;
       return a.title.localeCompare(b.title);
     });
-  }, [searchQuery, selectedGenre, sortBy]);
+  }, [books, searchQuery, selectedGenre, sortBy]);
 
   const handleTabChange = (tab: 'books' | 'reviews') => {
     soundEngine.playClick();
@@ -140,13 +154,13 @@ export const LibraryPage: React.FC = () => {
             <BookOpen className="w-3.5 h-3.5 text-[#FFF9F3]" />
             <span>CURATED STACKS · ARCHIVAL REPOSITORY</span>
           </div>
-          <h1 className="font-editorial text-3xl sm:text-5xl font-bold text-[#443223]">
+          <h1 className="type-page-title text-[#443223]">
             {currentTab === 'reviews' ? 'Borrower Reviews & Marginalia' : 'The Grand Library Catalogue'}
           </h1>
-          <p className="font-typewriter text-xs sm:text-sm text-[#72583E] mt-1 max-w-xl">
+          <p className="font-sans text-sm sm:text-base text-[#72583E] mt-1.5 max-w-xl leading-relaxed">
             {currentTab === 'reviews'
-              ? 'Handwritten reflections, stamped ratings, and marginalia left by fellow poets in the library stacks.'
-              : 'Explore literary monuments, classics, dark academia reflections, and poetry. Every volume has a voice.'}
+              ? 'Go on. Read what the books did to everyone else.'
+              : 'Another room full of things we swear we’ll finish before winter.'}
           </p>
         </div>
 
@@ -154,19 +168,19 @@ export const LibraryPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleTabChange('books')}
-            className={`px-4 py-2 rounded font-typewriter text-xs font-bold border-2 transition-all cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded font-sans text-xs font-semibold border-2 transition-all cursor-pointer flex items-center gap-2 ${
               currentTab !== 'reviews'
                 ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[2px_2px_0px_#443223]'
                 : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]/40'
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
-            <span>Volumes ({SEED_BOOKS.length})</span>
+            <span>Volumes ({books.length})</span>
           </button>
 
           <button
             onClick={() => handleTabChange('reviews')}
-            className={`px-4 py-2 rounded font-typewriter text-xs font-bold border-2 transition-all cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded font-sans text-xs font-semibold border-2 transition-all cursor-pointer flex items-center gap-2 ${
               currentTab === 'reviews'
                 ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[2px_2px_0px_#443223]'
                 : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]/40'
@@ -195,16 +209,16 @@ export const LibraryPage: React.FC = () => {
                         <PixelAvatar config={rev.avatar} size="xs" viewMode="bust" />
                       </div>
                       <div>
-                        <span className="font-typewriter text-xs font-bold text-[#443223] block leading-tight">
+                        <span className="font-sans text-xs font-semibold text-[#443223] block leading-tight">
                           {rev.author}
                         </span>
-                        <span className="font-mono text-[9px] text-[#755151]">
+                        <span className="font-mono text-[10px] text-[#755151]">
                           @{rev.username} · {rev.date}
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1 text-xs font-typewriter font-bold text-[#755151]">
+                    <div className="flex items-center gap-1 text-xs font-mono font-medium text-[#755151]">
                       <Star className="w-3.5 h-3.5 fill-current text-[#755151]" />
                       <span>{rev.rating.toFixed(1)}</span>
                     </div>
@@ -212,30 +226,30 @@ export const LibraryPage: React.FC = () => {
 
                   {/* Book Reference */}
                   <div className="mb-2">
-                    <span className="font-typewriter text-[10px] uppercase tracking-wider text-[#A08670] block">
-                      MARGINALIA ON:
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-[#A08670] block">
+                      MARGINALIA ON
                     </span>
                     <button
                       onClick={() => setSelectedBook(rev.book)}
-                      className="font-editorial text-sm font-bold text-[#755151] hover:underline text-left block"
+                      className="font-editorial text-lg text-[#755151] hover:underline text-left block"
                     >
                       {rev.book.title}
                     </button>
                   </div>
 
                   {/* Review Text */}
-                  <p className="font-typewriter text-xs text-[#443223] italic leading-relaxed bg-[#FFF9F3] p-3 rounded border border-[#DBC4A5]">
-                    "{rev.text}"
+                  <p className="font-sans text-sm text-[#443223] leading-relaxed bg-[#FFF9F3] p-3 rounded border border-[#DBC4A5]">
+                    “{rev.text}”
                   </p>
                 </div>
 
                 <div className="pt-3 border-t border-[#A08670] mt-3 flex items-center justify-between">
                   <span className="text-[10px] font-mono text-[#72583E]">
-                    ARCHIVAL VERIFIED BORROWER
+                    VERIFIED BORROWER
                   </span>
                   <button
                     onClick={() => setSelectedBook(rev.book)}
-                    className="text-[10px] font-typewriter font-bold text-[#FFF9F3] bg-[#755151] px-2 py-0.5 rounded border border-[#443223] hover:brightness-110"
+                    className="text-xs font-sans font-semibold text-[#FFF9F3] bg-[#755151] px-2.5 py-1 rounded border border-[#443223] hover:brightness-110"
                   >
                     View Volume
                   </button>
@@ -255,8 +269,8 @@ export const LibraryPage: React.FC = () => {
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search by title, author, or passage..."
-                className="w-full px-4 py-2 pl-9 rounded font-typewriter text-xs sm:text-sm bg-[#FFF9F3] border-2 border-[#A08670] text-[#443223] placeholder-[#A08670] focus:outline-none focus:border-[#443223]"
+                placeholder="Looking for a particular rabbit hole?"
+                className="w-full px-4 py-2 pl-9 rounded font-sans text-sm bg-[#FFF9F3] border-2 border-[#A08670] text-[#443223] placeholder-[#A08670] focus:outline-none focus:border-[#443223]"
               />
               <Search className="w-4 h-4 text-[#72583E] absolute left-3 top-2.5" />
             </div>
@@ -265,11 +279,11 @@ export const LibraryPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
               {/* Genre select */}
               <div className="flex items-center gap-2">
-                <span className="text-xs font-typewriter font-bold text-[#72583E] uppercase">GENRE:</span>
+                <span className="text-[11px] font-mono font-medium text-[#72583E] uppercase">Genre</span>
                 <select
                   value={selectedGenre}
                   onChange={e => setSelectedGenre(e.target.value)}
-                  className="text-xs font-typewriter font-bold bg-[#FFF9F3] border-2 border-[#A08670] text-[#443223] rounded px-3 py-1.5 outline-none focus:border-[#443223]"
+                  className="text-xs font-sans font-semibold bg-[#FFF9F3] border-2 border-[#A08670] text-[#443223] rounded px-3 py-1.5 outline-none focus:border-[#443223]"
                 >
                   {genres.map(g => (
                     <option key={g} value={g}>
@@ -281,11 +295,11 @@ export const LibraryPage: React.FC = () => {
 
               {/* Sort By */}
               <div className="flex items-center gap-2">
-                <span className="text-xs font-typewriter font-bold text-[#72583E] uppercase">SORT:</span>
+                <span className="text-[11px] font-mono font-medium text-[#72583E] uppercase">Sort</span>
                 <select
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value as 'title' | 'year' | 'rating')}
-                  className="text-xs font-typewriter font-bold bg-[#FFF9F3] border-2 border-[#A08670] text-[#443223] rounded px-3 py-1.5 outline-none focus:border-[#443223]"
+                  className="text-xs font-sans font-semibold bg-[#FFF9F3] border-2 border-[#A08670] text-[#443223] rounded px-3 py-1.5 outline-none focus:border-[#443223]"
                 >
                   <option value="rating">Highest Rated</option>
                   <option value="year">Publication Year</option>
@@ -299,11 +313,11 @@ export const LibraryPage: React.FC = () => {
           {filteredBooks.length === 0 ? (
             <div className="catalog-card p-12 text-center bg-[#FCF8F2] border-2 border-dashed border-[#A08670]">
               <BookOpen className="w-12 h-12 text-[#A08670] mx-auto mb-3" />
-              <h3 className="font-editorial text-lg font-bold text-[#443223] mb-1">
-                No Books Found in the Stacks
+              <h3 className="font-editorial text-2xl text-[#443223] mb-1">
+                This book has wandered off.
               </h3>
-              <p className="font-typewriter text-xs text-[#72583E]">
-                Try adjusting your search query or reset the genre filter.
+              <p className="font-sans text-sm text-[#72583E]">
+                Authors are notoriously difficult to keep in one place. Try another shelf or reset your filters.
               </p>
               <button
                 onClick={() => {

@@ -4,9 +4,12 @@ import { AvatarConfig, DEFAULT_AVATAR_CONFIG } from '../../types/profile';
 export interface PixelAvatarProps {
   config?: Partial<AvatarConfig> | null;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  viewMode?: 'full' | 'bust' | 'head';
+  viewMode?: 'full' | 'bust' | 'head' | 'seated';
   className?: string;
   animateIdle?: boolean;
+  isWalking?: boolean;
+  facing?: 'left' | 'right';
+  customWidth?: number;
 }
 
 // Canonical grid dimensions: 48 units wide by 88 units tall
@@ -26,6 +29,9 @@ export const PixelAvatar: React.FC<PixelAvatarProps> = ({
   viewMode = 'full',
   className = '',
   animateIdle = false,
+  isWalking = false,
+  facing = 'right',
+  customWidth,
 }) => {
   const config: AvatarConfig = {
     ...DEFAULT_AVATAR_CONFIG,
@@ -41,7 +47,7 @@ export const PixelAvatar: React.FC<PixelAvatarProps> = ({
     xl: 300,
   };
 
-  const pixelSize = sizeMap[size];
+  const pixelSize = customWidth ?? sizeMap[size];
 
   // Adjust SVG viewBox based on viewMode
   let viewBox = `0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`;
@@ -53,6 +59,9 @@ export const PixelAvatar: React.FC<PixelAvatarProps> = ({
   } else if (viewMode === 'head') {
     viewBox = '12 4 24 26';
     aspectRatio = 24 / 26;
+  } else if (viewMode === 'seated') {
+    viewBox = '4 2 40 52';
+    aspectRatio = 40 / 52;
   }
 
   const skin = config.skinTone || '#EAD4BA';
@@ -65,20 +74,30 @@ export const PixelAvatar: React.FC<PixelAvatarProps> = ({
   const INK_OUTLINE = '#141210';
   const INK_SHADOW = 'rgba(20, 18, 16, 0.25)';
 
+  const motionClass = isWalking
+    ? 'animate-pixel-walk'
+    : animateIdle
+      ? 'animate-pixel-bob'
+      : '';
+
   return (
     <div
       className={`inline-flex items-center justify-center select-none relative ${className}`}
       style={{
         width: pixelSize,
-        height: viewMode === 'full' ? pixelSize * (CANVAS_HEIGHT / CANVAS_WIDTH) : pixelSize,
+        height:
+          viewMode === 'full' || viewMode === 'seated'
+            ? pixelSize / aspectRatio
+            : pixelSize,
       }}
     >
       <svg
         viewBox={viewBox}
-        className={`w-full h-full ${animateIdle ? 'animate-pulse' : ''}`}
+        className={`w-full h-full ${motionClass}`}
         style={{
           imageRendering: 'pixelated',
           shapeRendering: 'crispEdges',
+          transform: facing === 'left' ? 'scaleX(-1)' : undefined,
         }}
         aria-label="Pixel RPG Character Avatar"
         role="img"

@@ -26,6 +26,7 @@ import {
   CornerDownRight,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTypewriterSound } from '../hooks/useTypewriterSound';
 
 // Seed community letters for 9A
 const INITIAL_LETTERS: CommunityLetter[] = [
@@ -159,6 +160,7 @@ export const TheMarginsPage: React.FC = () => {
   );
 
   const [modalBook, setModalBook] = useState<Book | null>(null);
+  const typewriter = useTypewriterSound();
 
   // 9A Letters state
   const [letters, setLetters] = useState<CommunityLetter[]>(() => {
@@ -375,19 +377,19 @@ export const TheMarginsPage: React.FC = () => {
           <span>LITERARY JOURNAL & COMMUNITY PASSAGES</span>
         </div>
 
-        <h1 className="font-editorial text-4xl sm:text-6xl font-bold text-[#443223] tracking-tight">
-          THE MARGINS
+        <h1 className="type-hero text-[#443223]">
+          The Margins
         </h1>
 
-        <p className="font-handwritten text-xl sm:text-2xl text-[#755151] mt-1 italic">
-          Some thoughts belong between the lines.
+        <p className="font-sans text-sm sm:text-base text-[#72583E] mt-2">
+          Deface the margins, not the book. We have standards.
         </p>
 
         {/* Small internal sub-navigation bar for the 3 distinct destinations */}
         <div className="mt-8 flex items-center justify-center sm:justify-start gap-2 border-b-2 border-dashed border-[#A08670] pb-4 overflow-x-auto">
           <button
             onClick={() => handleSectionTab('letters')}
-            className={`px-4 py-2 rounded text-xs font-typewriter font-bold transition-all border-2 cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded text-xs font-sans font-semibold transition-all border-2 cursor-pointer flex items-center gap-2 ${
               activeSection === 'letters'
                 ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[3px_3px_0px_#443223]'
                 : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]'
@@ -395,12 +397,12 @@ export const TheMarginsPage: React.FC = () => {
           >
             <Feather className="w-3.5 h-3.5" />
             <span>Letters from the Margins</span>
-            <span className="text-[10px] font-mono opacity-80">({letters.length})</span>
+            <span className="text-[11px] font-mono opacity-80">({letters.length})</span>
           </button>
 
           <button
             onClick={() => handleSectionTab('marginalia')}
-            className={`px-4 py-2 rounded text-xs font-typewriter font-bold transition-all border-2 cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded text-xs font-sans font-semibold transition-all border-2 cursor-pointer flex items-center gap-2 ${
               activeSection === 'marginalia'
                 ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[3px_3px_0px_#443223]'
                 : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]'
@@ -408,14 +410,14 @@ export const TheMarginsPage: React.FC = () => {
           >
             <Calendar className="w-3.5 h-3.5" />
             <span>Dear Marginalia</span>
-            <span className="text-[10px] bg-amber-200/50 text-[#755151] px-1.5 py-0.5 rounded font-mono font-bold">
+            <span className="text-[10px] bg-amber-200/50 text-[#755151] px-1.5 py-0.5 rounded font-mono font-medium">
               Streak: {marginaliaStreak}
             </span>
           </button>
 
           <button
             onClick={() => handleSectionTab('leave-book')}
-            className={`px-4 py-2 rounded text-xs font-typewriter font-bold transition-all border-2 cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded text-xs font-sans font-semibold transition-all border-2 cursor-pointer flex items-center gap-2 ${
               activeSection === 'leave-book'
                 ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[3px_3px_0px_#443223]'
                 : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]'
@@ -434,11 +436,11 @@ export const TheMarginsPage: React.FC = () => {
         <section className="space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-dashed border-[#A08670]">
             <div>
-              <h2 className="font-editorial text-2xl font-bold text-[#443223]">
+              <h2 className="type-section-title text-[#443223]">
                 Community Letter Wall
               </h2>
-              <p className="font-typewriter text-xs text-[#72583E]">
-                Pinned letters, personal confessions, and midnight thoughts left between pages.
+              <p className="font-sans text-sm text-[#72583E] mt-0.5">
+                The postman has brought you a thought. Go on—tell us what the book did to you.
               </p>
             </div>
 
@@ -458,20 +460,20 @@ export const TheMarginsPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className="catalog-card p-6 bg-[#FCF8F2] border-3 border-[#443223] shadow-[5px_5px_0px_#443223]"
             >
-              <h3 className="font-editorial text-lg font-bold mb-3 flex items-center gap-2">
+              <h3 className="font-editorial text-2xl mb-3 flex items-center gap-2">
                 <Feather className="w-4 h-4 text-[#755151]" />
                 <span>Write to the Margins</span>
               </h3>
 
-              <form onSubmit={handlePostLetter} className="space-y-4 font-typewriter text-xs">
+              <form onSubmit={handlePostLetter} className="space-y-4 font-sans text-sm">
                 <div>
-                  <label className="block font-bold text-[#72583E] mb-1">
-                    ASSOCIATED BOOK (OPTIONAL):
+                  <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                    Associated Book (optional)
                   </label>
                   <select
                     value={newLetterBookId}
                     onChange={e => setNewLetterBookId(e.target.value)}
-                    className="w-full p-2 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-typewriter font-bold"
+                    className="w-full p-2 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-sans text-sm font-medium"
                   >
                     <option value="">No specific volume (General Literary Letter)</option>
                     {SEED_BOOKS.map(b => (
@@ -483,34 +485,36 @@ export const TheMarginsPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#72583E] mb-1">
-                    SHORT QUOTE OR PAGE REFERENCE (OPTIONAL):
+                  <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                    Short quote or page reference (optional)
                   </label>
                   <input
                     type="text"
                     value={newLetterQuote}
                     onChange={e => setNewLetterQuote(e.target.value)}
+                    onKeyDown={typewriter.handleKeyDown}
                     placeholder="e.g. Page 142 or “Death exists not as the opposite...”"
                     className="w-full p-2 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#72583E] mb-1">
-                    YOUR LETTER CONTENT:
+                  <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                    Your Letter
                   </label>
                   <textarea
                     required
                     rows={4}
                     value={newLetterContent}
                     onChange={e => setNewLetterContent(e.target.value)}
+                    onKeyDown={typewriter.handleKeyDown}
                     placeholder="Inscribe your thought, question, or reflection here..."
-                    className="w-full p-3 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-handwritten text-lg leading-relaxed"
+                    className="w-full p-3 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-sans text-sm leading-relaxed"
                   />
                 </div>
 
                 <div className="flex items-center justify-between pt-2">
-                  <label className="flex items-center gap-2 cursor-pointer font-bold text-[#72583E]">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-[#72583E]">
                     <input
                       type="checkbox"
                       checked={newLetterAnonymous}
@@ -558,28 +562,28 @@ export const TheMarginsPage: React.FC = () => {
                 <div>
                   {/* Book Reference Tag */}
                   {letter.book_title && (
-                    <div className="mb-3 pt-1 flex items-center justify-between text-xs font-typewriter">
-                      <span className="font-bold text-[#755151] flex items-center gap-1.5">
+                    <div className="mb-3 pt-1 flex items-center justify-between text-xs">
+                      <span className="font-sans font-semibold text-[#755151] flex items-center gap-1.5">
                         <BookOpen className="w-3.5 h-3.5" />
                         {letter.book_title}
                       </span>
                       {letter.quote_or_page && (
-                        <span className="text-[10px] text-[#A08670] italic">
+                        <span className="font-mono text-[10px] text-[#A08670]">
                           {letter.quote_or_page}
                         </span>
                       )}
                     </div>
                   )}
 
-                  {/* Letter Text (Handwritten Aesthetic) */}
-                  <p className="font-handwritten text-xl sm:text-2xl text-[#3D2B1F] leading-relaxed mb-4">
+                  {/* Letter Text (Selective Handwritten Marginal Accent) */}
+                  <p className="font-handwritten text-2xl text-[#3D2B1F] leading-snug mb-4">
                     "{letter.content}"
                   </p>
                 </div>
 
                 <div>
                   {/* Letter Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t border-dashed border-[#A08670] text-xs font-typewriter">
+                  <div className="flex items-center justify-between pt-3 border-t border-dashed border-[#A08670] text-xs font-sans">
                     <div className="flex items-center gap-2">
                       <div
                         className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
@@ -621,11 +625,11 @@ export const TheMarginsPage: React.FC = () => {
                   {letter.replies && letter.replies.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-dashed border-[#A08670]/60 space-y-2">
                       {letter.replies.map(rep => (
-                        <div key={rep.id} className="pl-3 border-l-2 border-[#755151] text-xs font-typewriter">
-                          <span className="font-bold text-[#755151] block text-[10px]">
+                        <div key={rep.id} className="pl-3 border-l-2 border-[#755151] text-xs font-sans">
+                          <span className="font-mono font-semibold text-[#755151] block text-[10px]">
                             {rep.author_name} · {rep.created_at}
                           </span>
-                          <p className="text-[#443223] italic mt-0.5">
+                          <p className="text-[#443223] italic mt-0.5 leading-relaxed">
                             "{rep.content}"
                           </p>
                         </div>
@@ -640,8 +644,9 @@ export const TheMarginsPage: React.FC = () => {
                         type="text"
                         value={replyContent}
                         onChange={e => setReplyContent(e.target.value)}
+                        onKeyDown={typewriter.handleKeyDown}
                         placeholder="Write a gentle reply..."
-                        className="flex-1 p-1.5 text-xs font-typewriter border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
+                        className="flex-1 p-1.5 text-xs font-sans border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
                       />
                       <button
                         onClick={() => handleAddReply(letter.id)}
@@ -667,13 +672,13 @@ export const TheMarginsPage: React.FC = () => {
             {/* Header Stamp */}
             <div className="flex flex-wrap items-center justify-between pb-6 mb-6 border-b-2 border-dashed border-[#A08670] gap-4">
               <div>
-                <span className="font-typewriter text-xs font-bold text-[#755151] uppercase tracking-wider block mb-1">
-                  ISSUE NO. {selectedPrompt.issue_number} · {selectedPrompt.date_string}
+                <span className="font-mono text-xs font-medium text-[#755151] uppercase tracking-wider block mb-1">
+                  Issue No. {selectedPrompt.issue_number} · {selectedPrompt.date_string}
                 </span>
-                <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#443223]">
-                  DEAR MARGINALIA
+                <h2 className="type-page-title text-[#443223]">
+                  Dear Marginalia
                 </h2>
-                <p className="font-handwritten text-lg text-[#755151] italic mt-0.5">
+                <p className="font-sans text-sm text-[#72583E] mt-1">
                   Leave a little piece of yourself here. Someone might need it tomorrow.
                 </p>
               </div>
@@ -681,11 +686,11 @@ export const TheMarginsPage: React.FC = () => {
               {/* Streak Tracker Badge */}
               <div className="p-3 bg-[#FFF9F3] border-2 border-[#443223] rounded shadow-[2px_2px_0px_#443223] text-center flex items-center gap-3">
                 <Flame className="w-6 h-6 text-amber-600 fill-amber-500 animate-pulse" />
-                <div className="text-left font-typewriter">
-                  <span className="text-[10px] uppercase text-[#72583E] block font-bold">
+                <div className="text-left">
+                  <span className="font-mono text-[10px] uppercase text-[#72583E] block">
                     Marginalia Streak
                   </span>
-                  <span className="font-editorial text-lg font-bold text-[#443223]">
+                  <span className="font-editorial text-xl text-[#443223]">
                     {marginaliaStreak} Days Inscribed
                   </span>
                 </div>
@@ -694,40 +699,42 @@ export const TheMarginsPage: React.FC = () => {
 
             {/* Today's Featured Prompt */}
             <div className="p-6 bg-[#FFF9F3] border-2 border-[#443223] rounded shadow-[3px_3px_0px_#443223] mb-8">
-              <span className="font-typewriter text-[10px] font-bold text-[#755151] uppercase tracking-wider block mb-2">
-                TODAY'S LITERARY INVITATION:
+              <span className="font-mono text-[10px] font-medium text-[#755151] uppercase tracking-wider block mb-2">
+                Today&apos;s Literary Invitation
               </span>
-              <p className="font-editorial text-xl sm:text-2xl font-bold text-[#443223] leading-snug">
-                "{selectedPrompt.prompt_text}"
+              <p className="font-editorial text-2xl sm:text-3xl text-[#443223] leading-snug">
+                “{selectedPrompt.prompt_text}”
               </p>
             </div>
 
             {/* User Response Form */}
-            <form onSubmit={handleSubmitPromptResponse} className="space-y-4 font-typewriter text-xs">
+            <form onSubmit={handleSubmitPromptResponse} className="space-y-4 font-sans text-sm">
               <div>
-                <label className="block font-bold text-[#72583E] mb-1">
-                  MENTION A VOLUME (OPTIONAL):
+                <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                  Mention a Volume (optional)
                 </label>
                 <input
                   type="text"
                   value={responseBookTitle}
                   onChange={e => setResponseBookTitle(e.target.value)}
+                  onKeyDown={typewriter.handleKeyDown}
                   placeholder="e.g. The Secret History or Meditations..."
-                  className="w-full p-2 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
+                  className="w-full p-2 text-sm border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-[#72583E] mb-1">
-                  YOUR RESPONSE (JOURNAL ENTRY):
+                <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                  Your Journal Entry
                 </label>
                 <textarea
                   required
                   rows={4}
                   value={responseContent}
                   onChange={e => setResponseContent(e.target.value)}
+                  onKeyDown={typewriter.handleKeyDown}
                   placeholder="Inscribe your reflection as if writing in a quiet notebook..."
-                  className="w-full p-3 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-handwritten text-lg leading-relaxed"
+                  className="w-full p-3 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-sans text-sm leading-relaxed"
                 />
               </div>
 
@@ -772,7 +779,7 @@ export const TheMarginsPage: React.FC = () => {
 
           {/* Public Responses to Prompt */}
           <div className="space-y-4">
-            <h3 className="font-editorial text-xl font-bold text-[#443223] border-b-2 border-[#443223] pb-3">
+            <h3 className="font-editorial text-2xl font-normal text-[#443223] border-b-2 border-[#443223] pb-3">
               Member Inscriptions ({responses.filter(r => !r.is_private).length})
             </h3>
 
@@ -786,7 +793,7 @@ export const TheMarginsPage: React.FC = () => {
                   >
                     <div>
                       {r.book_title && (
-                        <span className="text-[10px] font-typewriter font-bold text-[#755151] block mb-2">
+                        <span className="text-[10px] font-mono font-semibold text-[#755151] block mb-2">
                           RE: {r.book_title}
                         </span>
                       )}
@@ -795,8 +802,8 @@ export const TheMarginsPage: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-dashed border-[#A08670] text-xs font-typewriter">
-                      <span className="text-[#72583E] font-bold">
+                    <div className="flex items-center justify-between pt-3 border-t border-dashed border-[#A08670] text-xs font-mono">
+                      <span className="text-[#72583E] font-medium">
                         {r.display_name} · {r.created_at}
                       </span>
                       <span className="text-[#755151] text-xs flex items-center gap-1">
@@ -821,10 +828,10 @@ export const TheMarginsPage: React.FC = () => {
                 <Share2 className="w-3.5 h-3.5 text-[#FFF9F3]" />
                 <span>BOOK SHARING RECOMMENDATION ENGINE</span>
               </div>
-              <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#443223]">
+              <h2 className="type-page-title text-[#443223]">
                 Leave This Book for Someone
               </h2>
-              <p className="font-handwritten text-xl text-[#755151] italic mt-1">
+              <p className="font-sans text-sm text-[#72583E] mt-1">
                 Some books are better when they find their way to someone else.
               </p>
             </div>
@@ -832,10 +839,10 @@ export const TheMarginsPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* Left Column: Form */}
               <div className="lg:col-span-7">
-                <form onSubmit={handleGenerateRecommendation} className="space-y-4 font-typewriter text-xs">
+                <form onSubmit={handleGenerateRecommendation} className="space-y-4 font-sans text-sm">
                   <div>
-                    <label className="block font-bold text-[#72583E] mb-1">
-                      1. SELECT VOLUME FROM CATALOGUE:
+                    <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                      1. Select Volume from Catalogue
                     </label>
                     <select
                       value={recBookId}
@@ -843,7 +850,7 @@ export const TheMarginsPage: React.FC = () => {
                         setRecBookId(e.target.value);
                         setGeneratedShareToken(null);
                       }}
-                      className="w-full p-2.5 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-typewriter font-bold"
+                      className="w-full p-2.5 text-sm border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-medium"
                     >
                       {SEED_BOOKS.map(b => (
                         <option key={b.id} value={b.id}>
@@ -854,8 +861,8 @@ export const TheMarginsPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-[#72583E] mb-1">
-                      2. WHY ARE YOU LEAVING THIS BOOK FOR THEM?
+                    <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                      2. Why are you leaving this book for them?
                     </label>
                     <textarea
                       required
@@ -865,13 +872,14 @@ export const TheMarginsPage: React.FC = () => {
                         setRecMessage(e.target.value);
                         setGeneratedShareToken(null);
                       }}
+                      onKeyDown={typewriter.handleKeyDown}
                       placeholder="Write your note: 'I remembered you loved autumn rains, and this novel carries that exact fragrance...'"
-                      className="w-full p-3 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-handwritten text-lg leading-relaxed"
+                      className="w-full p-3 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-sans text-sm leading-relaxed"
                     />
                   </div>
 
                   <div className="flex items-center gap-2 pt-1">
-                    <label className="flex items-center gap-2 cursor-pointer font-bold text-[#72583E]">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-[#72583E]">
                       <input
                         type="checkbox"
                         checked={recIsAnonymous}
@@ -881,7 +889,7 @@ export const TheMarginsPage: React.FC = () => {
                         }}
                         className="accent-[#755151]"
                       />
-                      <span>Leave Anonymously (Hide sender name on recommendation card)</span>
+                      <span>Leave anonymously (hide sender name on card)</span>
                     </label>
                   </div>
 
@@ -891,7 +899,7 @@ export const TheMarginsPage: React.FC = () => {
                       className="btn-primary text-xs py-2.5 px-5 cursor-pointer flex items-center gap-2"
                     >
                       <Sparkles className="w-4 h-4 text-amber-300" />
-                      <span>Seal Recommendation & Generate Link</span>
+                      <span>Seal Recommendation &amp; Generate Link</span>
                     </button>
                   </div>
                 </form>
@@ -904,15 +912,15 @@ export const TheMarginsPage: React.FC = () => {
                     className="mt-6 p-4 bg-[#FFF9F3] border-2 border-[#755151] rounded shadow-[3px_3px_0px_#443223] space-y-3"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-typewriter text-xs font-bold text-[#755151] uppercase flex items-center gap-1.5">
-                        <Check className="w-4 h-4 text-green-700" /> Recommendation Sealed!
+                      <span className="font-sans text-xs font-semibold text-[#755151] flex items-center gap-1.5">
+                        <Check className="w-4 h-4 text-green-700" /> Recommendation Sealed
                       </span>
                       <span className="font-mono text-[10px] text-[#A08670]">
                         TOKEN #{generatedShareToken}
                       </span>
                     </div>
 
-                    <p className="font-typewriter text-xs text-[#58432D]">
+                    <p className="font-sans text-xs text-[#58432D]">
                       Share this unique unlisted link with a friend. When they open it, they’ll discover your note and this volume:
                     </p>
 
@@ -937,16 +945,16 @@ export const TheMarginsPage: React.FC = () => {
 
               {/* Right Column: Live Recipient Experience Preview */}
               <div className="lg:col-span-5">
-                <span className="font-typewriter text-[11px] font-bold text-[#755151] uppercase tracking-wider block mb-2">
-                  RECIPIENT PREVIEW CARD:
+                <span className="font-mono text-[11px] font-medium text-[#755151] uppercase tracking-wider block mb-2">
+                  Recipient Preview Card
                 </span>
 
                 <div className="p-6 bg-[#FCF8F2] border-3 border-[#443223] rounded-lg shadow-[6px_6px_0px_#443223] space-y-4">
                   <div className="border-b border-dashed border-[#A08670] pb-3">
-                    <span className="text-[10px] font-typewriter uppercase tracking-widest text-[#72583E] block">
-                      A BOOK WAS LEFT FOR YOU BY:
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#72583E] block">
+                      A book was left for you by
                     </span>
-                    <h3 className="font-editorial text-xl font-bold text-[#755151]">
+                    <h3 className="font-editorial text-2xl text-[#755151]">
                       {recIsAnonymous ? 'A Fellow Reader in the Shadows' : (user?.displayName || user?.username || 'Eleanor Vance')}
                     </h3>
                   </div>
@@ -957,15 +965,15 @@ export const TheMarginsPage: React.FC = () => {
                       <BookCoverImage book={selectedRecBook} className="w-16" />
                     </div>
                     <div>
-                      <h4 className="font-editorial text-base font-bold text-[#443223] leading-snug">
+                      <h4 className="font-editorial text-lg text-[#443223] leading-snug">
                         {selectedRecBook.title}
                       </h4>
-                      <p className="font-typewriter text-xs text-[#72583E]">
-                        by {selectedRecBook.author} ({selectedRecBook.publication_year})
+                      <p className="font-mono text-xs text-[#72583E]">
+                        {selectedRecBook.author} · {selectedRecBook.publication_year}
                       </p>
                       <button
                         onClick={() => setModalBook(selectedRecBook)}
-                        className="text-[10px] font-typewriter font-bold text-[#755151] hover:underline mt-1 block cursor-pointer"
+                        className="text-xs font-sans font-semibold text-[#755151] hover:underline mt-1 block cursor-pointer"
                       >
                         Inspect Book Dossier →
                       </button>

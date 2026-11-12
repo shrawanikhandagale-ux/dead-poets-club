@@ -212,10 +212,10 @@ export const CrosswordPage: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5 text-[#FFF9F3]" />
             <span>DAILY LITERARY EDITION NO. 142</span>
           </div>
-          <h1 className="font-editorial text-3xl sm:text-4xl font-bold text-[#443223]">
+          <h1 className="type-page-title text-[#443223]">
             The Sunday Book Crossword
           </h1>
-          <p className="font-typewriter text-xs sm:text-sm text-[#72583E]">
+          <p className="font-sans text-sm text-[#72583E] mt-1">
             A daily literary puzzle over archival photography. Solved words unlock member stamps.
           </p>
         </div>
@@ -224,13 +224,13 @@ export const CrosswordPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-3 py-1.5 bg-[#DBC4A5] border-2 border-[#443223] shadow-[2px_2px_0px_#443223] rounded">
             <Flame className="w-4 h-4 text-[#755151]" />
-            <span className="font-typewriter text-xs font-bold text-[#443223]">
+            <span className="font-mono text-xs font-semibold text-[#443223]">
               STREAK: {streak} DAYS
             </span>
           </div>
 
           {isCompleted && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-100 border-2 border-green-800 text-green-900 text-xs font-typewriter font-bold rounded shadow-[2px_2px_0px_#14532d]">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-100 border-2 border-green-800 text-green-900 text-xs font-mono font-semibold rounded shadow-[2px_2px_0px_#14532d]">
               <CheckCircle2 className="w-4 h-4 text-green-700" />
               <span>COMPLETED!</span>
             </div>
@@ -300,7 +300,7 @@ export const CrosswordPage: React.FC = () => {
                           value={gridInput[key] || ''}
                           onChange={e => handleInputChange(r, c, e.target.value)}
                           onKeyDown={e => handleKeyDown(r, c, e)}
-                          className="w-full h-full text-center font-typewriter text-base sm:text-lg font-bold text-[#443223] bg-transparent outline-none uppercase pt-2 select-all"
+                          className="w-full h-full text-center font-mono text-base sm:text-lg font-semibold text-[#443223] bg-transparent outline-none uppercase pt-2 select-all"
                         />
                       </div>
                     );
@@ -310,28 +310,28 @@ export const CrosswordPage: React.FC = () => {
             </div>
 
             {/* Quick Controls */}
-            <div className="flex items-center justify-between mt-4 text-xs font-typewriter text-[#72583E]">
+            <div className="flex items-center justify-between mt-4 text-xs font-sans text-[#72583E]">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-[#443223]">DIRECTION:</span>
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#443223]">Direction:</span>
                 <button
                   onClick={() => setDirection(direction === 'across' ? 'down' : 'across')}
-                  className="px-2 py-0.5 bg-[#DBC4A5] border border-[#443223] rounded uppercase font-bold"
+                  className="px-2 py-0.5 bg-[#DBC4A5] border border-[#443223] rounded font-mono text-[11px] uppercase font-semibold cursor-pointer"
                 >
                   {direction} (Click / Space to switch)
                 </button>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3 font-medium">
                 <button
                   onClick={revealHint}
-                  className="flex items-center gap-1 hover:text-[#443223]"
+                  className="flex items-center gap-1 hover:text-[#443223] cursor-pointer"
                   title="Reveal letter"
                 >
                   <HelpCircle className="w-3.5 h-3.5" /> Hint
                 </button>
                 <button
                   onClick={resetPuzzle}
-                  className="flex items-center gap-1 hover:text-[#443223]"
+                  className="flex items-center gap-1 hover:text-[#443223] cursor-pointer"
                   title="Reset puzzle"
                 >
                   <RotateCcw className="w-3.5 h-3.5" /> Reset
@@ -346,17 +346,17 @@ export const CrosswordPage: React.FC = () => {
           {/* Across Clues */}
           <div className="catalog-card p-5 bg-[#FFFDF9] border-2 border-[#443223]">
             <div className="flex items-center gap-2 border-b-2 border-dashed border-[#A08670] pb-2 mb-3">
-              <span className="font-editorial text-lg font-bold text-[#443223]">ACROSS</span>
-              <span className="text-xs font-typewriter text-[#755151]">({CLUES.across.length} Clues)</span>
+              <span className="font-editorial text-2xl font-normal text-[#443223]">Across</span>
+              <span className="text-xs font-mono text-[#755151]">({CLUES.across.length} Clues)</span>
             </div>
 
             <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
               {CLUES.across.map(clue => (
                 <div
                   key={clue.num}
-                  className="text-xs font-typewriter text-[#443223] flex items-start gap-2 hover:bg-[#DBC4A5]/20 p-1 rounded cursor-pointer"
+                  className="text-[13px] font-sans text-[#443223] flex items-start gap-2 hover:bg-[#DBC4A5]/20 p-1 rounded cursor-pointer"
                 >
-                  <span className="font-bold text-[#755151] w-4 flex-shrink-0">{clue.num}</span>
+                  <span className="font-mono font-semibold text-xs text-[#755151] w-5 flex-shrink-0 pt-0.5">{clue.num}</span>
                   <span className="leading-snug">{clue.clue}</span>
                 </div>
               ))}
@@ -366,17 +366,17 @@ export const CrosswordPage: React.FC = () => {
           {/* Down Clues */}
           <div className="catalog-card p-5 bg-[#FFFDF9] border-2 border-[#443223]">
             <div className="flex items-center gap-2 border-b-2 border-dashed border-[#A08670] pb-2 mb-3">
-              <span className="font-editorial text-lg font-bold text-[#443223]">DOWN</span>
-              <span className="text-xs font-typewriter text-[#755151]">({CLUES.down.length} Clues)</span>
+              <span className="font-editorial text-2xl font-normal text-[#443223]">Down</span>
+              <span className="text-xs font-mono text-[#755151]">({CLUES.down.length} Clues)</span>
             </div>
 
             <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
               {CLUES.down.map(clue => (
                 <div
                   key={clue.num}
-                  className="text-xs font-typewriter text-[#443223] flex items-start gap-2 hover:bg-[#DBC4A5]/20 p-1 rounded cursor-pointer"
+                  className="text-[13px] font-sans text-[#443223] flex items-start gap-2 hover:bg-[#DBC4A5]/20 p-1 rounded cursor-pointer"
                 >
-                  <span className="font-bold text-[#755151] w-4 flex-shrink-0">{clue.num}</span>
+                  <span className="font-mono font-semibold text-xs text-[#755151] w-5 flex-shrink-0 pt-0.5">{clue.num}</span>
                   <span className="leading-snug">{clue.clue}</span>
                 </div>
               ))}
@@ -384,10 +384,10 @@ export const CrosswordPage: React.FC = () => {
           </div>
 
           {/* Crossword Notes */}
-          <div className="p-4 bg-[#DBC4A5]/30 border-2 border-[#A08670] rounded text-xs font-typewriter text-[#58432D]">
-            <p className="font-bold mb-1">PRO-TIP FOR POETS:</p>
-            <p>
-              Navigate using Arrow keys or click any letter. Pressing <kbd className="px-1 bg-white border border-[#443223] rounded">Space</kbd> toggles between Across and Down mode.
+          <div className="p-4 bg-[#DBC4A5]/30 border-2 border-[#A08670] rounded text-xs font-sans text-[#58432D]">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-wider mb-1 text-[#443223]">Pro-Tip for Poets:</p>
+            <p className="leading-relaxed">
+              Navigate using Arrow keys or click any letter. Pressing <kbd className="px-1 py-0.5 font-mono text-[11px] bg-white border border-[#443223] rounded">Space</kbd> toggles between Across and Down mode.
             </p>
           </div>
         </div>

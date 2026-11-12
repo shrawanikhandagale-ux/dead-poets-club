@@ -51,7 +51,7 @@ export const BookCoverImage: React.FC<BookCoverImageProps> = ({
 
         {/* Top Header Label */}
         <div className="pt-2 z-10">
-          <span className="font-typewriter text-[8px] tracking-widest uppercase opacity-75 block truncate">
+          <span className="font-mono text-[8px] tracking-widest uppercase opacity-75 block truncate">
             {book.genres?.[0] || 'CLASSIC'} · {book.publication_year || 'ARCHIVE'}
           </span>
         </div>
@@ -61,17 +61,17 @@ export const BookCoverImage: React.FC<BookCoverImageProps> = ({
           <div className="w-6 h-6 mx-auto mb-1 rounded-full border border-current flex items-center justify-center opacity-60">
             <Feather className="w-3 h-3" />
           </div>
-          <h4 className="font-editorial text-xs sm:text-sm font-bold leading-tight line-clamp-3">
+          <h4 className="font-editorial text-sm sm:text-base font-normal leading-tight line-clamp-3">
             {book.title}
           </h4>
-          <p className="font-typewriter text-[9px] mt-1 opacity-80 truncate">
+          <p className="font-mono text-[9px] mt-1 opacity-80 truncate">
             {book.author}
           </p>
         </div>
 
         {/* Bottom Seal */}
         <div className="pb-1 z-10">
-          <span className="font-typewriter text-[7px] tracking-widest uppercase opacity-60">
+          <span className="font-mono text-[7px] tracking-widest uppercase opacity-60">
             DEAD POETS CLUB
           </span>
         </div>

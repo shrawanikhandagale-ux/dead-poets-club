@@ -8,7 +8,7 @@ import {
   Feather,
   Bookmark,
   Grid3X3,
-  ScrollText,
+  Palette,
   Sparkles,
   Users,
   LogOut,
@@ -19,6 +19,7 @@ import {
   Sliders,
   Moon,
   Sun,
+  User,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -41,24 +42,44 @@ export const SidebarNav: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  // SECTION 3 SPECIFICATION: Home | Library | Cafeteria | Reviews | The Margins | My Shelf
+  // Level 1: Primary Destinations (Strictly 4)
   const primaryNavItems = [
-    { name: 'Home', path: '/', icon: Compass },
+    { name: 'The Atrium', path: '/', icon: Sparkles },
     { name: 'Library', path: '/library', icon: BookOpen },
     { name: 'Cafeteria', path: '/cafe', icon: Coffee },
-    { name: 'Reviews', path: '/reviews', icon: MessageSquareQuote },
-    { name: 'The Margins', path: '/margins', icon: Feather },
-    { name: 'My Shelf', path: '/shelves', icon: Bookmark },
+    { name: 'Community', path: '/margins', icon: Feather },
   ];
 
-  // Secondary club quarters preserved
-  const secondaryNavItems = [
-    { name: 'Author Spotlight', path: '/authors', icon: Feather },
+  // Level 2: Regular Club Activities
+  const activityNavItems = [
     { name: 'Daily Crossword', path: '/crossword', icon: Grid3X3 },
-    { name: 'The Poem Jar', path: '/poems', icon: ScrollText },
-    { name: 'Character Atelier', path: '/character-creator', icon: Sparkles },
-    { name: 'Clubhouse Quarters', path: '/clubhouse', icon: Users },
+    { name: 'My Shelf', path: '/shelves', icon: Bookmark },
+    { name: 'My Reviews', path: '/reviews', icon: MessageSquareQuote },
+    { name: 'The Margins', path: '/margins?section=marginalia', icon: Feather },
+    { name: 'Author Spotlight', path: '/authors', icon: BookOpen },
+    { name: 'Character Atelier', path: '/character-creator', icon: Palette },
+    { name: 'Profile & Settings', path: '/profile', icon: User },
   ];
+
+  const isItemActive = (path: string) => {
+    if (path === '/') {
+      return (
+        location.pathname === '/' ||
+        location.pathname === '/atrium' ||
+        location.pathname === '/clubhouse'
+      );
+    }
+    if (path === '/margins') {
+      return location.pathname === '/margins' && !location.search.includes('section=marginalia');
+    }
+    if (path === '/margins?section=marginalia') {
+      return location.pathname === '/margins' && location.search.includes('section=marginalia');
+    }
+    if (path === '/profile') {
+      return location.pathname.startsWith('/profile') || location.pathname === '/me';
+    }
+    return location.pathname === path;
+  };
 
   const handleSoundToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -88,10 +109,10 @@ export const SidebarNav: React.FC = () => {
             <Feather className="w-5 h-5 text-[#FAF4EB]" />
           </div>
           <div>
-            <h1 className="font-editorial text-base tracking-wider font-bold text-[#FAF4EB] leading-tight">
+            <h1 className="font-editorial text-xl tracking-normal font-normal text-[#FAF4EB] leading-tight">
               DEAD POETS CLUB
             </h1>
-            <p className="text-[10px] font-typewriter text-[#DBC4A5]/70 tracking-widest uppercase">
+            <p className="text-[11px] font-sans text-[#DBC4A5]/75">
               Sanctuary for Book Lovers
             </p>
           </div>
@@ -104,7 +125,7 @@ export const SidebarNav: React.FC = () => {
               soundEngine.playClick();
               toggleTheme();
             }}
-            className={`w-full flex items-center justify-between px-3 py-2 rounded text-xs font-typewriter font-bold border transition-all cursor-pointer ${
+            className={`w-full flex items-center justify-between px-3 py-2 rounded text-xs font-sans font-medium border transition-all cursor-pointer ${
               isAfterHours
                 ? 'bg-[#2D221A] text-amber-200 border-[#72583E] shadow-[inset_0_1px_3px_rgba(0,0,0,0.5)]'
                 : 'bg-[#241D18] text-[#DBC4A5] border-[#382D24] hover:border-[#A08670]'
@@ -119,7 +140,7 @@ export const SidebarNav: React.FC = () => {
               )}
               <span>{isAfterHours ? 'Theme: After Hours' : 'Theme: Daylight'}</span>
             </div>
-            <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-black/40 font-mono">
+            <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-black/40 font-mono">
               {isAfterHours ? 'NIGHT' : 'DAY'}
             </span>
           </button>
@@ -129,16 +150,16 @@ export const SidebarNav: React.FC = () => {
         <nav className="mt-4 flex flex-col gap-1.5">
           {primaryNavItems.map(item => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = isItemActive(item.path);
 
             return (
               <NavLink
                 key={item.name}
                 to={item.path}
                 onClick={() => soundEngine.playClick()}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded font-typewriter text-xs font-semibold transition-all text-decoration-none border ${
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded font-sans text-[13px] font-medium transition-all text-decoration-none border ${
                   isActive
-                    ? 'bg-[#72583E] text-[#FFF9F3] border-[#A08670] shadow-[2px_2px_0px_#0D0B0A] font-bold'
+                    ? 'bg-[#72583E] text-[#FFF9F3] border-[#A08670] shadow-[2px_2px_0px_#0D0B0A] font-semibold'
                     : 'text-[#E0D5C7] border-transparent hover:bg-[#2A231E] hover:text-[#FAF4EB]'
                 }`}
               >
@@ -161,26 +182,26 @@ export const SidebarNav: React.FC = () => {
 
         {/* Delicate Separator */}
         <div className="my-4 border-t border-[#382D24]/80 flex items-center justify-between pt-3">
-          <span className="text-[9px] font-typewriter uppercase tracking-widest text-[#A08670]">
-            Club Quarters
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[#A08670]">
+            Club Activities
           </span>
         </div>
 
-        {/* Secondary Preserved Quarters */}
+        {/* Regular Club Activities */}
         <div className="flex flex-col gap-1">
-          {secondaryNavItems.map(item => {
+          {activityNavItems.map(item => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = isItemActive(item.path);
 
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
                 onClick={() => soundEngine.playClick()}
-                className={`flex items-center gap-2.5 px-3 py-1.5 rounded font-typewriter text-[11px] transition-all text-decoration-none ${
+                className={`flex items-center gap-2.5 px-3 py-1.5 rounded font-sans text-xs transition-all text-decoration-none ${
                   isActive
-                    ? 'text-[#FAF4EB] bg-[#2A231E] font-bold'
-                    : 'text-[#A08670] hover:text-[#E0D5C7] hover:bg-[#2A231E]/50'
+                    ? 'text-[#FAF4EB] bg-[#2A231E] font-semibold'
+                    : 'text-[#B8A18A] hover:text-[#E0D5C7] hover:bg-[#2A231E]/50'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5 text-[#C4A482]/80" />
@@ -194,7 +215,7 @@ export const SidebarNav: React.FC = () => {
       {/* Footer Controls: Audio Engine Controller + Identity Card */}
       <div className="border-t border-[#382D24] pt-4 mt-4 space-y-3">
         {/* Ambient Sound Dock & Controls */}
-        <div className="p-3 bg-[#231D19] border border-[#382D24] rounded-md shadow-inner text-xs font-typewriter">
+        <div className="p-3 bg-[#231D19] border border-[#382D24] rounded-md shadow-inner text-xs font-sans">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <button
@@ -269,22 +290,22 @@ export const SidebarNav: React.FC = () => {
               </span>
               <div className="grid grid-cols-3 gap-1">
                 <button
-                  onClick={() => soundEngine.playRoomPreset('gazing_out')}
+                  onClick={() => soundEngine.playRoomPreset('athenaeum')}
                   className="px-1.5 py-1 rounded text-[9px] bg-[#1A1614] border border-[#382D24] hover:border-[#A08670] text-[#DBC4A5] truncate text-center cursor-pointer"
                 >
-                  Gazing Out
+                  Athenaeum
                 </button>
                 <button
-                  onClick={() => soundEngine.playRoomPreset('writers_den')}
+                  onClick={() => soundEngine.playRoomPreset('conservatory')}
                   className="px-1.5 py-1 rounded text-[9px] bg-[#1A1614] border border-[#382D24] hover:border-[#A08670] text-[#DBC4A5] truncate text-center cursor-pointer"
                 >
-                  Writers' Den
+                  Conservatory
                 </button>
                 <button
-                  onClick={() => soundEngine.playRoomPreset('quiet_reading')}
+                  onClick={() => soundEngine.playRoomPreset('nocturne')}
                   className="px-1.5 py-1 rounded text-[9px] bg-[#1A1614] border border-[#382D24] hover:border-[#A08670] text-[#DBC4A5] truncate text-center cursor-pointer"
                 >
-                  Quiet Room
+                  Nocturne
                 </button>
               </div>
             </div>
@@ -309,10 +330,10 @@ export const SidebarNav: React.FC = () => {
                   <span className="w-2 h-2 rounded-full bg-green-500 border border-[#1A1614] absolute bottom-0 right-0" />
                 </div>
                 <div className="truncate max-w-[130px]">
-                  <span className="font-typewriter text-xs font-bold text-[#FAF4EB] block truncate group-hover:text-[#DBC4A5]">
+                  <span className="font-sans text-xs font-semibold text-[#FAF4EB] block truncate group-hover:text-[#DBC4A5]">
                     {profile?.display_name || user.username}
                   </span>
-                  <span className="text-[9px] font-mono text-[#A08670]">
+                  <span className="text-[10px] font-mono text-[#A08670]">
                     * {profile?.avatar_config?.mbti || 'Reader'}
                   </span>
                 </div>

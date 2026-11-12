@@ -18,7 +18,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           <div className="w-16 h-16 rounded-full border-2 border-[#d3a66d]/30 border-t-[#d3a66d] animate-spin" />
           <Feather className="w-6 h-6 text-[#d3a66d] absolute" />
         </div>
-        <p className="mt-4 font-serif text-sm tracking-widest text-[#a39b8f] uppercase">
+        <p className="mt-4 font-mono text-xs tracking-widest text-[#a39b8f] uppercase">
           Unfolding the Sanctuary...
         </p>
       </div>

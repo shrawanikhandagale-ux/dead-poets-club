@@ -13,7 +13,13 @@
  * - Tactile UI Click SFX (delicate vintage wood tap)
  */
 
-export type RoomSoundPreset = 'gazing_out' | 'writers_den' | 'quiet_reading';
+export type RoomSoundPreset =
+  | 'athenaeum'
+  | 'conservatory'
+  | 'nocturne'
+  | 'gazing_out'
+  | 'writers_den'
+  | 'quiet_reading';
 
 export interface SoundState {
   isPlaying: boolean;
@@ -22,6 +28,7 @@ export interface SoundState {
   currentRoom?: RoomSoundPreset;
   activeTracks: Record<string, boolean>;
   volumes: Record<string, number>;
+  typewriterEnabled: boolean;
 }
 
 type SoundListener = (state: SoundState) => void;
@@ -32,8 +39,16 @@ class AmbientSoundEngine {
   private isPlayingMaster: boolean = false;
   private masterVolume: number = 0.7;
   private masterGain: GainNode | null = null;
-  private currentRoom: RoomSoundPreset = 'gazing_out';
+  private currentRoom: RoomSoundPreset = 'athenaeum';
   private listeners: Set<SoundListener> = new Set();
+  private typewriterSoundEnabled: boolean = (() => {
+    try {
+      return localStorage.getItem('dpc_typewriter_sound') !== 'false';
+    } catch {
+      return true;
+    }
+  })();
+  private lastTypewriterTime: number = 0;
 
   // Track state
   private tracks: Record<string, { gainNode: GainNode; isPlaying: boolean; volume: number; stop: () => void }> = {};
@@ -88,6 +103,7 @@ class AmbientSoundEngine {
       currentRoom: this.currentRoom,
       activeTracks,
       volumes: { ...this.trackVolumes },
+      typewriterEnabled: this.typewriterSoundEnabled,
     };
   }
 
@@ -630,6 +646,147 @@ class AmbientSoundEngine {
     } catch {}
   }
 
+  public isTypewriterSoundEnabled(): boolean {
+    return this.typewriterSoundEnabled;
+  }
+
+  public setTypewriterSoundEnabled(enabled: boolean) {
+    this.typewriterSoundEnabled = enabled;
+    try {
+      localStorage.setItem('dpc_typewriter_sound', enabled ? 'true' : 'false');
+    } catch {}
+    this.notify();
+  }
+
+  public toggleTypewriterSound(): boolean {
+    this.setTypewriterSoundEnabled(!this.typewriterSoundEnabled);
+    return this.typewriterSoundEnabled;
+  }
+
+  /**
+   * SUBTLE ORGANIC TYPEWRITER / MECHANICAL KEY TAP
+   * Restrained, tactile typewriter mechanical strike for writing experiences.
+   * Throttled to avoid harsh machine-gun effects during rapid typing.
+   */
+  public playTypewriterKey(keyType: 'letter' | 'space' | 'return' = 'letter') {
+    try {
+      if (!this.typewriterSoundEnabled) return;
+      const now = performance.now();
+      if (now - this.lastTypewriterTime < 45) return; // Sensible throttle
+      this.lastTypewriterTime = now;
+
+      this.initContext();
+      if (!this.ctx || this.isMuted) return;
+
+      const currentTime = this.ctx.currentTime;
+      const masterVol = Math.max(0.1, this.masterVolume);
+
+      // Random micro-pitch variation (+/- 8%) for organic, non-machine feel
+      const pitchVariance = 0.92 + Math.random() * 0.16;
+
+      if (keyType === 'return') {
+        // Return key: slightly deeper platen strike + tiny subtle bell ping
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(160 * pitchVariance, currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, currentTime + 0.05);
+
+        gain.gain.setValueAtTime(0.06 * masterVol, currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, currentTime + 0.05);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(currentTime);
+        osc.stop(currentTime + 0.05);
+
+        // Delicate antique carriage return bell chime (faint, warm)
+        const bellOsc = this.ctx.createOscillator();
+        const bellGain = this.ctx.createGain();
+        bellOsc.type = 'sine';
+        bellOsc.frequency.setValueAtTime(1760, currentTime + 0.01);
+        bellGain.gain.setValueAtTime(0.001, currentTime + 0.01);
+        bellGain.gain.linearRampToValueAtTime(0.025 * masterVol, currentTime + 0.018);
+        bellGain.gain.exponentialRampToValueAtTime(0.0001, currentTime + 0.22);
+        bellOsc.connect(bellGain);
+        bellGain.connect(this.ctx.destination);
+        bellOsc.start(currentTime + 0.01);
+        bellOsc.stop(currentTime + 0.23);
+        return;
+      }
+
+      // 1. Mechanical impact impulse (platen body thud)
+      const baseFreq = keyType === 'space' ? 140 : 210;
+      const thudOsc = this.ctx.createOscillator();
+      const thudGain = this.ctx.createGain();
+      thudOsc.type = 'triangle';
+      thudOsc.frequency.setValueAtTime(baseFreq * pitchVariance, currentTime);
+      thudOsc.frequency.exponentialRampToValueAtTime(90, currentTime + 0.028);
+
+      const impactVol = (keyType === 'space' ? 0.045 : 0.055) * masterVol;
+      thudGain.gain.setValueAtTime(impactVol, currentTime);
+      thudGain.gain.exponentialRampToValueAtTime(0.0001, currentTime + 0.028);
+
+      thudOsc.connect(thudGain);
+      thudGain.connect(this.ctx.destination);
+      thudOsc.start(currentTime);
+      thudOsc.stop(currentTime + 0.028);
+
+      // 2. High-frequency typewriter key bar click (typebar striking ribbon/paper)
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.02);
+      const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+      }
+
+      const noiseSource = this.ctx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime((keyType === 'space' ? 1800 : 2800) * pitchVariance, currentTime);
+      filter.Q.setValueAtTime(3.5, currentTime);
+
+      const clickGain = this.ctx.createGain();
+      const clickVol = (keyType === 'space' ? 0.025 : 0.038) * masterVol;
+      clickGain.gain.setValueAtTime(clickVol, currentTime);
+      clickGain.gain.exponentialRampToValueAtTime(0.0001, currentTime + 0.02);
+
+      noiseSource.connect(filter);
+      filter.connect(clickGain);
+      clickGain.connect(this.ctx.destination);
+
+      noiseSource.start(currentTime);
+      noiseSource.stop(currentTime + 0.02);
+    } catch {}
+  }
+
+  /**
+   * SOFT INTERACTION CHIME SFX
+   * Gentle warm celesta/bell tap for Cafeteria seat & object interactions
+   */
+  public playChime(pitch = 587.33) {
+    try {
+      this.initContext();
+      if (!this.ctx || this.isMuted) return;
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(pitch, this.ctx.currentTime);
+
+      gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.08 * this.masterVolume, this.ctx.currentTime + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.35);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.36);
+    } catch {}
+  }
+
   // ==========================================
   // ROOM-AWARE AMBIENCE PRESETS & TRANSITIONS
   // ==========================================
@@ -643,22 +800,23 @@ class AmbientSoundEngine {
     this.stopAll();
 
     // Start room-specific sound combinations
-    if (roomId === 'gazing_out') {
-      // Room A: Gazing Out -> rain, quiet street ambience, distant café murmur
-      this.startRain(0.55);
-      this.startStreet(0.4);
-      this.startCafeMurmur(0.18);
-    } else if (roomId === 'writers_den') {
-      // Room B: The Writers' Den -> soft café gathering, typing sounds, vinyl, warm fireplace
-      this.startCafeMurmur(0.35);
-      this.startTyping(0.25);
-      this.startFireplace(0.3);
-      this.startVinyl(0.2);
-    } else if (roomId === 'quiet_reading') {
-      // Room C: The Quiet Reading Room -> gentle rain, quiet room tone, soft piano
-      this.startRoomTone(0.45);
-      this.startRain(0.25);
-      this.startPiano(0.25);
+    if (roomId === 'athenaeum' || roomId === 'writers_den') {
+      // The Athenaeum -> crackling fireplace, rain against tall windows, quiet room tone, occasional typing
+      this.startFireplace(0.4);
+      this.startRain(0.32);
+      this.startRoomTone(0.35);
+      this.startTyping(0.16);
+    } else if (roomId === 'conservatory' || roomId === 'gazing_out') {
+      // The Conservatory of Rain -> rain on glass roof, distant wind/thunder rumble, gentle café murmur
+      this.startRain(0.62);
+      this.startStreet(0.42);
+      this.startCafeMurmur(0.22);
+    } else if (roomId === 'nocturne' || roomId === 'quiet_reading') {
+      // The Nocturne -> vinyl crackle, soft piano chords, light night rain, deep quiet tone
+      this.startVinyl(0.32);
+      this.startPiano(0.3);
+      this.startRain(0.22);
+      this.startRoomTone(0.25);
     }
 
     this.isPlayingMaster = true;

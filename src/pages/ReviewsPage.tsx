@@ -22,7 +22,8 @@ import {
   Search,
   Sparkles,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { useTypewriterSound } from '../hooks/useTypewriterSound';
 
 interface ReviewCardItem {
   id: string;
@@ -144,10 +145,13 @@ export const ReviewsPage: React.FC = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const bookIdFilter = searchParams.get('bookId');
+  const prefersReducedMotion = useReducedMotion();
+  const typewriter = useTypewriterSound();
 
   const [deckIndex, setDeckIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'next' | 'prev'>('next');
+  const [isCardTurning, setIsCardTurning] = useState(false);
   const [modalBook, setModalBook] = useState<Book | null>(null);
 
   // User reviews state
@@ -186,17 +190,23 @@ export const ReviewsPage: React.FC = () => {
   }, [bookIdFilter]);
 
   const handleNextCard = () => {
-    soundEngine.playClick();
+    if (isCardTurning) return;
+    soundEngine.playPageTurn();
     setSlideDirection('next');
-    setIsFlipped(false); // Reset flip state for new card
+    setIsFlipped(false);
+    setIsCardTurning(true);
     setDeckIndex(prev => (prev + 1) % allCards.length);
+    setTimeout(() => setIsCardTurning(false), 420);
   };
 
   const handlePrevCard = () => {
-    soundEngine.playClick();
+    if (isCardTurning) return;
+    soundEngine.playPageTurn();
     setSlideDirection('prev');
-    setIsFlipped(false); // Reset flip state for new card
+    setIsFlipped(false);
+    setIsCardTurning(true);
     setDeckIndex(prev => (prev - 1 + allCards.length) % allCards.length);
+    setTimeout(() => setIsCardTurning(false), 420);
   };
 
   const handleToggleFlip = () => {
@@ -264,13 +274,13 @@ export const ReviewsPage: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 starburst-badge mb-3">
             <MessageSquareQuote className="w-3.5 h-3.5 text-[#FFF9F3]" />
-            <span>GOODREADS-STYLE SEQUENTIAL FLASHCARD DECK</span>
+            <span>LITERARY VOICES & MARGIN REFLECTIONS</span>
           </div>
-          <h1 className="font-editorial text-3xl sm:text-5xl font-bold text-[#443223]">
-            Borrower Reviews & Flashcards
+          <h1 className="type-page-title text-[#443223]">
+            Borrower Reviews &amp; Flashcards
           </h1>
-          <p className="font-typewriter text-xs sm:text-sm text-[#72583E] mt-1 max-w-xl">
-            Physical layered paper deck. Click the card to flip between reviewer reflection and book archival context, then slide forward through the stack.
+          <p className="font-sans text-sm sm:text-base text-[#72583E] mt-1.5 max-w-xl leading-relaxed">
+            Candid impressions, highlighted margins, and reflections left behind by readers.
           </p>
         </div>
 
@@ -289,12 +299,12 @@ export const ReviewsPage: React.FC = () => {
         {/* Deck Header & Position Indicator */}
         <div className="flex flex-wrap items-center justify-between pb-4 mb-6 border-b-2 border-dashed border-[#A08670] gap-4">
           <div className="flex items-center gap-3">
-            <span className="font-typewriter text-xs font-bold text-[#755151] uppercase tracking-wider">
-              VOLUME {deckIndex + 1} OF {allCards.length}
+            <span className="font-mono text-xs font-medium text-[#755151] uppercase tracking-wider">
+              Volume {deckIndex + 1} of {allCards.length}
             </span>
             <span className="text-[#A08670]">•</span>
-            <span className="font-typewriter text-xs text-[#72583E]">
-              {isFlipped ? 'REVERSE SIDE (FULL REVIEW)' : 'FRONT FACE (PULL QUOTE & DOSSIER)'}
+            <span className="font-sans text-xs text-[#72583E]">
+              {isFlipped ? 'Reflection' : 'Pull Quote'}
             </span>
           </div>
 
@@ -304,9 +314,13 @@ export const ReviewsPage: React.FC = () => {
               <button
                 key={idx}
                 onClick={() => {
+                  if (isCardTurning) return;
+                  soundEngine.playPageTurn();
                   setSlideDirection(idx > deckIndex ? 'next' : 'prev');
                   setIsFlipped(false);
+                  setIsCardTurning(true);
                   setDeckIndex(idx);
+                  setTimeout(() => setIsCardTurning(false), 420);
                 }}
                 className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
                   idx === deckIndex ? 'w-5 bg-[#755151]' : 'bg-[#DBC4A5]'
@@ -317,33 +331,58 @@ export const ReviewsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* THE MAIN CARD (With Perspective, 3D Flip, and Smooth Slide Animation) */}
-        <div className="relative min-h-[460px] flex items-center justify-center py-4">
+        {/* THE MAIN CARD (With Perspective, 3D Physical Page-Turn and Shadow) */}
+        <div className="relative min-h-[460px] flex items-center justify-center py-4" style={{ perspective: '1600px' }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentCard.id}
-              initial={{
-                opacity: 0,
-                x: slideDirection === 'next' ? 120 : -120,
-                scale: 0.92,
-                rotate: currentCard.rotation * 1.5,
+              initial={
+                prefersReducedMotion
+                  ? { opacity: 0 }
+                  : {
+                      opacity: 0,
+                      x: slideDirection === 'next' ? 140 : -140,
+                      rotateY: slideDirection === 'next' ? 36 : -36,
+                      rotateZ: slideDirection === 'next' ? 4 : -4,
+                      scale: 0.94,
+                      boxShadow: '0 6px 14px rgba(0,0,0,0.12)',
+                    }
+              }
+              animate={
+                prefersReducedMotion
+                  ? { opacity: 1 }
+                  : {
+                      opacity: 1,
+                      x: 0,
+                      rotateY: 0,
+                      rotateZ: currentCard.rotation,
+                      scale: 1,
+                      boxShadow: '8px 14px 32px rgba(30,20,15,0.25)',
+                    }
+              }
+              exit={
+                prefersReducedMotion
+                  ? { opacity: 0 }
+                  : {
+                      opacity: 0,
+                      x: slideDirection === 'next' ? -180 : 180,
+                      rotateY: slideDirection === 'next' ? -48 : 48,
+                      rotateZ: slideDirection === 'next' ? -6 : 6,
+                      scale: 0.92,
+                      boxShadow: '0 25px 40px rgba(0,0,0,0.3)',
+                    }
+              }
+              transition={{
+                duration: prefersReducedMotion ? 0.15 : 0.4,
+                ease: [0.25, 1, 0.5, 1],
               }}
-              animate={{
-                opacity: 1,
-                x: 0,
-                scale: 1,
-                rotate: currentCard.rotation,
+              style={{
+                perspective: '1400px',
+                transformStyle: 'preserve-3d',
+                transformOrigin: slideDirection === 'next' ? 'left 60%' : 'right 60%',
               }}
-              exit={{
-                opacity: 0,
-                x: slideDirection === 'next' ? -120 : 120,
-                scale: 0.92,
-                rotate: -currentCard.rotation * 1.5,
-              }}
-              transition={{ duration: 0.35, ease: 'easeOut' }}
               className="w-full max-w-2xl cursor-pointer select-none"
               onClick={handleToggleFlip}
-              style={{ perspective: '1200px' }}
             >
               {/* 3D Flippable Paper Container */}
               <motion.div
@@ -366,7 +405,7 @@ export const ReviewsPage: React.FC = () => {
                 >
                   {/* Top Bar of Front Face */}
                   <div className="flex items-center justify-between border-b border-white/20 pb-3 mb-4">
-                    <span className="font-typewriter text-[11px] font-bold tracking-widest uppercase opacity-85">
+                    <span className="font-mono text-[11px] font-medium tracking-wider uppercase opacity-85">
                       {currentCard.tagline}
                     </span>
                     <div className="flex items-center gap-1 text-amber-300 text-xs">
@@ -390,30 +429,30 @@ export const ReviewsPage: React.FC = () => {
                     </div>
 
                     <div className="sm:col-span-8 space-y-3">
-                      <span className="font-typewriter text-[10px] uppercase tracking-wider text-amber-200/80 block">
-                        PULL QUOTE FROM ARCHIVES:
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-amber-200/80 block">
+                        Pull Quote
                       </span>
-                      <p className="font-editorial text-xl sm:text-2xl font-bold leading-snug italic text-white">
-                        "{currentCard.quote || currentCard.headline}"
+                      <p className="font-editorial text-2xl sm:text-3xl leading-snug italic text-white">
+                        “{currentCard.quote || currentCard.headline}”
                       </p>
-                      <p className="font-typewriter text-xs text-white/80">
-                        {currentCard.book.title} by {currentCard.book.author} ({currentCard.book.publication_year})
+                      <p className="font-mono text-xs text-white/80">
+                        {currentCard.book.title} · {currentCard.book.author} ({currentCard.book.publication_year})
                       </p>
                     </div>
                   </div>
 
                   {/* Bottom Bar: Flip affordance + Reviewer info */}
-                  <div className="flex items-center justify-between pt-4 border-t border-white/20 mt-4 text-xs font-typewriter">
+                  <div className="flex items-center justify-between pt-4 border-t border-white/20 mt-4 text-xs font-sans">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center font-bold text-[10px]">
+                      <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center font-semibold text-[11px]">
                         {currentCard.reviewerName.charAt(0)}
                       </div>
                       <span className="opacity-90">{currentCard.reviewerName} · {currentCard.date}</span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded bg-white/15 border border-white/30 text-[11px] font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded bg-white/15 border border-white/30 text-xs font-semibold">
                       <RotateCw className="w-3 h-3 animate-spin-slow" />
-                      <span>Click to Read Review</span>
+                      <span>Read Reflection</span>
                     </div>
                   </div>
                 </div>
@@ -430,11 +469,11 @@ export const ReviewsPage: React.FC = () => {
                   {/* Top Bar of Reverse Face */}
                   <div className="flex items-center justify-between border-b border-white/20 pb-3 mb-4">
                     <div>
-                      <span className="font-editorial text-base sm:text-lg font-bold block text-white">
+                      <span className="font-editorial text-xl sm:text-2xl block text-white">
                         {currentCard.headline}
                       </span>
-                      <span className="font-typewriter text-[10px] text-white/70">
-                        Review for {currentCard.book.title} · Rated {currentCard.rating}/5
+                      <span className="font-mono text-[11px] text-white/75">
+                        {currentCard.book.title} · {currentCard.rating}/5
                       </span>
                     </div>
 
@@ -452,27 +491,27 @@ export const ReviewsPage: React.FC = () => {
 
                   {/* Body Text */}
                   <div className="my-auto py-2">
-                    <p className="font-typewriter text-xs sm:text-sm leading-relaxed text-white/95 whitespace-pre-line">
+                    <p className="font-sans text-sm sm:text-base leading-relaxed text-white/95 whitespace-pre-line">
                       {currentCard.body}
                     </p>
                   </div>
 
                   {/* Bottom Bar: Action buttons */}
-                  <div className="flex flex-wrap items-center justify-between pt-4 border-t border-white/20 mt-4 gap-2 text-xs font-typewriter">
+                  <div className="flex flex-wrap items-center justify-between pt-4 border-t border-white/20 mt-4 gap-2 text-xs font-sans">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setModalBook(currentCard.book);
                       }}
-                      className="px-3 py-1.5 rounded bg-white text-[#443223] font-bold flex items-center gap-1.5 hover:bg-amber-100 transition-colors cursor-pointer"
+                      className="px-3 py-1.5 rounded bg-white text-[#443223] font-semibold flex items-center gap-1.5 hover:bg-amber-100 transition-colors cursor-pointer"
                     >
                       <BookOpen className="w-3.5 h-3.5" />
                       <span>Open Book Dossier</span>
                     </button>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] opacity-75">
-                        Tap anywhere to flip back
+                      <span className="text-xs opacity-75">
+                        Flip Card
                       </span>
                     </div>
                   </div>
@@ -514,10 +553,10 @@ export const ReviewsPage: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between border-b-2 border-[#443223] pb-4">
           <div>
-            <h3 className="font-editorial text-2xl font-bold text-[#443223]">
-              Clubhouse Review Archive ({allCards.length})
+            <h3 className="type-section-title text-[#443223]">
+              Atrium Review Archive ({allCards.length})
             </h3>
-            <p className="font-typewriter text-xs text-[#72583E]">
+            <p className="font-sans text-sm text-[#72583E]">
               All reflections catalogued in the Dead Poets Club registry.
             </p>
           </div>
@@ -536,11 +575,11 @@ export const ReviewsPage: React.FC = () => {
                       <BookCoverImage book={card.book} className="w-10" />
                     </div>
                     <div>
-                      <h4 className="font-editorial text-base font-bold text-[#443223] line-clamp-1">
+                      <h4 className="font-editorial text-xl text-[#443223] line-clamp-1">
                         {card.headline}
                       </h4>
-                      <p className="font-typewriter text-xs text-[#72583E]">
-                        {card.book.title} · by {card.book.author}
+                      <p className="font-mono text-xs text-[#72583E]">
+                        {card.book.title} · {card.book.author}
                       </p>
                     </div>
                   </div>
@@ -557,13 +596,13 @@ export const ReviewsPage: React.FC = () => {
                   </div>
                 </div>
 
-                <p className="font-typewriter text-xs text-[#58432D] leading-relaxed line-clamp-3 mb-3">
+                <p className="font-sans text-sm text-[#58432D] leading-relaxed line-clamp-3 mb-3">
                   {card.body}
                 </p>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-dashed border-[#A08670] text-xs font-typewriter">
-                <span className="text-[11px] text-[#755151] font-bold">
+              <div className="flex items-center justify-between pt-3 border-t border-dashed border-[#A08670] text-xs font-sans">
+                <span className="font-mono text-[11px] text-[#755151] font-medium">
                   @{card.reviewerHandle} · {card.date}
                 </span>
 
@@ -574,7 +613,7 @@ export const ReviewsPage: React.FC = () => {
                       setIsFlipped(true);
                       window.scrollTo({ top: 200, behavior: 'smooth' });
                     }}
-                    className="text-[11px] font-bold text-[#755151] hover:underline cursor-pointer"
+                    className="text-xs font-semibold text-[#755151] hover:underline cursor-pointer"
                   >
                     View in Deck →
                   </button>
@@ -601,27 +640,27 @@ export const ReviewsPage: React.FC = () => {
             <div className="flex items-center justify-between border-b-2 border-[#443223] pb-3 mb-4">
               <div className="flex items-center gap-2">
                 <Feather className="w-4 h-4 text-[#755151]" />
-                <h3 className="font-editorial text-xl font-bold">
+                <h3 className="font-editorial text-2xl">
                   Write a Borrower Review
                 </h3>
               </div>
               <button
                 onClick={() => setIsWriteModalOpen(false)}
-                className="text-xs font-typewriter font-bold px-2 py-1 border border-[#443223] rounded bg-[#FFF9F3] cursor-pointer"
+                className="text-xs font-sans font-semibold px-2.5 py-1 border border-[#443223] rounded bg-[#FFF9F3] cursor-pointer"
               >
                 Close ✕
               </button>
             </div>
 
-            <form onSubmit={handleSubmitReview} className="space-y-4 font-typewriter text-xs">
+            <form onSubmit={handleSubmitReview} className="space-y-4 font-sans text-sm">
               <div>
-                <label className="block font-bold text-[#72583E] mb-1">
-                  SELECT VOLUME:
+                <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                  Select Volume
                 </label>
                 <select
                   value={selectedBookId}
                   onChange={e => setSelectedBookId(e.target.value)}
-                  className="w-full p-2 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-typewriter font-bold"
+                  className="w-full p-2 text-sm border border-[#443223] rounded bg-[#FFF9F3] text-[#443223] font-medium"
                 >
                   {SEED_BOOKS.map(b => (
                     <option key={b.id} value={b.id}>
@@ -632,8 +671,8 @@ export const ReviewsPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-bold text-[#72583E] mb-1">
-                  STAR RATING (1 TO 5):
+                <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                  Star Rating (1 to 5)
                 </label>
                 <div className="flex items-center gap-2">
                   {[1, 2, 3, 4, 5].map(star => (
@@ -650,50 +689,53 @@ export const ReviewsPage: React.FC = () => {
                       ★
                     </button>
                   ))}
-                  <span className="font-bold text-[#755151] ml-2">
-                    {formRating} Stars
+                  <span className="font-mono text-xs font-medium text-[#755151] ml-2">
+                    {formRating} / 5
                   </span>
                 </div>
               </div>
 
               <div>
-                <label className="block font-bold text-[#72583E] mb-1">
-                  HEADLINE / CORE THOUGHT:
+                <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                  Headline / Core Thought
                 </label>
                 <input
                   type="text"
                   required
                   value={formHeadline}
                   onChange={e => setFormHeadline(e.target.value)}
+                  onKeyDown={typewriter.handleKeyDown}
                   placeholder="e.g. A haunting meditation on moral vanity..."
-                  className="w-full p-2 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
+                  className="w-full p-2 text-sm border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-[#72583E] mb-1">
-                  FAVOURITE SHORT QUOTE (OPTIONAL):
+                <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                  Favourite Short Quote (optional)
                 </label>
                 <input
                   type="text"
                   value={formQuote}
                   onChange={e => setFormQuote(e.target.value)}
+                  onKeyDown={typewriter.handleKeyDown}
                   placeholder="e.g. Beauty is terror..."
-                  className="w-full p-2 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
+                  className="w-full p-2 text-sm border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-[#72583E] mb-1">
-                  YOUR FULL REVIEW / THOUGHTS:
+                <label className="block text-xs font-semibold text-[#72583E] mb-1">
+                  Your Review
                 </label>
                 <textarea
                   required
                   rows={4}
                   value={formBody}
                   onChange={e => setFormBody(e.target.value)}
+                  onKeyDown={typewriter.handleKeyDown}
                   placeholder="Write your reflection in the margins. How did this book make you feel?"
-                  className="w-full p-2 border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
+                  className="w-full p-2 text-sm border border-[#443223] rounded bg-[#FFF9F3] text-[#443223]"
                 />
               </div>
 

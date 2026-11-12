@@ -4,8 +4,11 @@ import { Book, ShelfItem, ShelfStatus } from '../types/book';
 import { Profile, DEFAULT_AVATAR_CONFIG } from '../types/profile';
 import { User, Session } from '../types/auth';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const DEFAULT_SUPABASE_URL = 'https://qdnleqyiymddxoesicvj.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkbmxlcXlpeW1kZHhvZXNpY3ZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMjIzMTIsImV4cCI6MjEwODY5ODMxMn0.zuCRfIMco_uh6jN0QjLLuNDpaYUGpDz8mD628FHL17s';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
@@ -140,15 +143,7 @@ class LocalService {
     if (!safeStorage.getItem(STORAGE_KEYS.SHELVES)) {
       safeStorage.setItem(STORAGE_KEYS.SHELVES, JSON.stringify(DEFAULT_DEMO_SHELVES));
     }
-    // Auto-login demo user on first visit if no session exists
-    if (!safeStorage.getItem(STORAGE_KEYS.SESSION)) {
-      const demoSession: Session = {
-        user: DEFAULT_DEMO_USER,
-        token: 'dpc_mock_jwt_token',
-        expiresAt: Date.now() + 86400000 * 7,
-      };
-      safeStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(demoSession));
-    }
+    // Visitors start as unauthenticated guests. Demo sessions are created explicitly on demand.
   }
 
   public resetStorage() {
@@ -181,22 +176,79 @@ class LocalService {
   }
 
   public async checkUsernameAvailable(username: string): Promise<boolean> {
-    const profiles = this.getProfiles();
     const clean = username.trim().toLowerCase();
-    return !profiles.some(p => p.username.toLowerCase() === clean);
+    const profiles = this.getProfiles();
+    if (profiles.some(p => p.username.toLowerCase() === clean)) {
+      return false;
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id')
+          .ilike('username', clean)
+          .limit(1);
+        if (!error && data) {
+          return data.length === 0;
+        }
+      } catch (err) {
+        console.warn('Supabase username check fallback:', err);
+      }
+    }
+    return true;
   }
 
-  public async signup(email: string, username: string, displayName: string): Promise<{ user: User; session: Session }> {
-    const isAvail = await this.checkUsernameAvailable(username);
+  public async signup(
+    email: string,
+    username: string,
+    displayName: string,
+    password?: string
+  ): Promise<{ user: User; session: Session }> {
+    const cleanUsername = username.trim().toLowerCase();
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanDisplayName = displayName.trim();
+
+    const isAvail = await this.checkUsernameAvailable(cleanUsername);
     if (!isAvail) {
-      throw new Error(`Username "@${username}" is already taken by another poet.`);
+      throw new Error(`Username "@${cleanUsername}" is already taken by another poet.`);
+    }
+
+    if (isSupabaseConfigured && supabase && password) {
+      const { data, error } = await supabase.auth.signUp({
+        email: cleanEmail,
+        password,
+        options: {
+          data: {
+            username: cleanUsername,
+            display_name: cleanDisplayName,
+          },
+        },
+      });
+      if (error) throw error;
+      if (data.user) {
+        const newUser: User = {
+          id: data.user.id,
+          email: data.user.email || cleanEmail,
+          username: cleanUsername,
+          displayName: cleanDisplayName,
+          createdAt: data.user.created_at,
+        };
+        const session: Session = {
+          user: newUser,
+          token: data.session?.access_token || 'sb_token_' + data.user.id,
+          expiresAt: data.session?.expires_at ? data.session.expires_at * 1000 : Date.now() + 86400000 * 7,
+        };
+        this.setSession(session);
+        return { user: newUser, session };
+      }
     }
 
     const newUser: User = {
       id: 'poet_' + Math.random().toString(36).substring(2, 9),
-      email,
-      username: username.toLowerCase().trim(),
-      displayName: displayName.trim(),
+      email: cleanEmail,
+      username: cleanUsername,
+      displayName: cleanDisplayName,
       createdAt: new Date().toISOString(),
     };
 
@@ -239,13 +291,61 @@ class LocalService {
     return { user: newUser, session };
   }
 
-  public async login(emailOrUsername: string): Promise<{ user: User; session: Session }> {
+  public async login(
+    emailOrUsername: string,
+    password?: string
+  ): Promise<{ user: User; session: Session }> {
+    const cleanIdentifier = emailOrUsername.trim();
+
+    // 1. Explicit Instant Demo Login
+    if (cleanIdentifier === 'keats_apprentice' && !password) {
+      const demoSession: Session = {
+        user: DEFAULT_DEMO_USER,
+        token: 'dpc_mock_jwt_token',
+        expiresAt: Date.now() + 86400000 * 7,
+      };
+      this.setSession(demoSession);
+      return { user: DEFAULT_DEMO_USER, session: demoSession };
+    }
+
+    // 2. Real Supabase Auth (Email + Password)
+    if (isSupabaseConfigured && supabase && password) {
+      if (!cleanIdentifier.includes('@')) {
+        throw new Error(
+          'Supabase authentication requires your registered email address to sign in. Please enter your email, or use the Instant Demo below.'
+        );
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanIdentifier.toLowerCase(),
+        password,
+      });
+      if (error) throw error;
+      if (data.user) {
+        const p = await this.getProfile(data.user.id);
+        const user: User = {
+          id: data.user.id,
+          email: data.user.email || cleanIdentifier.toLowerCase(),
+          username: p?.username || data.user.user_metadata?.username || cleanIdentifier.split('@')[0],
+          displayName: p?.display_name || data.user.user_metadata?.display_name || 'Fellow Poet',
+          createdAt: data.user.created_at,
+        };
+        const session: Session = {
+          user,
+          token: data.session?.access_token || 'sb_token_' + data.user.id,
+          expiresAt: data.session?.expires_at ? data.session.expires_at * 1000 : Date.now() + 86400000 * 7,
+        };
+        this.setSession(session);
+        return { user, session };
+      }
+    }
+
+    // 3. Local Mock Fallback
     const users = this.getUsers();
-    const query = emailOrUsername.trim().toLowerCase();
+    const query = cleanIdentifier.toLowerCase();
     let user = users.find(u => u.email.toLowerCase() === query || u.username.toLowerCase() === query);
 
     if (!user) {
-      // Create user automatically for painless testing if not found
       user = {
         id: 'poet_' + Math.random().toString(36).substring(2, 9),
         email: query.includes('@') ? query : `${query}@deadpoets.club`,
@@ -309,6 +409,53 @@ class LocalService {
   }
 
   public async getProfile(userIdOrUsername: string): Promise<Profile | null> {
+    const isMock = userIdOrUsername.startsWith('demo_') || userIdOrUsername.startsWith('poet_');
+    if (!isMock && isSupabaseConfigured && supabase) {
+      try {
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userIdOrUsername);
+        const query = supabase.from('profiles').select('id, username, display_name, avatar_config, created_at, updated_at');
+        const { data: profileData, error: profileError } = isUUID
+          ? await query.eq('id', userIdOrUsername).maybeSingle()
+          : await query.ilike('username', userIdOrUsername).maybeSingle();
+
+        if (!profileError && profileData) {
+          // Check if current user is the owner to query private user_settings
+          const { data: sessionData } = await supabase.auth.getSession();
+          const currentUserId = sessionData?.session?.user?.id;
+          let userSettings: any = null;
+
+          if (currentUserId && currentUserId === profileData.id) {
+            const { data: settingsData } = await supabase
+              .from('user_settings')
+              .select('bio, reading_goal, favorite_genres, shelves_public, stats_public')
+              .eq('user_id', profileData.id)
+              .maybeSingle();
+            userSettings = settingsData;
+          }
+
+          return {
+            id: profileData.id,
+            username: profileData.username,
+            display_name: profileData.display_name,
+            bio: userSettings?.bio || '',
+            reading_goal: userSettings?.reading_goal ?? 12,
+            books_read_count: 0,
+            favorite_genres: userSettings?.favorite_genres || [],
+            privacy_settings: {
+              profile_public: true,
+              shelves_public: userSettings?.shelves_public ?? true,
+              stats_public: userSettings?.stats_public ?? false,
+            },
+            avatar_config: { ...DEFAULT_AVATAR_CONFIG, ...(profileData.avatar_config || {}) },
+            created_at: profileData.created_at,
+            updated_at: profileData.updated_at,
+          };
+        }
+      } catch (err) {
+        console.warn('Supabase getProfile fallback:', err);
+      }
+    }
+
     const profiles = this.getProfiles();
     const found = profiles.find(p => p.id === userIdOrUsername || p.username.toLowerCase() === userIdOrUsername.toLowerCase());
     if (!found) return null;
@@ -324,49 +471,226 @@ class LocalService {
   public async updateProfile(userId: string, updates: Partial<Profile>): Promise<Profile> {
     const profiles = this.getProfiles();
     const index = profiles.findIndex(p => p.id === userId);
-    if (index === -1) throw new Error('Profile not found');
 
-    const existing = profiles[index];
+    let existing = index >= 0 ? profiles[index] : null;
     const mergedAvatar = updates.avatar_config
-      ? { ...DEFAULT_AVATAR_CONFIG, ...existing.avatar_config, ...updates.avatar_config }
-      : existing.avatar_config;
+      ? { ...DEFAULT_AVATAR_CONFIG, ...(existing?.avatar_config || {}), ...updates.avatar_config }
+      : (existing?.avatar_config || DEFAULT_AVATAR_CONFIG);
 
-    profiles[index] = {
-      ...existing,
-      ...updates,
-      avatar_config: mergedAvatar,
-      updated_at: new Date().toISOString(),
-    };
-    safeStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(profiles));
+    if (existing) {
+      profiles[index] = {
+        ...existing,
+        ...updates,
+        avatar_config: mergedAvatar,
+        updated_at: new Date().toISOString(),
+      };
+      safeStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(profiles));
+    }
 
     if (isSupabaseConfigured && supabase) {
-      try {
-        await supabase
-          .from('profiles')
-          .update({
-            ...updates,
-            avatar_config: mergedAvatar,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', userId);
-      } catch (err) {
-        console.warn('Supabase profile remote update warning:', err);
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+      if (isUUID) {
+        try {
+          const profilePayload: any = { updated_at: new Date().toISOString() };
+          if (updates.display_name) profilePayload.display_name = updates.display_name;
+          if (updates.username) profilePayload.username = updates.username.toLowerCase().trim();
+          if (updates.avatar_config) profilePayload.avatar_config = mergedAvatar;
+
+          const settingsPayload: any = { updated_at: new Date().toISOString() };
+          let hasSettingsUpdate = false;
+          if (updates.bio !== undefined) {
+            settingsPayload.bio = updates.bio;
+            hasSettingsUpdate = true;
+          }
+          if (updates.reading_goal !== undefined) {
+            settingsPayload.reading_goal = updates.reading_goal;
+            hasSettingsUpdate = true;
+          }
+          if (updates.favorite_genres !== undefined) {
+            settingsPayload.favorite_genres = updates.favorite_genres;
+            hasSettingsUpdate = true;
+          }
+          if (updates.privacy_settings?.shelves_public !== undefined) {
+            settingsPayload.shelves_public = updates.privacy_settings.shelves_public;
+            hasSettingsUpdate = true;
+          }
+          if (updates.privacy_settings?.stats_public !== undefined) {
+            settingsPayload.stats_public = updates.privacy_settings.stats_public;
+            hasSettingsUpdate = true;
+          }
+
+          const profilePromise = Object.keys(profilePayload).length > 1
+            ? supabase.from('profiles').update(profilePayload).eq('id', userId)
+            : Promise.resolve({ error: null });
+
+          const settingsPromise = hasSettingsUpdate
+            ? supabase.from('user_settings').update(settingsPayload).eq('user_id', userId)
+            : Promise.resolve({ error: null });
+
+          await Promise.all([profilePromise, settingsPromise]);
+
+          const refreshed = await this.getProfile(userId);
+          if (refreshed) return refreshed;
+        } catch (err) {
+          console.warn('Supabase profile remote update warning:', err);
+        }
       }
     }
 
+    if (index === -1) throw new Error('Profile not found');
     return profiles[index];
+  }
+
+  public async resetPassword(email: string): Promise<void> {
+    const cleanEmail = email.trim().toLowerCase();
+    if (isSupabaseConfigured && supabase) {
+      const redirectTo = `${window.location.origin}/login?reset=true`;
+      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+        redirectTo,
+      });
+      if (error) throw error;
+    }
   }
 
   // --- Books & Shelves Operations ---
   public async getBooks(): Promise<Book[]> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('works')
+          .select(`
+            id,
+            legacy_code,
+            title,
+            subtitle,
+            description,
+            first_published_year,
+            benchmark_rating,
+            benchmark_review_count,
+            featured_quote_text,
+            featured_quote_speaker,
+            is_club_select,
+            editions (
+              id,
+              publisher,
+              isbn_13,
+              isbn_10,
+              language_code,
+              page_count,
+              cover_url,
+              is_canonical_edition
+            ),
+            work_authors (
+              role,
+              display_order,
+              author:authors (
+                id,
+                display_name
+              )
+            ),
+            work_genres (
+              genre:genres (
+                name,
+                slug
+              )
+            ),
+            collection_works (
+              position,
+              collection:collections (
+                slug,
+                name
+              )
+            )
+          `);
+
+        if (!error && data && data.length > 0) {
+          const mapped: Book[] = data.map((w: any) => {
+            // Select canonical edition deterministically; fallback to first available edition
+            const canonicalEdition =
+              (w.editions || []).find((e: any) => e.is_canonical_edition) ||
+              w.editions?.[0];
+
+            // Select primary author deterministically by display_order
+            const sortedAuthors = (w.work_authors || [])
+              .slice()
+              .sort((a: any, b: any) => (a.display_order ?? 0) - (b.display_order ?? 0));
+            const primaryAuthor = sortedAuthors[0];
+
+            // Map genres
+            const genres = (w.work_genres || [])
+              .map((wg: any) => wg.genre?.name)
+              .filter(Boolean);
+
+            // Map collections sorted by position
+            const collections = (w.collection_works || [])
+              .slice()
+              .sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0))
+              .map((cw: any) => cw.collection?.slug)
+              .filter(Boolean);
+
+            return {
+              id: w.legacy_code || w.id,
+              title: w.title,
+              subtitle: w.subtitle || undefined,
+              author: primaryAuthor?.author?.display_name || 'Unknown Author',
+              author_id: primaryAuthor?.author?.id,
+              description: w.description || '',
+              cover_url: canonicalEdition?.cover_url || '',
+              publication_year: w.first_published_year || 0,
+              publisher: canonicalEdition?.publisher || undefined,
+              isbn: canonicalEdition?.isbn_13 || canonicalEdition?.isbn_10 || undefined,
+              language: canonicalEdition?.language_code || 'en',
+              genres,
+              rating_avg: Number(w.benchmark_rating) || 0,
+              rating_count: Number(w.benchmark_review_count) || 0,
+              pages: canonicalEdition?.page_count || 320,
+              quote: w.featured_quote_text
+                ? {
+                    text: w.featured_quote_text,
+                    speaker: w.featured_quote_speaker || undefined,
+                  }
+                : undefined,
+              featured: Boolean(w.is_club_select),
+              homepage_collections: collections,
+            };
+          });
+
+          // Sort deterministically to match canonical order b1..b34
+          mapped.sort((a, b) => {
+            const numA = parseInt(a.id.replace(/\D/g, ''), 10) || 0;
+            const numB = parseInt(b.id.replace(/\D/g, ''), 10) || 0;
+            return numA - numB;
+          });
+
+          return mapped;
+        }
+      } catch (err) {
+        console.warn('Supabase getBooks fallback:', err);
+      }
+    }
     return SEED_BOOKS;
   }
 
   public async getBookById(id: string): Promise<Book | null> {
-    return SEED_BOOKS.find(b => b.id === id) || null;
+    const books = await this.getBooks();
+    return books.find(b => b.id === id) || null;
   }
 
   public async getUserShelves(userId: string): Promise<ShelfItem[]> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('shelves')
+          .select('*')
+          .eq('user_id', userId);
+        if (!error && data) {
+          return data as ShelfItem[];
+        }
+      } catch (err) {
+        console.warn('Supabase getUserShelves fallback:', err);
+      }
+    }
+
     try {
       const all: ShelfItem[] = JSON.parse(safeStorage.getItem(STORAGE_KEYS.SHELVES) || '[]');
       return all.filter(s => s.user_id === userId);
@@ -376,6 +700,24 @@ class LocalService {
   }
 
   public async setBookShelf(userId: string, bookId: string, status: ShelfStatus): Promise<ShelfItem> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const payload: any = {
+          user_id: userId,
+          book_id: bookId,
+          status,
+        };
+        if (status === 'currently_reading') payload.started_at = new Date().toISOString();
+        if (status === 'read') payload.finished_at = new Date().toISOString();
+
+        await supabase
+          .from('shelves')
+          .upsert(payload, { onConflict: 'user_id,book_id' });
+      } catch (err) {
+        console.warn('Supabase setBookShelf remote upsert warning:', err);
+      }
+    }
+
     const all: ShelfItem[] = JSON.parse(safeStorage.getItem(STORAGE_KEYS.SHELVES) || '[]');
     const existingIndex = all.findIndex(s => s.user_id === userId && s.book_id === bookId);
 

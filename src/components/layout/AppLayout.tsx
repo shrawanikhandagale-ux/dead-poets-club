@@ -37,7 +37,7 @@ export const AppLayout: React.FC = () => {
           <div className="w-8 h-8 rounded bg-[#755151] border-2 border-[#443223] flex items-center justify-center shadow-[1.5px_1.5px_0px_#443223]">
             <Feather className="w-4 h-4 text-[#FFF9F3]" />
           </div>
-          <span className="font-editorial text-sm font-bold tracking-wider">
+          <span className="font-editorial text-lg font-normal tracking-normal">
             DEAD POETS CLUB
           </span>
         </NavLink>
@@ -67,7 +67,7 @@ export const AppLayout: React.FC = () => {
           ) : (
             <NavLink
               to="/login"
-              className="text-xs font-typewriter font-bold text-[#FFF9F3] bg-[#755151] px-3 py-1 rounded border border-[#443223] shadow-[1px_1px_0px_#443223]"
+              className="text-xs font-sans font-semibold text-[#FFF9F3] bg-[#755151] px-3 py-1 rounded border border-[#443223] shadow-[1px_1px_0px_#443223]"
             >
               Sign In
             </NavLink>

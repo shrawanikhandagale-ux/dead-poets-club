@@ -72,10 +72,10 @@ export const ProfilePage: React.FC = () => {
             <Award className="w-3.5 h-3.5 text-[#FFF9F3]" />
             <span>DEAD POETS CLUB · OFFICIAL MEMBER PASSPORT</span>
           </div>
-          <h1 className="font-editorial text-3xl sm:text-4xl font-bold text-[#443223]">
+          <h1 className="type-page-title text-[#443223]">
             {profile?.display_name || username || 'Member'}’s Library Identity
           </h1>
-          <p className="font-typewriter text-xs sm:text-sm text-[#72583E]">
+          <p className="font-mono text-xs text-[#72583E] mt-1">
             Library card ID: DPC-1889-X · Registered at the Welton Academy Archives
           </p>
         </div>
@@ -134,10 +134,10 @@ export const ProfilePage: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsCardFlipped(!isCardFlipped)}
-            className="flex items-center gap-2 text-xs font-typewriter text-[#755151] font-bold mb-4 hover:underline cursor-pointer"
+            className="flex items-center gap-2 text-xs font-sans font-semibold text-[#755151] mb-4 hover:underline cursor-pointer"
           >
             <RotateCw className="w-3.5 h-3.5" />
-            <span>Click to flip card ({isCardFlipped ? 'Showing Back: Record Stamps' : 'Showing Front: Borrower Identity'})</span>
+            <span>{isCardFlipped ? 'Record Stamps' : 'Borrower Identity'}</span>
           </button>
 
           {/* 3D Flip Card Container */}
@@ -162,20 +162,20 @@ export const ProfilePage: React.FC = () => {
                 {/* Header */}
                 <div className="flex items-center justify-between border-b-2 border-[#443223] pb-2.5">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded bg-[#755151] border-2 border-[#443223] flex items-center justify-center text-white font-serif font-bold text-sm">
+                    <div className="w-8 h-8 rounded bg-[#755151] border-2 border-[#443223] flex items-center justify-center text-white font-editorial text-base leading-none">
                       DP
                     </div>
                     <div>
-                      <h3 className="font-editorial text-sm sm:text-base font-bold text-[#443223] leading-none">
+                      <h3 className="font-editorial text-lg font-normal text-[#443223] leading-none">
                         DEAD POETS CLUB
                       </h3>
-                      <p className="font-typewriter text-[10px] text-[#72583E] tracking-wider uppercase">
+                      <p className="font-mono text-[10px] text-[#72583E] tracking-wider uppercase mt-0.5">
                         Official Borrower Identification
                       </p>
                     </div>
                   </div>
 
-                  <span className="font-typewriter text-xs font-bold text-[#755151] border border-[#755151] px-2 py-0.5 rounded">
+                  <span className="font-mono text-xs font-semibold text-[#755151] border border-[#755151] px-2 py-0.5 rounded">
                     CLASS OF 1889
                   </span>
                 </div>
@@ -197,28 +197,28 @@ export const ProfilePage: React.FC = () => {
                   </div>
 
                   {/* Cardholder Information & Stats */}
-                  <div className="col-span-8 space-y-2 font-typewriter text-xs text-[#443223]">
+                  <div className="col-span-8 space-y-2 text-xs text-[#443223]">
                     <div>
-                      <span className="text-[10px] text-[#A08670] uppercase block">NAME OF READER:</span>
-                      <span className="font-bold text-sm sm:text-base text-[#443223] border-b border-dashed border-[#A08670] block truncate">
+                      <span className="font-mono text-[10px] text-[#A08670] uppercase block">NAME OF READER:</span>
+                      <span className="font-editorial text-lg font-normal text-[#443223] border-b border-dashed border-[#A08670] block truncate">
                         {profile?.display_name || username || 'Wanderer'}
                       </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 pt-1">
                       <div>
-                        <span className="text-[10px] text-[#A08670] uppercase block">POET HANDLE:</span>
-                        <span className="font-bold text-[#755151]">@{profile?.username || username}</span>
+                        <span className="font-mono text-[10px] text-[#A08670] uppercase block">POET HANDLE:</span>
+                        <span className="font-mono font-semibold text-[#755151]">@{profile?.username || username}</span>
                       </div>
                       <div>
-                        <span className="text-[10px] text-[#A08670] uppercase block">FAVORITE GENRE:</span>
-                        <span className="font-bold truncate block">Dark Academia</span>
+                        <span className="font-mono text-[10px] text-[#A08670] uppercase block">FAVORITE GENRE:</span>
+                        <span className="font-sans font-semibold truncate block">Dark Academia</span>
                       </div>
                     </div>
 
                     <div className="pt-1">
-                      <span className="text-[10px] text-[#A08670] uppercase block">BIOGRAPHY:</span>
-                      <p className="text-[11px] text-[#72583E] italic line-clamp-2 leading-relaxed">
+                      <span className="font-mono text-[10px] text-[#A08670] uppercase block">BIOGRAPHY:</span>
+                      <p className="font-sans text-[11px] text-[#72583E] italic line-clamp-2 leading-relaxed">
                         "{profile?.bio || 'Haunting dusty stacks, drinking black tea, and whispering verse to gargoyles.'}"
                       </p>
                     </div>
@@ -240,7 +240,7 @@ export const ProfilePage: React.FC = () => {
                     ))}
                   </div>
 
-                  <span className="font-typewriter text-[10px] text-[#72583E]">
+                  <span className="font-mono text-[10px] text-[#72583E]">
                     VALID FOR ALL ROOMS, SHELVES & CAFÉ
                   </span>
                 </div>
@@ -255,10 +255,10 @@ export const ProfilePage: React.FC = () => {
                 }}
               >
                 <div className="border-b-2 border-[#443223] pb-2 flex items-center justify-between">
-                  <span className="font-typewriter text-xs font-bold text-[#443223] uppercase">
+                  <span className="font-mono text-xs font-semibold text-[#443223] uppercase">
                     BORROWER RECORD & MILESTONE STAMPS
                   </span>
-                  <span className="font-typewriter text-[10px] text-[#755151]">
+                  <span className="font-mono text-[10px] text-[#755151]">
                     DATE DUE IN ARCHIVES
                   </span>
                 </div>
@@ -267,39 +267,39 @@ export const ProfilePage: React.FC = () => {
                 <div className="grid grid-cols-4 gap-2 py-3">
                   {/* 1. Books Read */}
                   <div className="border-2 border-dashed border-[#A08670] p-2 rounded text-center bg-[#FFF9F3]">
-                    <span className="font-typewriter text-[8px] text-[#A08670] block uppercase">BOOKS READ</span>
-                    <span className="font-editorial text-lg font-bold text-[#443223]">{readBooks}</span>
+                    <span className="font-mono text-[8px] text-[#A08670] block uppercase">BOOKS READ</span>
+                    <span className="font-editorial text-xl font-normal text-[#443223]">{readBooks}</span>
                     <span className="font-handwritten text-[11px] text-[#755151] block rotate-2">Verified ✓</span>
                   </div>
 
                   {/* 2. Reading Hours Logged */}
                   <div className="border-2 border-dashed border-[#A08670] p-2 rounded text-center bg-[#FFF9F3]">
-                    <span className="font-typewriter text-[8px] text-[#A08670] block uppercase">HOURS LOGGED</span>
-                    <span className="font-editorial text-lg font-bold text-[#443223]">{readingHours}h</span>
+                    <span className="font-mono text-[8px] text-[#A08670] block uppercase">HOURS LOGGED</span>
+                    <span className="font-editorial text-xl font-normal text-[#443223]">{readingHours}h</span>
                     <span className="font-handwritten text-[11px] text-green-800 block -rotate-2">Archived 📜</span>
                   </div>
 
                   {/* 3. Reviews Written */}
                   <div className="border-2 border-dashed border-[#A08670] p-2 rounded text-center bg-[#FFF9F3]">
-                    <span className="font-typewriter text-[8px] text-[#A08670] block uppercase">REVIEWS</span>
-                    <span className="font-editorial text-lg font-bold text-[#755151]">{reviewsCount}</span>
+                    <span className="font-mono text-[8px] text-[#A08670] block uppercase">REVIEWS</span>
+                    <span className="font-editorial text-xl font-normal text-[#755151]">{reviewsCount}</span>
                     <span className="font-handwritten text-[11px] text-[#72583E] block rotate-3">Critical 🖋️</span>
                   </div>
 
                   {/* 4. Crossword Streak */}
                   <div className="border-2 border-dashed border-[#A08670] p-2 rounded text-center bg-[#FFF9F3]">
-                    <span className="font-typewriter text-[8px] text-[#A08670] block uppercase">CROSSWORD</span>
-                    <span className="font-editorial text-lg font-bold text-[#755151]">{crosswordStreak} d</span>
+                    <span className="font-mono text-[8px] text-[#A08670] block uppercase">CROSSWORD</span>
+                    <span className="font-editorial text-xl font-normal text-[#755151]">{crosswordStreak} d</span>
                     <span className="font-handwritten text-[11px] text-red-800 block -rotate-3">On Fire 🔥</span>
                   </div>
                 </div>
 
                 {/* Vintage Ink Society Stamps */}
                 <div className="flex items-center justify-around border-t-2 border-dashed border-[#A08670] pt-2">
-                  <div className="border-2 border-red-800 text-red-800 px-2.5 py-0.5 text-[10px] font-typewriter font-bold -rotate-3 rounded">
+                  <div className="border-2 border-red-800 text-red-800 px-2.5 py-0.5 text-[10px] font-mono font-semibold -rotate-3 rounded">
                     OCT 2026 · ADMITTED
                   </div>
-                  <div className="border-2 border-[#443223] text-[#443223] px-2.5 py-0.5 text-[10px] font-typewriter font-bold rotate-2 rounded">
+                  <div className="border-2 border-[#443223] text-[#443223] px-2.5 py-0.5 text-[10px] font-mono font-semibold rotate-2 rounded">
                     SECRET SOCIETY VERIFIED
                   </div>
                 </div>
@@ -317,10 +317,10 @@ export const ProfilePage: React.FC = () => {
           <div className="catalog-card p-6 sm:p-8 bg-[#FFFDF9] border-3 border-[#1A1614] shadow-[6px_6px_0px_#1A1614] rounded">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b-2 border-[#1A1614]">
               <div>
-                <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#1A1614]">
+                <h2 className="type-section-title text-[#1A1614]">
                   Archival Equipment & Sprite Sheet
                 </h2>
-                <p className="font-typewriter text-xs sm:text-sm text-[#72583E] mt-1">
+                <p className="font-sans text-sm text-[#72583E] mt-1">
                   Active pixel configuration used across the Grand Library, Café tables, and review slips.
                 </p>
               </div>
@@ -377,10 +377,10 @@ export const ProfilePage: React.FC = () => {
       {activeTab === 'saved_poems' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="font-editorial text-2xl font-bold text-[#443223]">
+            <h2 className="type-section-title text-[#443223]">
               Personal Poem Vault
             </h2>
-            <span className="font-typewriter text-xs text-[#72583E]">
+            <span className="font-mono text-xs text-[#72583E]">
               {savedPoems.length} Verses Preserved from the Gumball Jar
             </span>
           </div>
@@ -392,27 +392,27 @@ export const ProfilePage: React.FC = () => {
                 className="catalog-card p-6 bg-[#FCF8F2] border-2 border-[#443223] shadow-[4px_4px_0px_#443223]"
               >
                 <div className="flex items-center justify-between border-b border-dashed border-[#A08670] pb-2 mb-3">
-                  <span className="font-typewriter text-xs font-bold text-[#755151]">
+                  <span className="font-mono text-xs font-semibold text-[#755151]">
                     {poem.period}
                   </span>
-                  <span className="text-xs font-typewriter px-2 py-0.5 bg-[#DBC4A5]/40 border border-[#72583E] text-[#443223]">
+                  <span className="text-xs font-mono px-2 py-0.5 bg-[#DBC4A5]/40 border border-[#72583E] text-[#443223]">
                     {poem.theme}
                   </span>
                 </div>
 
-                <h3 className="font-editorial text-lg font-bold text-[#443223] mb-1">
+                <h3 className="font-editorial text-2xl font-normal text-[#443223] mb-1">
                   {poem.title}
                 </h3>
-                <p className="font-typewriter text-xs text-[#72583E] mb-4">
+                <p className="font-mono text-xs text-[#72583E] mb-4">
                   by {poem.poet}
                 </p>
 
-                <div className="bg-[#FFF9F3] p-4 rounded border border-[#A08670] font-typewriter text-xs text-[#443223] leading-relaxed max-h-48 overflow-y-auto">
+                <div className="bg-[#FFF9F3] p-4 rounded border border-[#A08670] font-editorial text-base text-[#443223] leading-relaxed max-h-48 overflow-y-auto">
                   {poem.lines.slice(0, 8).map((line, i) => (
                     <p key={i}>{line}</p>
                   ))}
                   {poem.lines.length > 8 && (
-                    <p className="text-[10px] text-[#A08670] italic pt-2">... (tap for full poem)</p>
+                    <p className="text-xs font-sans text-[#A08670] italic pt-2">... (tap for full poem)</p>
                   )}
                 </div>
               </div>

@@ -77,8 +77,8 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
 
               {/* Shelf Selector Buttons */}
               <div className="w-full flex flex-col gap-1.5 mt-2">
-                <p className="text-[10px] font-typewriter text-center uppercase tracking-widest text-[#72583E] font-bold">
-                  SHELVE IN LIBRARY
+                <p className="text-[11px] font-mono text-center uppercase tracking-wider text-[#72583E] font-medium">
+                  Shelve in Library
                 </p>
                 {(['want_to_read', 'currently_reading', 'read', 'abandoned'] as ShelfStatus[]).map(
                   s => {
@@ -87,14 +87,14 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                       <button
                         key={s}
                         onClick={() => handleShelfChange(s)}
-                        className={`py-1.5 px-3 rounded text-xs font-typewriter font-bold tracking-wide transition-all border-2 cursor-pointer ${
+                        className={`py-1.5 px-3 rounded text-xs font-sans font-semibold transition-all border-2 cursor-pointer capitalize ${
                           isSelected
                             ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[2px_2px_0px_#443223]'
                             : 'bg-[#FFF9F3] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]'
                         }`}
                       >
                         {isSelected && '✓ '}
-                        {s.replace(/_/g, ' ').toUpperCase()}
+                        {s.replace(/_/g, ' ')}
                       </button>
                     );
                   }
@@ -104,7 +104,7 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                 <NavLink
                   to={`/margins?section=leave-book&bookId=${book.id}`}
                   onClick={onClose}
-                  className="mt-2 py-2 px-3 rounded text-xs font-typewriter font-bold text-center bg-[#755151] text-[#FFF9F3] border-2 border-[#443223] shadow-[2px_2px_0px_#443223] flex items-center justify-center gap-1.5 text-decoration-none hover:bg-[#855d5d]"
+                  className="mt-2 py-2 px-3 rounded text-xs font-sans font-semibold text-center bg-[#755151] text-[#FFF9F3] border-2 border-[#443223] shadow-[2px_2px_0px_#443223] flex items-center justify-center gap-1.5 text-decoration-none hover:bg-[#855d5d]"
                 >
                   <Share2 className="w-3.5 h-3.5" />
                   <span>Leave for Someone</span>
@@ -118,33 +118,33 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                 {book.genres.map(g => (
                   <span
                     key={g}
-                    className="text-xs px-2.5 py-0.5 rounded bg-[#DBC4A5]/50 border border-[#72583E] text-[#443223] font-typewriter font-bold"
+                    className="text-xs px-2.5 py-0.5 rounded bg-[#DBC4A5]/50 border border-[#72583E] text-[#443223] font-sans font-medium"
                   >
                     {g}
                   </span>
                 ))}
               </div>
 
-              <h2 className="font-editorial text-2xl md:text-3xl font-bold text-[#443223] leading-tight">
+              <h2 className="type-page-title text-[#443223]">
                 {book.title}
               </h2>
 
               {/* Author link */}
               <div className="mt-1 mb-4 flex items-center gap-2">
-                <span className="font-editorial text-lg text-[#755151] font-semibold">
+                <span className="font-sans text-sm text-[#72583E]">
                   by
                 </span>
                 <NavLink
                   to={`/authors?author=${encodeURIComponent(book.author)}`}
                   onClick={onClose}
-                  className="font-editorial text-lg text-[#755151] font-bold underline decoration-[#755151] hover:text-[#443223] transition-colors"
+                  className="font-editorial text-xl text-[#755151] underline decoration-[#755151] hover:text-[#443223] transition-colors"
                 >
                   {book.author}
                 </NavLink>
               </div>
 
               {/* Bibliographic Details Bar */}
-              <div className="flex flex-wrap items-center gap-3 py-3 border-y-2 border-dashed border-[#A08670] mb-5 text-xs font-typewriter">
+              <div className="flex flex-wrap items-center gap-3 py-3 border-y-2 border-dashed border-[#A08670] mb-5 text-xs font-mono">
                 <div className="flex items-center gap-1.5 font-bold text-[#755151]">
                   <Star className="w-4 h-4 fill-current text-[#755151]" />
                   <span>{book.rating_avg.toFixed(1)} / 5.0</span>
@@ -177,10 +177,10 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
               {/* Description */}
               <div className="space-y-4 mb-6">
                 <div>
-                  <h4 className="text-xs font-typewriter uppercase tracking-wider text-[#72583E] font-bold mb-1">
-                    SYNOPSIS:
+                  <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#72583E] font-medium mb-1">
+                    Synopsis
                   </h4>
-                  <p className="font-typewriter text-xs sm:text-sm text-[#443223] leading-relaxed">
+                  <p className="font-sans text-sm text-[#443223] leading-relaxed">
                     {book.description}
                   </p>
                 </div>
@@ -189,11 +189,11 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                 {book.quote && (
                   <div className="p-4 bg-[#FFF9F3] border-l-4 border-[#755151] border-2 border-[#443223] rounded shadow-[2px_2px_0px_#443223]">
                     <Quote className="w-4 h-4 text-[#755151] mb-1" />
-                    <p className="font-typewriter text-xs italic text-[#443223] leading-relaxed">
+                    <p className="font-editorial italic text-lg text-[#443223] leading-snug">
                       "{book.quote.text}"
                     </p>
                     {book.quote.speaker && (
-                      <p className="font-typewriter text-[10px] text-[#755151] font-bold mt-1 text-right">
+                      <p className="font-handwritten text-base text-[#755151] mt-1 text-right">
                         — {book.quote.speaker}
                       </p>
                     )}
@@ -203,11 +203,11 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                 {/* Private Marginalia Note Form (Section 10: User Created Annotation) */}
                 <div className="p-4 bg-[#FAF4EB] border-2 border-[#443223] rounded shadow-[2px_2px_0px_#443223]">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-typewriter text-xs font-bold text-[#755151] uppercase flex items-center gap-1.5">
-                      <PenTool className="w-3.5 h-3.5" /> Private Marginalia & Notes
+                    <span className="font-sans text-xs font-semibold text-[#755151] flex items-center gap-1.5">
+                      <PenTool className="w-3.5 h-3.5" /> Private Marginalia &amp; Notes
                     </span>
-                    <span className="text-[10px] font-typewriter text-[#A08670] italic">
-                      Saved to your personal shelf
+                    <span className="text-[11px] font-mono text-[#A08670]">
+                      Saved to My Shelf
                     </span>
                   </div>
                   <form onSubmit={handleSaveAnnotation} className="space-y-2">
@@ -215,13 +215,13 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                       value={annotationText}
                       onChange={e => setAnnotationText(e.target.value)}
                       placeholder="Write your private note, reflections, or page quotes on this book..."
-                      className="w-full p-2.5 text-xs font-typewriter border border-[#A08670] rounded bg-[#FFF9F3] text-[#443223] focus:outline-none focus:border-[#755151] min-h-[60px]"
+                      className="w-full p-2.5 text-sm font-sans border border-[#A08670] rounded bg-[#FFF9F3] text-[#443223] focus:outline-none focus:border-[#755151] min-h-[60px]"
                     />
                     <div className="flex justify-end">
                       <button
                         type="submit"
                         disabled={!annotationText.trim()}
-                        className="btn-secondary text-[11px] py-1 px-3 disabled:opacity-50"
+                        className="btn-secondary text-xs py-1 px-3 disabled:opacity-50"
                       >
                         {annotationSaved ? (
                           <>
@@ -239,13 +239,13 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                 {/* Borrower Reviews & Marginalia */}
                 <div className="pt-4 border-t-2 border-dashed border-[#A08670]">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-xs font-typewriter uppercase tracking-wider text-[#72583E] font-bold">
-                      BORROWER REVIEWS:
+                    <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#72583E] font-medium">
+                      Borrower Reviews
                     </h4>
                     <NavLink
                       to={`/reviews?bookId=${book.id}`}
                       onClick={onClose}
-                      className="font-typewriter text-[11px] text-[#755151] font-bold hover:underline"
+                      className="font-sans text-xs text-[#755151] font-semibold hover:underline"
                     >
                       Browse All Reviews →
                     </NavLink>
@@ -269,7 +269,7 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                             />
                           </div>
                           <div>
-                            <span className="font-typewriter text-xs font-bold text-[#443223] block leading-tight">
+                            <span className="font-sans text-xs font-semibold text-[#443223] block leading-tight">
                               Eleanor Vance
                             </span>
                             <span className="font-mono text-[9px] text-[#755151]">@eleanor_v · Welton Fellow</span>
@@ -280,7 +280,7 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                           ★★★★★
                         </div>
                       </div>
-                      <p className="font-typewriter text-xs text-[#443223] italic leading-relaxed">
+                      <p className="font-sans text-xs text-[#443223] italic leading-relaxed">
                         "Unputdownable prose that echoes through the corridors. An essential piece of literature for anyone living between lines."
                       </p>
                     </div>

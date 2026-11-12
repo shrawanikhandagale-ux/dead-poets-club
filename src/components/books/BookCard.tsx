@@ -41,30 +41,30 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onSelect }) => {
 
         {/* Title & Author */}
         <div className="mb-2">
-          <h3 className="font-editorial text-base font-bold text-[#443223] group-hover:text-[#755151] transition-colors leading-snug line-clamp-1">
+          <h3 className="font-editorial text-xl text-[#443223] group-hover:text-[#755151] transition-colors leading-snug line-clamp-1">
             {book.title}
           </h3>
-          <p className="font-typewriter text-xs text-[#72583E] mt-0.5">
+          <p className="font-mono text-xs text-[#72583E] mt-0.5">
             {book.author} · {book.publication_year}
           </p>
         </div>
 
         {/* Rating and Genre Tags */}
         <div className="flex items-center gap-2 mb-3">
-          <div className="flex items-center gap-1 text-[#755151] text-xs font-typewriter font-bold">
+          <div className="flex items-center gap-1 text-[#755151] text-xs font-mono font-medium">
             <Star className="w-3.5 h-3.5 fill-current text-[#755151]" />
             <span>{book.rating_avg.toFixed(1)}</span>
             <span className="text-[#A08670] text-[10px]">({book.rating_count})</span>
           </div>
           <span className="text-[#A08670]">•</span>
-          <span className="text-[10px] font-typewriter font-bold text-[#443223] px-2 py-0.5 rounded bg-[#DBC4A5]/50 border border-[#A08670] truncate">
+          <span className="text-[11px] font-sans font-medium text-[#443223] px-2 py-0.5 rounded bg-[#DBC4A5]/50 border border-[#A08670] truncate">
             {book.genres[0]}
           </span>
         </div>
 
         {/* Quote if available */}
         {book.quote && (
-          <div className="p-2.5 rounded bg-[#FFF9F3] border-l-3 border-[#755151] border-t border-r border-b border-[#A08670] mb-3 text-xs italic text-[#443223] font-typewriter line-clamp-2">
+          <div className="p-2.5 rounded bg-[#FFF9F3] border-l-3 border-[#755151] border-t border-r border-b border-[#A08670] mb-3 text-xs italic text-[#443223] font-sans leading-relaxed line-clamp-2">
             "{book.quote.text}"
           </div>
         )}
@@ -72,7 +72,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onSelect }) => {
 
       {/* Shelf Action Selector */}
       <div className="pt-3 border-t-2 border-dashed border-[#A08670] flex items-center justify-between mt-auto">
-        <span className="text-[10px] font-typewriter uppercase tracking-wider text-[#72583E] flex items-center gap-1 font-bold">
+        <span className="text-[11px] font-mono text-[#72583E] flex items-center gap-1 font-medium capitalize">
           <Bookmark className="w-3 h-3 text-[#755151]" />
           {status ? status.replace(/_/g, ' ') : 'Not shelved'}
         </span>
@@ -81,7 +81,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onSelect }) => {
           value={status || ''}
           onChange={handleShelfChange}
           onClick={e => e.stopPropagation()}
-          className="text-xs font-typewriter font-bold bg-[#FFF9F3] text-[#443223] border border-[#443223] rounded px-2 py-1 outline-none cursor-pointer hover:bg-[#DBC4A5]/30 transition-colors"
+          className="text-xs font-sans font-semibold bg-[#FFF9F3] text-[#443223] border border-[#443223] rounded px-2 py-1 outline-none cursor-pointer hover:bg-[#DBC4A5]/30 transition-colors"
         >
           <option value="" disabled>Shelve</option>
           <option value="want_to_read">Want to Read</option>

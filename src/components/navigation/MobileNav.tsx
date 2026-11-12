@@ -1,40 +1,50 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Compass, BookOpen, Coffee, MessageSquareQuote, Feather, Bookmark } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Sparkles, BookOpen, Coffee, Feather } from 'lucide-react';
 import { soundEngine } from '../../lib/audioEngine';
 
 export const MobileNav: React.FC = () => {
-  const { user } = useAuth();
+  const location = useLocation();
 
-  // SECTION 3 SPECIFICATION: Home | Library | Cafeteria | Reviews | The Margins | My Shelf
+  // Primary Destinations (Strictly 4)
   const navItems = [
-    { name: 'Home', path: '/', icon: Compass },
+    { name: 'The Atrium', path: '/', icon: Sparkles },
     { name: 'Library', path: '/library', icon: BookOpen },
-    { name: 'Café', path: '/cafe', icon: Coffee },
-    { name: 'Reviews', path: '/reviews', icon: MessageSquareQuote },
-    { name: 'Margins', path: '/margins', icon: Feather },
-    { name: 'Shelf', path: '/shelves', icon: Bookmark },
+    { name: 'Cafeteria', path: '/cafe', icon: Coffee },
+    { name: 'Community', path: '/margins', icon: Feather },
   ];
 
+  const isItemActive = (path: string) => {
+    if (path === '/') {
+      return (
+        location.pathname === '/' ||
+        location.pathname === '/atrium' ||
+        location.pathname === '/clubhouse'
+      );
+    }
+    if (path === '/margins') {
+      return location.pathname === '/margins' && !location.search.includes('section=marginalia');
+    }
+    return location.pathname === path;
+  };
+
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-[#1A1614] border-t border-[#382D24] z-40 px-1 py-2 flex items-center justify-around shadow-[0px_-2px_12px_rgba(0,0,0,0.4)]">
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-[#1A1614] border-t border-[#382D24] z-40 px-2 py-2 flex items-center justify-around shadow-[0px_-2px_12px_rgba(0,0,0,0.4)]">
       {navItems.map(item => {
         const Icon = item.icon;
+        const isActive = isItemActive(item.path);
         return (
           <NavLink
             key={item.path}
             to={item.path}
             onClick={() => soundEngine.playClick()}
-            className={({ isActive }) =>
-              `flex flex-col items-center gap-0.5 px-1.5 py-1 rounded font-typewriter text-[9px] sm:text-[10px] font-bold transition-all text-decoration-none ${
-                isActive
-                  ? 'text-[#FAF4EB] scale-105'
-                  : 'text-[#A08670] hover:text-[#FAF4EB]'
-              }`
-            }
+            className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded font-sans text-[11px] font-medium transition-all text-decoration-none ${
+              isActive
+                ? 'text-[#FAF4EB] scale-105 font-semibold'
+                : 'text-[#A08670] hover:text-[#FAF4EB]'
+            }`}
           >
-            <Icon className="w-4 h-4" />
+            <Icon className={`w-4 h-4 ${isActive ? 'text-[#FAF4EB]' : 'text-[#A08670]'}`} />
             <span>{item.name}</span>
           </NavLink>
         );

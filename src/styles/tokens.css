@@ -1,51 +1,78 @@
 @import "tailwindcss";
 
 @theme {
-  --color-linen: #FFF9F3;
+  --color-linen: #F7EFE3;
   --color-latte: #DBC4A5;
-  --color-cafenoir: #443223;
-  --color-clockwork: #72583E;
-  --color-deepolive: #44422D;
-  --color-mauve: #755151;
-  --color-cedar: #7C7960;
-  --color-weathered: #A08670;
+  --color-cafenoir: #2E2118;
+  --color-clockwork: #6E543B;
+  --color-deepolive: #3A4435;
+  --color-mauve: #6E3E44;
+  --color-cedar: #747258;
+  --color-weathered: #9C836B;
 
-  --font-serif: 'Playfair Display', Georgia, serif;
-  --font-editorial: 'Playfair Display', Georgia, serif;
-  --font-typewriter: 'Courier Prime', Courier, monospace;
-  --font-mono: 'Courier Prime', Courier, monospace;
-  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-editorial: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-typewriter: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
   --font-handwritten: 'Caveat', cursive;
 }
 
 /* ==========================================================================
-   DEAD POETS CLUB (DPC) — DESIGN SYSTEM TOKENS & SIGNATURE ELEMENTS
-   Aesthetic: Light Academia + Y2K Grunge + Library Vibes
-   PRD Specification Draft v2
+   DEAD POETS CLUB (DPC) — DESIGN SYSTEM TOKENS & ATMOSPHERIC UTILITIES
+   Palette: Espresso, Warm Parchment, Aged Timber, Deep Moss, Oxblood,
+            Candle Amber & Midnight Blue
    ========================================================================== */
 
 :root {
-  /* Color Palette Tokens */
-  --linen: #FFF9F3;
-  --latte: #DBC4A5;
-  --cafe-noir: #443223;
-  --clockwork: #72583E;
-  --deep-olive: #44422D;
-  --mauve: #755151;
-  --cedar: #7C7960;
-  --weathered: #A08670;
+  /* Core Literary Palette */
+  --linen: #F7EFE3;
+  --parchment-elevated: #FCF7EE;
+  --latte: #DFC9AA;
+  --cafe-noir: #2E2118;
+  --espresso-deep: #1B1410;
+  --clockwork: #6E543B;
+  --aged-timber: #543B27;
+  --deep-olive: #384434;
+  --mauve: #6E3E44;
+  --oxblood: #633138;
+  --cedar: #6E7056;
+  --weathered: #9E856E;
+  --candle-amber: #E4A853;
+  --midnight-blue: #162133;
 
-  /* Typography */
-  --font-serif-display: 'Playfair Display', Georgia, serif;
-  --font-serif-editorial: 'Playfair Display', Georgia, serif;
-  --font-mono-typewriter: 'Courier Prime', Courier, monospace;
-  --font-sans-clean: 'Outfit', sans-serif;
-  --font-handwritten: 'Caveat', cursive;
+  /* Semantic Surface & Text Tokens (Daylight) */
+  --surface-page: #F7EFE3;
+  --surface-card: #FCF7EE;
+  --surface-subtle: #EFE2CF;
+  --surface-scene: #241A14;
+  --text-primary: #2E2118;
+  --text-secondary: #684F38;
+  --text-muted: #8C735C;
+  --border-ink: #3B2B1F;
+  --border-soft: #B59C84;
+  --accent-primary: #6E3E44;
+  --accent-amber: #D69B47;
+
+  /* Centralized Typography Tokens */
+  --font-family-display: 'Instrument Serif', Georgia, serif;
+  --font-family-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-family-accent: 'Caveat', cursive;
+
+  /* Compatibility aliases mapped to unified stack */
+  --font-serif-display: var(--font-family-display);
+  --font-serif-editorial: var(--font-family-display);
+  --font-mono-typewriter: var(--font-family-mono);
+  --font-sans-clean: var(--font-family-body);
+  --font-handwritten: var(--font-family-accent);
 
   /* Shadows */
-  --shadow-stamped: 3px 3px 0px var(--cafe-noir);
-  --shadow-stamped-lg: 5px 5px 0px var(--cafe-noir);
-  --shadow-book-spine: 4px 6px 14px rgba(68, 50, 35, 0.35);
+  --shadow-stamped: 3px 3px 0px rgba(46, 33, 24, 0.85);
+  --shadow-stamped-lg: 5px 5px 0px rgba(46, 33, 24, 0.85);
+  --shadow-cozy: 0 10px 30px -8px rgba(27, 20, 16, 0.22), 0 2px 6px rgba(27, 20, 16, 0.12);
+  --shadow-book-spine: 4px 6px 14px rgba(27, 20, 16, 0.35);
 
   --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -57,59 +84,121 @@
 }
 
 body {
-  background-color: var(--linen);
-  color: var(--cafe-noir);
-  font-family: var(--font-sans-clean);
-  line-height: 1.6;
+  background-color: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-family-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  /* Halftone paper texture */
-  background-image: 
-    radial-gradient(circle, rgba(68, 50, 35, 0.08) 1px, transparent 1px);
-  background-size: 18px 18px;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(228, 168, 83, 0.08), transparent 45%),
+    radial-gradient(circle, rgba(46, 33, 24, 0.055) 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px;
   min-height: 100vh;
 }
 
-/* Scrollbar with light academia feel */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 9px;
   height: 9px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--linen);
+  background: var(--surface-page);
   border-left: 1px solid var(--latte);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--weathered);
   border-radius: 4px;
-  border: 2px solid var(--linen);
+  border: 2px solid var(--surface-page);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--clockwork);
 }
 
-/* Typography Utility Classes */
+/* Typography Role Utilities & Scale */
 .font-editorial {
-  font-family: var(--font-serif-editorial);
+  font-family: var(--font-family-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
 }
 
 .font-typewriter {
-  font-family: var(--font-mono-typewriter);
+  font-family: var(--font-family-mono);
 }
 
 .font-handwritten {
-  font-family: var(--font-handwritten);
+  font-family: var(--font-family-accent);
+  font-weight: 500;
 }
 
-/* Signature Element: 2-3px Heavy Ink Outlines */
+.type-hero {
+  font-family: var(--font-family-display);
+  font-weight: 400;
+  font-size: clamp(2.75rem, 5vw, 4.35rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.type-page-title {
+  font-family: var(--font-family-display);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 3.8vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+}
+
+.type-section-title {
+  font-family: var(--font-family-display);
+  font-weight: 400;
+  font-size: clamp(1.65rem, 2.6vw, 2.2rem);
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+}
+
+.type-card-title {
+  font-family: var(--font-family-display);
+  font-weight: 400;
+  font-size: 1.35rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.type-body {
+  font-family: var(--font-family-body);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.type-meta {
+  font-family: var(--font-family-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+
+.type-prompt {
+  font-family: var(--font-family-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+.pixel-crisp {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Ink Borders */
 .border-ink {
-  border: 2px solid var(--cafe-noir);
+  border: 2px solid var(--border-ink);
 }
 
 .border-ink-thick {
-  border: 3px solid var(--cafe-noir);
+  border: 3px solid var(--border-ink);
 }
 
 .border-dashed-catalog {
@@ -117,101 +206,101 @@ body {
 }
 
 .border-double-ink {
-  border: 3px double var(--cafe-noir);
+  border: 3px double var(--border-ink);
 }
 
-/* Signature Element: Stamped Starburst Badges */
+/* Stamped Archive Badges */
 .starburst-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--mauve);
-  color: var(--linen);
-  font-family: var(--font-mono-typewriter);
-  font-size: 0.72rem;
-  font-weight: 700;
+  background-color: var(--accent-primary);
+  color: #FAF3E8;
+  font-family: var(--font-family-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   padding: 4px 10px;
-  border: 1.5px solid var(--cafe-noir);
-  box-shadow: 2px 2px 0px var(--cafe-noir);
+  border: 1.5px solid var(--border-ink);
+  box-shadow: 2px 2px 0px rgba(27, 20, 16, 0.85);
   position: relative;
 }
 
-/* Signature Element: Stamped Buttons */
+/* Tactile Buttons */
 .btn-primary {
-  background-color: var(--mauve);
-  color: var(--linen);
-  border: 2.5px solid var(--cafe-noir);
-  box-shadow: 3px 3px 0px var(--cafe-noir);
-  font-family: var(--font-serif-editorial);
+  background-color: var(--accent-primary);
+  color: #FAF3E8;
+  border: 2px solid var(--border-ink);
+  box-shadow: 3px 3px 0px rgba(27, 20, 16, 0.85);
+  font-family: var(--font-family-body);
   font-weight: 600;
-  padding: 0.65rem 1.4rem;
+  padding: 0.65rem 1.35rem;
   border-radius: 4px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  letter-spacing: 0.02em;
-  transition: all 0.15s ease-out;
+  letter-spacing: 0.01em;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, background-color 0.15s ease-out;
   text-decoration: none;
 }
 
 .btn-primary:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0px var(--cafe-noir);
-  background-color: #855d5d;
+  box-shadow: 4px 4px 0px rgba(27, 20, 16, 0.9);
+  background-color: #7F4950;
 }
 
 .btn-primary:active {
   transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px var(--cafe-noir);
+  box-shadow: 1px 1px 0px rgba(27, 20, 16, 0.9);
 }
 
 .btn-secondary {
-  background-color: var(--latte);
-  color: var(--cafe-noir);
-  border: 2px solid var(--cafe-noir);
-  box-shadow: 2px 2px 0px var(--cafe-noir);
-  font-family: var(--font-mono-typewriter);
+  background-color: var(--surface-subtle);
+  color: var(--text-primary);
+  border: 2px solid var(--border-ink);
+  box-shadow: 2px 2px 0px rgba(27, 20, 16, 0.8);
+  font-family: var(--font-family-body);
   font-weight: 600;
-  padding: 0.6rem 1.25rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.15s ease-out;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, background-color 0.15s ease-out;
   text-decoration: none;
 }
 
 .btn-secondary:hover {
-  background-color: #e5cfb3;
+  background-color: #E7D5BA;
   transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px var(--cafe-noir);
+  box-shadow: 3px 3px 0px rgba(27, 20, 16, 0.85);
 }
 
 .btn-secondary:active {
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px var(--cafe-noir);
+  box-shadow: 1px 1px 0px rgba(27, 20, 16, 0.85);
 }
 
-/* Signature Element: Catalog Paper Cards */
+/* Catalog Paper Cards */
 .catalog-card {
-  background-color: #FCF8F2;
-  border: 2px solid var(--cafe-noir);
-  box-shadow: 3px 3px 0px var(--cafe-noir);
-  border-radius: 4px;
+  background-color: var(--surface-card);
+  border: 2px solid var(--border-ink);
+  box-shadow: 3px 3px 0px rgba(27, 20, 16, 0.8);
+  border-radius: 6px;
   position: relative;
   transition: transform 0.2s var(--ease-editorial), box-shadow 0.2s var(--ease-editorial);
 }
 
 .catalog-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0px var(--cafe-noir);
+  transform: translate(-1px, -2px);
+  box-shadow: 5px 5px 0px rgba(27, 20, 16, 0.85);
 }
 
-/* Signature Element: Ticker Strip Marquee */
+/* Ticker Strip Marquee */
 @keyframes ticker {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -227,13 +316,13 @@ body {
   animation-play-state: paused;
 }
 
-/* Signature Element: Wooden Bookshelf Base */
+/* Wooden Bookshelf Base */
 .wooden-shelf {
   position: relative;
-  background: linear-gradient(180deg, #58432D 0%, #443223 50%, #2A1D13 100%);
-  border-top: 3px solid #72583E;
-  border-bottom: 4px solid #23170D;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), inset 0 2px 3px rgba(255, 255, 255, 0.15);
+  background: linear-gradient(180deg, #5A412C 0%, #3E2B1C 55%, #251910 100%);
+  border-top: 3px solid #7C5C40;
+  border-bottom: 4px solid #1C120B;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38), inset 0 2px 3px rgba(255, 232, 198, 0.15);
 }
 
 .wooden-shelf::before {
@@ -243,36 +332,88 @@ body {
   left: 0;
   right: 0;
   height: 8px;
-  background: #3B2A1C;
-  box-shadow: inset 0 3px 5px rgba(0,0,0,0.5);
+  background: #332216;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
 }
 
-/* Signature Element: 3D Book Spine */
+/* 3D Book Spine */
 .book-spine {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   transform-origin: bottom center;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: -2px 0 6px rgba(0,0,0,0.3), inset 2px 0 4px rgba(255,255,255,0.15), inset -2px 0 4px rgba(0,0,0,0.3);
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s ease;
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.32), inset 2px 0 4px rgba(255, 255, 255, 0.16), inset -2px 0 4px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   border-radius: 3px 3px 0 0;
-  border: 1px solid rgba(0,0,0,0.25);
+  border: 1px solid rgba(0, 0, 0, 0.3);
   user-select: none;
 }
 
-.book-spine:hover {
-  transform: translateY(-24px) scale(1.03);
-  box-shadow: -4px 0 14px rgba(0,0,0,0.45), 0 10px 20px rgba(0,0,0,0.25);
+.book-spine:hover,
+.book-spine:focus-visible {
+  transform: translateY(-20px) scale(1.03);
+  box-shadow: -4px 0 14px rgba(0, 0, 0, 0.45), 0 10px 20px rgba(0, 0, 0, 0.25);
   z-index: 20;
+  outline: 2px solid var(--candle-amber);
+  outline-offset: 2px;
 }
 
 .book-spine.active {
-  transform: translateY(-32px) scale(1.06);
-  box-shadow: 0 15px 30px rgba(68, 50, 35, 0.5), 0 0 0 2px var(--cafe-noir);
+  transform: translateY(-28px) scale(1.05);
+  box-shadow: 0 15px 30px rgba(27, 20, 16, 0.5), 0 0 0 2px var(--candle-amber);
   z-index: 25;
 }
 
-/* Stacked Note Cards (Fan-out effect) */
+/* Indie Game Pixel Animations */
+@keyframes pixel-bob {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes pixel-walk-bob {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes candle-flicker {
+  0%, 100% { opacity: 0.78; transform: scale(1); }
+  35% { opacity: 0.92; transform: scale(1.03); }
+  65% { opacity: 0.72; transform: scale(0.98); }
+}
+
+@keyframes steam-rise {
+  0% { opacity: 0; transform: translateY(4px); }
+  35% { opacity: 0.65; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+@keyframes foliage-sway {
+  0%, 100% { transform: rotate(-1.2deg); }
+  50% { transform: rotate(1.5deg); }
+}
+
+.animate-pixel-bob {
+  animation: pixel-bob 2.2s steps(2, end) infinite;
+}
+
+.animate-pixel-walk {
+  animation: pixel-walk-bob 0.38s steps(2, end) infinite;
+}
+
+.animate-candle-flicker {
+  animation: candle-flicker 3.6s ease-in-out infinite;
+}
+
+.animate-steam-rise {
+  animation: steam-rise 2.4s ease-out infinite;
+}
+
+.animate-foliage-sway {
+  transform-origin: bottom center;
+  animation: foliage-sway 4.5s ease-in-out infinite;
+}
+
+/* Stacked Note Cards */
 .note-stack-container {
   position: relative;
   perspective: 1000px;
@@ -281,11 +422,11 @@ body {
 .note-card {
   transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
-  border: 1.5px solid var(--cafe-noir);
-  box-shadow: 2px 2px 0px var(--cafe-noir);
+  border: 1.5px solid var(--border-ink);
+  box-shadow: 2px 2px 0px var(--border-ink);
 }
 
-/* Photocopy Grunge Overlay */
+/* Subtle Grain Overlay */
 .grunge-overlay {
   position: fixed;
   top: 0;
@@ -293,40 +434,52 @@ body {
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  opacity: 0.035;
+  opacity: 0.03;
   z-index: 9999;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 /* ==========================================================================
    AFTER HOURS — GLOBAL NIGHT MODE (DARK ACADEMIA MIDNIGHT)
-   Charcoal & near-black grounds, warm cream text, amber & burgundy accents
    ========================================================================== */
 
 :root.after-hours,
 :root.dark,
 body.after-hours,
 body.dark {
-  --linen: #14110E;
+  --linen: #13100E;
+  --parchment-elevated: #1C1714;
   --latte: #2A221C;
-  --cafe-noir: #FAF4EB;
+  --cafe-noir: #F5ECE0;
   --clockwork: #D4A373;
-  --deep-olive: #68705C;
-  --mauve: #9B6565;
+  --deep-olive: #68775E;
+  --mauve: #9B5D63;
   --cedar: #8C896C;
   --weathered: #B89C82;
 
-  --shadow-stamped: 3px 3px 0px #0A0807;
-  --shadow-stamped-lg: 5px 5px 0px #0A0807;
+  --surface-page: #13100E;
+  --surface-card: #1C1714;
+  --surface-subtle: #27201B;
+  --surface-scene: #0E0B09;
+  --text-primary: #F5ECE0;
+  --text-secondary: #D4BEA9;
+  --text-muted: #A9937E;
+  --border-ink: #433529;
+  --border-soft: #5C4939;
+  --accent-primary: #8C4E55;
+
+  --shadow-stamped: 3px 3px 0px #080605;
+  --shadow-stamped-lg: 5px 5px 0px #080605;
   --shadow-book-spine: 4px 6px 14px rgba(0, 0, 0, 0.7);
 }
 
 body.after-hours,
 body.dark {
   background-color: #12100E;
-  color: #FAF4EB;
-  background-image: 
-    radial-gradient(circle, rgba(219, 196, 165, 0.06) 1px, transparent 1px);
+  color: #F5ECE0;
+  background-image:
+    radial-gradient(circle at 30% 10%, rgba(228, 168, 83, 0.05), transparent 50%),
+    radial-gradient(circle, rgba(219, 196, 165, 0.05) 1px, transparent 1px);
 }
 
 .after-hours .catalog-card,
@@ -334,16 +487,16 @@ body.after-hours .catalog-card,
 .dark .catalog-card,
 body.dark .catalog-card {
   background-color: #1C1714 !important;
-  color: #FAF4EB !important;
+  color: #F5ECE0 !important;
   border-color: #3D3126 !important;
-  box-shadow: 3px 3px 0px #0A0807 !important;
+  box-shadow: 3px 3px 0px #080605 !important;
 }
 
 .after-hours .catalog-card:hover,
 body.after-hours .catalog-card:hover,
 .dark .catalog-card:hover,
 body.dark .catalog-card:hover {
-  box-shadow: 5px 5px 0px #0A0807 !important;
+  box-shadow: 5px 5px 0px #080605 !important;
 }
 
 .after-hours .bg-\[\#FFF9F3\],
@@ -353,22 +506,46 @@ body.dark .bg-\[\#FFF9F3\],
 .after-hours .bg-\[\#FCF8F2\],
 body.after-hours .bg-\[\#FCF8F2\],
 .dark .bg-\[\#FCF8F2\],
-body.dark .bg-\[\#FCF8F2\] {
+body.dark .bg-\[\#FCF8F2\],
+.after-hours .bg-\[\#FFFDF9\],
+body.after-hours .bg-\[\#FFFDF9\],
+.dark .bg-\[\#FFFDF9\],
+body.dark .bg-\[\#FFFDF9\],
+.after-hours .bg-\[\#FAF4EB\],
+body.after-hours .bg-\[\#FAF4EB\],
+.dark .bg-\[\#FAF4EB\],
+body.dark .bg-\[\#FAF4EB\],
+.after-hours .bg-\[\#F7EFE3\],
+body.after-hours .bg-\[\#F7EFE3\],
+.dark .bg-\[\#F7EFE3\],
+body.dark .bg-\[\#F7EFE3\] {
   background-color: #1A1613 !important;
-  color: #FAF4EB !important;
+  color: #F5ECE0 !important;
 }
 
 .after-hours .text-\[\#443223\],
 body.after-hours .text-\[\#443223\],
 .dark .text-\[\#443223\],
-body.dark .text-\[\#443223\] {
-  color: #FAF4EB !important;
+body.dark .text-\[\#443223\],
+.after-hours .text-\[\#2E2118\],
+body.after-hours .text-\[\#2E2118\],
+.dark .text-\[\#2E2118\],
+body.dark .text-\[\#2E2118\],
+.after-hours .text-\[\#3D2B1F\],
+body.after-hours .text-\[\#3D2B1F\],
+.dark .text-\[\#3D2B1F\],
+body.dark .text-\[\#3D2B1F\] {
+  color: #F5ECE0 !important;
 }
 
 .after-hours .text-\[\#72583E\],
 body.after-hours .text-\[\#72583E\],
 .dark .text-\[\#72583E\],
-body.dark .text-\[\#72583E\] {
+body.dark .text-\[\#72583E\],
+.after-hours .text-\[\#684F38\],
+body.after-hours .text-\[\#684F38\],
+.dark .text-\[\#684F38\],
+body.dark .text-\[\#684F38\] {
   color: #D4BEA9 !important;
 }
 
@@ -382,7 +559,11 @@ body.dark .text-\[\#58432D\] {
 .after-hours .border-\[\#443223\],
 body.after-hours .border-\[\#443223\],
 .dark .border-\[\#443223\],
-body.dark .border-\[\#443223\] {
+body.dark .border-\[\#443223\],
+.after-hours .border-\[\#2E2118\],
+body.after-hours .border-\[\#2E2118\],
+.dark .border-\[\#2E2118\],
+body.dark .border-\[\#2E2118\] {
   border-color: #3D3126 !important;
 }
 
@@ -398,9 +579,9 @@ body.after-hours .btn-secondary,
 .dark .btn-secondary,
 body.dark .btn-secondary {
   background-color: #26201B !important;
-  color: #FAF4EB !important;
+  color: #F5ECE0 !important;
   border-color: #4D3D30 !important;
-  box-shadow: 2px 2px 0px #0A0807 !important;
+  box-shadow: 2px 2px 0px #080605 !important;
 }
 
 .after-hours .btn-secondary:hover,
@@ -423,8 +604,36 @@ body.dark input,
 body.dark textarea,
 body.dark select {
   background-color: #201A16 !important;
-  color: #FAF4EB !important;
+  color: #F5ECE0 !important;
   border-color: #4D3D30 !important;
+}
+
+.after-hours input::placeholder,
+.after-hours textarea::placeholder,
+body.after-hours input::placeholder,
+body.after-hours textarea::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder,
+body.dark input::placeholder,
+body.dark textarea::placeholder {
+  color: #A9937E !important;
+}
+
+/* Preserve warm white speech bubble readability inside dark pixel-art game scenes in both themes */
+.after-hours .pixel-bubble-surface,
+body.after-hours .pixel-bubble-surface,
+.dark .pixel-bubble-surface,
+body.dark .pixel-bubble-surface,
+.pixel-bubble-surface {
+  background-color: #FFFDF9 !important;
+  color: #2E2118 !important;
+}
+
+.after-hours .pixel-bubble-surface p,
+body.after-hours .pixel-bubble-surface p,
+.dark .pixel-bubble-surface p,
+body.dark .pixel-bubble-surface p {
+  color: #2E2118 !important;
 }
 
 .after-hours header,
@@ -433,3 +642,46 @@ body.after-hours header {
   border-color: #3D3126 !important;
 }
 
+/* Cafeteria Ambience Mixer High-Contrast Dark Surface (Consistent in Daylight & After Hours) */
+.cafeteria-mixer-panel,
+.after-hours .cafeteria-mixer-panel,
+body.after-hours .cafeteria-mixer-panel,
+.dark .cafeteria-mixer-panel,
+body.dark .cafeteria-mixer-panel {
+  background-color: #1D1612 !important;
+  color: #FAF3E8 !important;
+  border-color: #7C5C40 !important;
+}
+
+.cafeteria-mixer-panel button.track-active,
+.after-hours .cafeteria-mixer-panel button.track-active {
+  background-color: #E4A853 !important;
+  color: #140F0C !important;
+  border-color: #FAF3E8 !important;
+}
+
+.cafeteria-mixer-panel button.track-inactive,
+.after-hours .cafeteria-mixer-panel button.track-inactive {
+  background-color: #18120F !important;
+  color: #DFC9AA !important;
+  border-color: #4A382A !important;
+}
+
+/* Reduced Motion Respect */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pixel-bob,
+  .animate-pixel-walk,
+  .animate-candle-flicker,
+  .animate-steam-rise,
+  .animate-foliage-sway,
+  .ticker-track {
+    animation: none !important;
+  }
+
+  .book-spine,
+  .catalog-card,
+  .btn-primary,
+  .btn-secondary {
+    transition: none !important;
+  }
+}

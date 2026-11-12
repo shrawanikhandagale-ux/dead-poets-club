@@ -9,7 +9,7 @@ export const LoginPage: React.FC = () => {
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const returnTo = searchParams.get('returnTo') || '/clubhouse';
+  const returnTo = searchParams.get('returnTo') || '/';
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -26,8 +26,9 @@ export const LoginPage: React.FC = () => {
     setError(null);
     setIsSubmitting(true);
     try {
-      await login(identifier);
-      const p = await localService.getProfile(identifier);
+      const res = await login(identifier, password);
+      const targetId = res?.user?.id || identifier;
+      const p = await localService.getProfile(targetId);
       if (p && p.avatar_config && p.avatar_config.configured === false) {
         navigate('/character-creator?onboarding=true');
       } else {
@@ -53,6 +54,8 @@ export const LoginPage: React.FC = () => {
     }
   };
 
+  const isResetSuccess = searchParams.get('reset') === 'true';
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-[#141210] relative overflow-hidden">
       {/* Subtle atmospheric background glows */}
@@ -68,13 +71,21 @@ export const LoginPage: React.FC = () => {
           >
             <Feather className="w-7 h-7 text-[#e8c18e] group-hover:rotate-12 transition-transform duration-300" />
           </NavLink>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#f0eae1] tracking-tight">
+          <h1 className="font-editorial text-3xl sm:text-4xl font-normal text-[#f0eae1] tracking-tight">
             Welcome Back, Poet
           </h1>
           <p className="font-sans text-xs sm:text-sm text-[#a39b8f] mt-1.5">
             Step back into your quiet literary sanctuary.
           </p>
         </div>
+
+        {/* Password reset notice */}
+        {isResetSuccess && (
+          <div className="mb-6 p-3.5 rounded-lg bg-[#75816a]/25 border border-[#75816a]/50 flex items-start gap-3 text-xs text-[#d1e0d4]">
+            <Sparkles className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#8e9c82]" />
+            <span>Passphrase restoration link processed. Please authenticate with your credentials.</span>
+          </div>
+        )}
 
         {/* Error notification */}
         {error && (
@@ -89,20 +100,20 @@ export const LoginPage: React.FC = () => {
           <div>
             <label
               htmlFor="identifier"
-              className="block font-mono text-[11px] uppercase tracking-wider text-[#d3a66d] mb-1.5"
+              className="block font-sans text-xs font-medium text-[#d3a66d] mb-1.5"
             >
-              Email or Username
+              Sanctuary Missive Address (Email)
             </label>
             <div className="relative">
               <input
                 id="identifier"
-                type="text"
-                autoComplete="username"
+                type="email"
+                autoComplete="email"
                 value={identifier}
                 onChange={e => setIdentifier(e.target.value)}
-                placeholder="e.g. byron or byron@club.org"
+                placeholder="poet@sanctuary.org"
                 required
-                className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
+                className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] font-sans text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
               />
               <Mail className="w-4 h-4 text-[#8e8578] absolute left-3.5 top-3" />
             </div>
@@ -112,13 +123,13 @@ export const LoginPage: React.FC = () => {
             <div className="flex items-center justify-between mb-1.5">
               <label
                 htmlFor="password"
-                className="block font-mono text-[11px] uppercase tracking-wider text-[#d3a66d]"
+                className="block font-sans text-xs font-medium text-[#d3a66d]"
               >
                 Passphrase
               </label>
               <NavLink
                 to="/forgot-password"
-                className="text-xs text-[#a39b8f] hover:text-[#e8c18e] transition-colors"
+                className="text-xs font-sans text-[#a39b8f] hover:text-[#e8c18e] transition-colors"
               >
                 Forgot secret?
               </NavLink>
@@ -131,7 +142,7 @@ export const LoginPage: React.FC = () => {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
+                className="w-full px-3.5 py-2.5 pl-10 rounded-lg bg-[#241e1a] border border-[#3e342b] text-[#f0eae1] placeholder-[#6e6559] font-sans text-sm focus:outline-none focus:border-[#d3a66d] focus:ring-1 focus:ring-[#d3a66d] transition-colors"
               />
               <Lock className="w-4 h-4 text-[#8e8578] absolute left-3.5 top-3" />
             </div>
@@ -141,13 +152,13 @@ export const LoginPage: React.FC = () => {
             type="submit"
             disabled={isSubmitting || isLoading}
             onClick={e => triggerInkSplatter(e.clientX, e.clientY)}
-            className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[#784743] to-[#5a2e2b] hover:from-[#8f5550] hover:to-[#6d3835] border border-[#d3a66d]/40 text-[#f0eae1] font-serif text-sm font-semibold tracking-wide flex items-center justify-center gap-2 shadow-lg hover:shadow-[#784743]/30 transition-all cursor-pointer mt-2 disabled:opacity-50"
+            className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[#784743] to-[#5a2e2b] hover:from-[#8f5550] hover:to-[#6d3835] border border-[#d3a66d]/40 text-[#f0eae1] font-sans text-sm font-semibold tracking-wide flex items-center justify-center gap-2 shadow-lg hover:shadow-[#784743]/30 transition-all cursor-pointer mt-2 disabled:opacity-50"
           >
             {isSubmitting ? (
               <span>Consulting the Registers...</span>
             ) : (
               <>
-                <span>Enter the Clubhouse</span>
+                <span>Enter The Atrium</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}

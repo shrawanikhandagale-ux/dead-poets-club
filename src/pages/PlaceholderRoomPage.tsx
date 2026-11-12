@@ -24,7 +24,7 @@ export const PlaceholderRoomPage: React.FC<PlaceholderRoomPageProps> = ({ type }
         <span>{isCafe ? 'Phase 5 Roadmap: Virtual Café' : 'Phase 4 Roadmap: Daily Crossword'}</span>
       </div>
 
-      <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#f0eae1]">
+      <h1 className="font-editorial text-4xl sm:text-5xl font-normal text-[#f0eae1]">
         {isCafe ? 'The Candlelit Virtual Café' : 'The Daily Literary Crossword'}
       </h1>
 
@@ -35,8 +35,8 @@ export const PlaceholderRoomPage: React.FC<PlaceholderRoomPageProps> = ({ type }
       </p>
 
       <div className="flex items-center justify-center gap-4 pt-4">
-        <NavLink to="/clubhouse" className="btn-secondary text-xs py-2.5 px-4">
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to Clubhouse
+        <NavLink to="/" className="btn-secondary text-xs py-2.5 px-4">
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to The Atrium
         </NavLink>
         <NavLink to="/library" className="btn-primary text-xs py-2.5 px-4">
           <BookOpen className="w-3.5 h-3.5" /> Explore Grand Library

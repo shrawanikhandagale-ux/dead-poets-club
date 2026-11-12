@@ -250,10 +250,10 @@ export const AuthorSpotlightPage: React.FC = () => {
             <Feather className="w-3.5 h-3.5 text-[#FFF9F3]" />
             <span>ARCHIVAL SPOTLIGHT · LITERARY MAGAZINE DOSSIER</span>
           </div>
-          <h1 className="font-editorial text-3xl sm:text-5xl font-bold text-[#443223]">
+          <h1 className="type-page-title text-[#443223]">
             Author Inquiries
           </h1>
-          <p className="font-typewriter text-xs sm:text-sm text-[#72583E] mt-1 max-w-xl">
+          <p className="font-sans text-sm sm:text-base text-[#72583E] mt-1.5 max-w-xl leading-relaxed">
             Factually verified literary portraits, recurring motifs, and archival editions from the Dead Poets Club repository.
           </p>
         </div>
@@ -270,14 +270,14 @@ export const AuthorSpotlightPage: React.FC = () => {
 
       {/* Author Switcher Ribbon */}
       <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 border-b-2 border-dashed border-[#A08670]">
-        <span className="font-typewriter text-xs font-bold text-[#755151] uppercase tracking-wider flex-shrink-0 mr-2">
-          SELECT AUTHOR:
+        <span className="font-mono text-[11px] font-medium text-[#755151] uppercase tracking-wider flex-shrink-0 mr-2">
+          Author
         </span>
         {AUTHORS.map(author => (
           <button
             key={author.id}
             onClick={() => handleSelectAuthor(author)}
-            className={`px-3.5 py-1.5 rounded font-typewriter text-xs font-bold transition-all border-2 cursor-pointer flex-shrink-0 ${
+            className={`px-3.5 py-1.5 rounded font-sans text-xs font-semibold transition-all border-2 cursor-pointer flex-shrink-0 ${
               selectedAuthor.id === author.id
                 ? 'bg-[#755151] text-[#FFF9F3] border-[#443223] shadow-[2px_2px_0px_#443223]'
                 : 'bg-[#FCF8F2] text-[#443223] border-[#A08670] hover:bg-[#DBC4A5]'
@@ -288,25 +288,25 @@ export const AuthorSpotlightPage: React.FC = () => {
         ))}
       </div>
 
-      {/* Main Author Showcase (Inspired by Literary Magazine Profile Layout) */}
+      {/* Main Author Showcase */}
       <div className="catalog-card p-6 sm:p-10 bg-[#FCF8F2] border-2 border-[#443223] shadow-[5px_5px_0px_#443223] mb-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pb-8 border-b-2 border-dashed border-[#A08670]">
           {/* Left: Author Headline & Bio */}
           <div className="lg:col-span-7">
             <div className="inline-flex items-center gap-2 starburst-badge mb-3">
               <Sparkles className="w-3.5 h-3.5 text-[#FFF9F3]" />
-              <span>{selectedAuthor.nationality.toUpperCase()} · {selectedAuthor.lifespan}</span>
+              <span>{selectedAuthor.nationality} · {selectedAuthor.lifespan}</span>
             </div>
 
-            <h2 className="font-editorial text-4xl sm:text-6xl font-bold text-[#443223] tracking-tight mb-2">
-              {selectedAuthor.name.toUpperCase()}
+            <h2 className="type-hero text-[#443223] mb-2">
+              {selectedAuthor.name}
             </h2>
 
-            <p className="font-typewriter text-xs sm:text-sm font-bold tracking-[0.2em] text-[#755151] uppercase mb-6">
+            <p className="font-sans text-sm sm:text-base font-medium text-[#755151] mb-5">
               {selectedAuthor.tagline}
             </p>
 
-            <p className="font-typewriter text-sm sm:text-base text-[#58432D] leading-relaxed max-w-xl">
+            <p className="font-sans text-sm sm:text-base text-[#58432D] leading-relaxed max-w-xl">
               {selectedAuthor.bio}
             </p>
           </div>
@@ -325,16 +325,16 @@ export const AuthorSpotlightPage: React.FC = () => {
                 ) : (
                   <div className="p-6 text-center text-[#DBC4A5] flex flex-col items-center justify-center">
                     <Feather className="w-12 h-12 text-[#DBC4A5] mb-2 opacity-60" />
-                    <span className="font-editorial text-lg font-bold">
+                    <span className="font-editorial text-xl">
                       {selectedAuthor.name}
                     </span>
-                    <span className="font-typewriter text-[10px] uppercase opacity-75 mt-1">
+                    <span className="font-mono text-[10px] uppercase opacity-75 mt-1">
                       Archival Record · Verified
                     </span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-                <span className="absolute bottom-2 left-2 bg-[#1A1614]/90 border border-[#DBC4A5]/40 text-[#FFF9F3] text-[9px] font-mono px-2 py-0.5 rounded">
+                <span className="absolute bottom-2 left-2 bg-[#1A1614]/90 border border-[#DBC4A5]/40 text-[#FFF9F3] text-[10px] font-mono px-2 py-0.5 rounded">
                   {selectedAuthor.name} · Archival Print
                 </span>
               </div>
@@ -344,8 +344,8 @@ export const AuthorSpotlightPage: React.FC = () => {
 
         {/* Featured Literary Monument Work */}
         <div className="pt-8 pb-8 border-b-2 border-dashed border-[#A08670]">
-          <span className="font-typewriter text-[10px] font-bold text-[#755151] uppercase tracking-wider block mb-4">
-            FEATURED ARCHIVAL VOLUME:
+          <span className="font-mono text-[11px] font-medium text-[#755151] uppercase tracking-wider block mb-4">
+            Featured Archival Volume
           </span>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-[#FFF9F3] p-5 sm:p-6 rounded border-2 border-[#443223]">
@@ -357,13 +357,13 @@ export const AuthorSpotlightPage: React.FC = () => {
               />
             </div>
             <div className="md:col-span-9">
-              <span className="font-typewriter text-[11px] font-bold text-[#755151] uppercase">
-                FIRST PUBLISHED {selectedAuthor.featuredBook.year}
+              <span className="font-mono text-[11px] font-medium text-[#755151] uppercase">
+                First published {selectedAuthor.featuredBook.year}
               </span>
-              <h3 className="font-editorial text-2xl font-bold text-[#443223] mt-0.5 mb-2">
+              <h3 className="font-editorial text-3xl text-[#443223] mt-0.5 mb-2">
                 {selectedAuthor.featuredBook.title}
               </h3>
-              <p className="font-typewriter text-xs sm:text-sm text-[#58432D] leading-relaxed mb-4">
+              <p className="font-sans text-sm text-[#58432D] leading-relaxed mb-4">
                 {selectedAuthor.featuredBook.synopsis}
               </p>
               <div className="flex items-center gap-3">
@@ -387,10 +387,10 @@ export const AuthorSpotlightPage: React.FC = () => {
 
         {/* Signature Guide to Recurring Motifs */}
         <div className="pt-8 pb-8 border-b-2 border-dashed border-[#A08670]">
-          <h3 className="font-editorial text-2xl font-bold text-[#443223] mb-2">
+          <h3 className="type-section-title text-[#443223] mb-2">
             {selectedAuthor.signatureGuide.heading}
           </h3>
-          <p className="font-typewriter text-xs sm:text-sm text-[#72583E] mb-6">
+          <p className="font-sans text-sm text-[#72583E] mb-6">
             {selectedAuthor.signatureGuide.intro}
           </p>
 
@@ -401,14 +401,14 @@ export const AuthorSpotlightPage: React.FC = () => {
                 className="p-4 rounded bg-[#FFF9F3] border-2 border-[#443223] shadow-[2px_2px_0px_#443223]"
               >
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="font-mono text-xs font-bold text-[#755151]">
+                  <span className="font-mono text-xs font-medium text-[#755151]">
                     0{idx + 1}.
                   </span>
-                  <h4 className="font-editorial text-base font-bold text-[#443223]">
+                  <h4 className="font-editorial text-xl text-[#443223]">
                     {sign.name}
                   </h4>
                 </div>
-                <p className="font-typewriter text-xs text-[#58432D] leading-relaxed">
+                <p className="font-sans text-sm text-[#58432D] leading-relaxed">
                   {sign.description}
                 </p>
               </div>
@@ -418,7 +418,7 @@ export const AuthorSpotlightPage: React.FC = () => {
           {/* Pull Quote */}
           <div className="p-4 bg-[#FFF9F3] border-l-4 border-[#755151] border border-[#443223] rounded">
             <Quote className="w-4 h-4 text-[#755151] mb-1" />
-            <p className="font-editorial text-sm italic text-[#443223]">
+            <p className="font-editorial text-lg italic text-[#443223]">
               {selectedAuthor.signatureGuide.quote}
             </p>
           </div>
@@ -427,11 +427,11 @@ export const AuthorSpotlightPage: React.FC = () => {
         {/* Notable Other Works Shelf */}
         <div className="pt-8">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="font-editorial text-xl font-bold text-[#443223]">
+            <h3 className="type-section-title text-[#443223]">
               Notable Works by {selectedAuthor.name}
             </h3>
-            <span className="font-typewriter text-xs text-[#755151] font-bold">
-              VERIFIED ARCHIVAL EDITIONS
+            <span className="font-mono text-[11px] text-[#755151] font-medium uppercase">
+              Verified Archival Editions
             </span>
           </div>
 
@@ -451,10 +451,10 @@ export const AuthorSpotlightPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <h4 className="font-editorial text-sm font-bold text-[#443223] group-hover:text-[#755151] transition-colors line-clamp-1">
+                  <h4 className="font-editorial text-base text-[#443223] group-hover:text-[#755151] transition-colors line-clamp-1">
                     {work.title}
                   </h4>
-                  <span className="font-typewriter text-[10px] text-[#72583E]">
+                  <span className="font-mono text-[11px] text-[#72583E]">
                     {work.year}
                   </span>
                 </div>

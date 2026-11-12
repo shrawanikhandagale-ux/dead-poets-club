@@ -253,15 +253,15 @@ export const ThreeBookHero: React.FC<ThreeBookHeroProps> = ({
       onClick={() => setIsOpen(!isOpen)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      title="Click to open/close the antique volume"
+      title="Open or close antique volume"
     >
       <div ref={containerRef} className="w-full h-full" />
 
       {/* Floating Interactive Badge */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#1c1815]/85 border border-[#d3a66d]/40 backdrop-blur-md px-3.5 py-1.5 rounded-full flex items-center gap-2 pointer-events-none transition-all duration-300 shadow-lg">
         <span className="w-2 h-2 rounded-full bg-[#d3a66d] animate-ping" />
-        <span className="text-xs font-serif text-[#e8c18e] tracking-wide">
-          {isOpen ? 'Click book to close volume' : 'Click 3D book to examine & open'}
+        <span className="text-xs font-sans font-medium text-[#e8c18e] tracking-wide">
+          {isOpen ? 'Close Volume' : 'Open Volume'}
         </span>
       </div>
     </div>
