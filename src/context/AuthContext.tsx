@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, Session } from '../types/auth';
+import { User, Session, SignupResult } from '../types/auth';
 import { Profile } from '../types/profile';
 import { ShelfItem, ShelfStatus } from '../types/book';
 import { localService, isSupabaseConfigured, supabase } from '../lib/supabase';
@@ -11,12 +11,20 @@ interface AuthContextType {
   shelves: ShelfItem[];
   isLoading: boolean;
   login: (emailOrUsername: string, password?: string) => Promise<{ user: User; session: Session }>;
-  signup: (email: string, username: string, displayName: string, password?: string) => Promise<{ user: User; session: Session }>;
+  signup: (
+    email: string,
+    username: string,
+    displayName: string,
+    password?: string,
+    avatarPreset?: string
+  ) => Promise<SignupResult>;
   logout: () => void;
   updateProfile: (updates: Partial<Profile>) => Promise<void>;
   updateBookShelf: (bookId: string, status: ShelfStatus) => Promise<void>;
+  removeBookShelf: (bookId: string) => Promise<void>;
   refreshProfile: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  resendConfirmationEmail: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -90,7 +98,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setProfile(null);
           setShelves([]);
         } else if (event === 'SIGNED_IN' && sbSession.user) {
-          const p = await localService.getProfile(sbSession.user.id);
+          let p = await localService.getProfile(sbSession.user.id);
+
+          // If signup user metadata has an avatar archetype and profile is unconfigured, sync it
+          if (
+            supabase &&
+            sbSession.user.user_metadata?.avatar_config &&
+            (!p?.avatar_config?.configured || p.avatar_config.baseId !== sbSession.user.user_metadata.avatar_config.baseId)
+          ) {
+            try {
+              await supabase
+                .from('profiles')
+                .update({ avatar_config: sbSession.user.user_metadata.avatar_config })
+                .eq('id', sbSession.user.id);
+              p = await localService.getProfile(sbSession.user.id);
+            } catch {
+              // sync warning
+            }
+          }
+
           const userObj: User = {
             id: sbSession.user.id,
             email: sbSession.user.email || '',
@@ -134,16 +160,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signup = async (email: string, username: string, displayName: string, password?: string) => {
+  const signup = async (
+    email: string,
+    username: string,
+    displayName: string,
+    password?: string,
+    avatarPreset?: string
+  ): Promise<SignupResult> => {
     setIsLoading(true);
     try {
-      const res = await localService.signup(email, username, displayName, password);
-      setUser(res.user);
-      setSession(res.session);
-      const p = await localService.getProfile(res.user.id);
-      setProfile(p);
-      const sh = await localService.getUserShelves(res.user.id);
-      setShelves(sh);
+      const res = await localService.signup(email, username, displayName, password, avatarPreset);
+      if (res.emailConfirmationRequired) {
+        setUser(null);
+        setSession(null);
+        setProfile(null);
+        setShelves([]);
+      } else {
+        setUser(res.user);
+        setSession(res.session);
+        const p = await localService.getProfile(res.user.id);
+        setProfile(p);
+        const sh = await localService.getUserShelves(res.user.id);
+        setShelves(sh);
+      }
       return res;
     } finally {
       setIsLoading(false);
@@ -185,6 +224,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const removeBookShelf = async (bookId: string) => {
+    if (!user) return;
+    await localService.removeBookShelf(user.id, bookId);
+    setShelves(prev => prev.filter(s => s.book_id !== bookId));
+  };
+
   const refreshProfile = async () => {
     if (!user) return;
     const p = await localService.getProfile(user.id);
@@ -195,6 +240,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const resetPassword = async (email: string) => {
     await localService.resetPassword(email);
+  };
+
+  const resendConfirmationEmail = async (email: string) => {
+    await localService.resendConfirmationEmail(email);
   };
 
   return (
@@ -210,8 +259,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         updateProfile,
         updateBookShelf,
+        removeBookShelf,
         refreshProfile,
         resetPassword,
+        resendConfirmationEmail,
       }}
     >
       {children}

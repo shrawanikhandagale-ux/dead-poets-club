@@ -6,7 +6,7 @@ import { Feather, Lock, Mail, ArrowRight, Sparkles, AlertCircle, BookOpen } from
 import { triggerInkSplatter } from '../../lib/animeAnimations';
 
 export const LoginPage: React.FC = () => {
-  const { login, isLoading } = useAuth();
+  const { login, resendConfirmationEmail, isLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo') || '/';
@@ -15,6 +15,9 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUnconfirmedEmail, setIsUnconfirmedEmail] = useState(false);
+  const [resendStatus, setResendStatus] = useState<string | null>(null);
+  const [isResending, setIsResending] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +27,8 @@ export const LoginPage: React.FC = () => {
     }
 
     setError(null);
+    setIsUnconfirmedEmail(false);
+    setResendStatus(null);
     setIsSubmitting(true);
     try {
       const res = await login(identifier, password);
@@ -35,9 +40,30 @@ export const LoginPage: React.FC = () => {
         navigate(returnTo);
       }
     } catch (err: any) {
-      setError(err?.message || 'Failed to authenticate. Please verify your credentials.');
+      const msg = err?.message || 'Failed to authenticate. Please verify your credentials.';
+      const unconfirmed = /email not confirmed|email_not_confirmed/i.test(msg);
+      if (unconfirmed) {
+        setIsUnconfirmedEmail(true);
+        setError('Your missive address has not yet been verified. Please inspect your inbox or resend the verification scroll.');
+      } else {
+        setError(msg);
+      }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!identifier.trim()) return;
+    setIsResending(true);
+    setResendStatus(null);
+    try {
+      await resendConfirmationEmail(identifier.trim());
+      setResendStatus('A fresh verification seal has been dispatched to your email.');
+    } catch (err: any) {
+      setResendStatus(err?.message || 'Failed to dispatch verification email.');
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -89,9 +115,26 @@ export const LoginPage: React.FC = () => {
 
         {/* Error notification */}
         {error && (
-          <div className="mb-6 p-3.5 rounded-lg bg-[#784743]/25 border border-[#784743]/50 flex items-start gap-3 text-xs text-[#f2b8b5]">
-            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#e8a8a4]" />
-            <span>{error}</span>
+          <div className="mb-6 p-3.5 rounded-lg bg-[#784743]/25 border border-[#784743]/50 text-xs text-[#f2b8b5] space-y-2">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#e8a8a4]" />
+              <span>{error}</span>
+            </div>
+            {isUnconfirmedEmail && (
+              <div className="pt-2 border-t border-[#784743]/40 flex flex-col gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  disabled={isResending}
+                  className="text-left font-sans text-xs text-[#e8c18e] hover:underline cursor-pointer disabled:opacity-50"
+                >
+                  {isResending ? 'Dispatching scroll...' : 'Resend verification email to this address →'}
+                </button>
+                {resendStatus && (
+                  <p className="text-[11px] font-mono text-[#d1e0d4]">{resendStatus}</p>
+                )}
+              </div>
+            )}
           </div>
         )}
 

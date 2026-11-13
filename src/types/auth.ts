@@ -19,3 +19,10 @@ export interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
 }
+
+export interface SignupResult {
+  user: User;
+  session: Session | null;
+  emailConfirmationRequired: boolean;
+}
+

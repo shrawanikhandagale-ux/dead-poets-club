@@ -61,7 +61,8 @@ describe('Phase 1: Auth, Profiles, Catalogue & RLS Access Boundaries', () => {
 
       expect(user).toBeDefined();
       expect(user.username).toBe('bell_jar_reader');
-      expect(session.token).toBeDefined();
+      expect(session).toBeDefined();
+      expect(session?.token).toBeDefined();
 
       const profile = await localService.getProfile(user.id);
       expect(profile).toBeDefined();

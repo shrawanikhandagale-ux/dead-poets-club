@@ -23,7 +23,7 @@ const AVATAR_PRESETS = [
 ];
 
 export const SignupPage: React.FC = () => {
-  const { signup, isLoading } = useAuth();
+  const { signup, resendConfirmationEmail, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -39,6 +39,18 @@ export const SignupPage: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailConfirmationSent, setEmailConfirmationSent] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendStatus, setResendStatus] = useState<string | null>(null);
+
+  // Countdown timer for resending confirmation
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown(prev => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   // Debounced username verification
   useEffect(() => {
@@ -94,14 +106,98 @@ export const SignupPage: React.FC = () => {
     setError(null);
     setIsSubmitting(true);
     try {
-      await signup(email, username, displayName, password);
-      navigate('/character-creator?onboarding=true');
+      const res = await signup(email, username, displayName, password, selectedAvatar);
+      if (res.emailConfirmationRequired) {
+        setEmailConfirmationSent(true);
+      } else {
+        navigate('/character-creator?onboarding=true');
+      }
     } catch (err: any) {
       setError(err?.message || 'Initiation failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const handleResend = async () => {
+    if (resendCooldown > 0) return;
+    try {
+      await resendConfirmationEmail(email);
+      setResendStatus('A fresh confirmation scroll has been dispatched.');
+      setResendCooldown(30);
+    } catch (err: any) {
+      setResendStatus(err?.message || 'Could not dispatch scroll. Please retry in a moment.');
+    }
+  };
+
+  if (emailConfirmationSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-[#141210] relative overflow-hidden">
+        {/* Background ambient lighting */}
+        <div className="absolute top-10 right-10 w-96 h-96 bg-[#784743]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#75816a]/15 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="w-full max-w-lg parchment-card p-6 sm:p-8 rounded-2xl relative z-10 border border-[#d3a66d]/30 bg-[#1a1614]/95 shadow-2xl text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#784743] to-[#401f1c] border border-[#d3a66d]/60 mb-4 shadow-lg">
+            <Mail className="w-8 h-8 text-[#e8c18e]" />
+          </div>
+
+          <h1 className="font-editorial text-3xl sm:text-4xl font-normal text-[#f0eae1] tracking-tight">
+            Confirmation Scroll Dispatched
+          </h1>
+
+          <p className="font-sans text-sm text-[#d3c8b8] mt-3 leading-relaxed">
+            We have inscribed your name into the club registers. A verification seal has been dispatched to:
+          </p>
+
+          <div className="my-4 py-2.5 px-4 rounded-lg bg-[#241e1a] border border-[#d3a66d]/30 text-xs font-mono text-[#e8c18e] break-all">
+            {email}
+          </div>
+
+          <p className="font-sans text-xs text-[#a39b8f] leading-relaxed">
+            Please open the missive in your inbox and click the verification link to confirm your quill before entering the Sanctuary.
+          </p>
+
+          {resendStatus && (
+            <div className="mt-4 p-3 rounded-lg bg-[#241e1a] border border-[#3e342b] text-xs text-[#e8c18e] font-sans">
+              {resendStatus}
+            </div>
+          )}
+
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resendCooldown > 0}
+              className="w-full sm:w-auto py-2.5 px-4 rounded-lg bg-[#241e1a] hover:bg-[#2e2622] border border-[#d3a66d]/40 text-xs font-sans font-medium text-[#f0eae1] transition-all disabled:opacity-50 cursor-pointer"
+            >
+              {resendCooldown > 0 ? `Resend Missive (${resendCooldown}s)` : 'Resend Missive'}
+            </button>
+
+            <NavLink
+              to="/login"
+              className="w-full sm:w-auto py-2.5 px-5 rounded-lg bg-gradient-to-r from-[#784743] to-[#5a2e2b] hover:from-[#8f5550] hover:to-[#6d3835] border border-[#d3a66d]/40 text-xs font-sans font-semibold text-[#f0eae1] transition-all text-center"
+            >
+              Enter Sanctuary Login
+            </NavLink>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-[#3e342b]/60">
+            <button
+              type="button"
+              onClick={() => {
+                setEmailConfirmationSent(false);
+                setResendStatus(null);
+              }}
+              className="text-xs font-sans text-[#a39b8f] hover:text-[#d3a66d] transition-colors cursor-pointer"
+            >
+              Entered the wrong address? Revise scroll
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-[#141210] relative overflow-hidden">

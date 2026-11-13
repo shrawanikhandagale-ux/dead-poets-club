@@ -14,7 +14,7 @@ interface BookDetailModalProps {
 }
 
 export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose }) => {
-  const { shelves, updateBookShelf } = useAuth();
+  const { shelves, updateBookShelf, removeBookShelf } = useAuth();
   const [annotationText, setAnnotationText] = useState('');
   const [annotationSaved, setAnnotationSaved] = useState(false);
 
@@ -98,6 +98,17 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({ book, onClose 
                       </button>
                     );
                   }
+                )}
+
+                {/* Remove from shelf button */}
+                {currentShelf && (
+                  <button
+                    type="button"
+                    onClick={() => removeBookShelf(book.id)}
+                    className="mt-1 py-1 px-2 rounded text-[11px] font-mono text-[#784743] hover:text-[#50201d] hover:bg-[#784743]/10 border border-[#784743]/30 transition-all cursor-pointer text-center"
+                  >
+                    ✕ Remove from shelf
+                  </button>
                 )}
 
                 {/* Direct Action: Leave This Book for Someone */}

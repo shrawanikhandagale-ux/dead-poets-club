@@ -1,8 +1,38 @@
 import { createClient } from '@supabase/supabase-js';
 import { SEED_BOOKS } from '../data/seedBooks';
 import { Book, ShelfItem, ShelfStatus } from '../types/book';
-import { Profile, DEFAULT_AVATAR_CONFIG } from '../types/profile';
-import { User, Session } from '../types/auth';
+import { Profile, DEFAULT_AVATAR_CONFIG, AvatarConfig } from '../types/profile';
+import { User, Session, SignupResult } from '../types/auth';
+
+export function getArchetypeAvatarConfig(archetypeId?: string): Partial<AvatarConfig> {
+  switch (archetypeId) {
+    case 'romantic_poet':
+      return {
+        baseId: 'romantic_poet',
+        outerwear: 'cozy_cardigan',
+        outerwearColor: '#6E3E44',
+        accessories: ['neck_scarf'],
+        heldItem: 'leather_journal',
+      };
+    case 'nocturnal_archivist':
+      return {
+        baseId: 'nocturnal_archivist',
+        outerwear: 'trench_coat',
+        outerwearColor: '#1A1614',
+        accessories: ['wire_rims'],
+        heldItem: 'antique_book',
+      };
+    case 'classic_scholar':
+    default:
+      return {
+        baseId: 'classic_scholar',
+        outerwear: 'tweed_blazer',
+        outerwearColor: '#72583E',
+        accessories: ['round_spectacles'],
+        heldItem: 'antique_book',
+      };
+  }
+}
 
 const DEFAULT_SUPABASE_URL = 'https://qdnleqyiymddxoesicvj.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkbmxlcXlpeW1kZHhvZXNpY3ZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMjIzMTIsImV4cCI6MjEwODY5ODMxMn0.zuCRfIMco_uh6jN0QjLLuNDpaYUGpDz8mD628FHL17s';
@@ -146,9 +176,71 @@ class LocalService {
     // Visitors start as unauthenticated guests. Demo sessions are created explicitly on demand.
   }
 
+  private workIdToLegacyMap = new Map<string, string>();
+  private legacyToWorkIdMap = new Map<string, string>();
+  private mappingLoaded = false;
+
   public resetStorage() {
     safeStorage.clear();
+    this.workIdToLegacyMap.clear();
+    this.legacyToWorkIdMap.clear();
+    this.mappingLoaded = false;
     this.init();
+  }
+
+  public async getWorkUuidForBookId(bookId: string): Promise<string | null> {
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(bookId);
+    if (isUUID) return bookId;
+
+    if (this.legacyToWorkIdMap.has(bookId)) {
+      return this.legacyToWorkIdMap.get(bookId)!;
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('works')
+          .select('id, legacy_code')
+          .eq('legacy_code', bookId)
+          .maybeSingle();
+
+        if (!error && data?.id) {
+          this.legacyToWorkIdMap.set(bookId, data.id);
+          this.workIdToLegacyMap.set(data.id, bookId);
+          return data.id;
+        }
+      } catch (err) {
+        console.warn(`Error resolving UUID for bookId "${bookId}":`, err);
+      }
+    }
+
+    return null;
+  }
+
+  public async getLegacyCodeForWorkId(workId: string): Promise<string> {
+    if (this.workIdToLegacyMap.has(workId)) {
+      return this.workIdToLegacyMap.get(workId)!;
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('works')
+          .select('id, legacy_code')
+          .eq('id', workId)
+          .maybeSingle();
+
+        if (!error && data?.legacy_code) {
+          this.workIdToLegacyMap.set(workId, data.legacy_code);
+          this.legacyToWorkIdMap.set(data.legacy_code, workId);
+          return data.legacy_code;
+        }
+      } catch (err) {
+        console.warn(`Error resolving legacy code for workId "${workId}":`, err);
+      }
+    }
+
+    return workId;
   }
 
   // --- Auth Operations ---
@@ -203,8 +295,9 @@ class LocalService {
     email: string,
     username: string,
     displayName: string,
-    password?: string
-  ): Promise<{ user: User; session: Session }> {
+    password?: string,
+    avatarPreset?: string
+  ): Promise<SignupResult> {
     const cleanUsername = username.trim().toLowerCase();
     const cleanEmail = email.trim().toLowerCase();
     const cleanDisplayName = displayName.trim();
@@ -214,6 +307,13 @@ class LocalService {
       throw new Error(`Username "@${cleanUsername}" is already taken by another poet.`);
     }
 
+    const archetypeConfig = getArchetypeAvatarConfig(avatarPreset);
+    const initialAvatarConfig: AvatarConfig = {
+      ...DEFAULT_AVATAR_CONFIG,
+      ...archetypeConfig,
+      configured: false,
+    };
+
     if (isSupabaseConfigured && supabase && password) {
       const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
@@ -222,25 +322,55 @@ class LocalService {
           data: {
             username: cleanUsername,
             display_name: cleanDisplayName,
+            avatar_config: initialAvatarConfig,
           },
         },
       });
       if (error) throw error;
       if (data.user) {
+        // When email confirmation is required, Supabase returns null session
+        if (!data.session) {
+          const pendingUser: User = {
+            id: data.user.id,
+            email: data.user.email || cleanEmail,
+            username: cleanUsername,
+            displayName: cleanDisplayName,
+            createdAt: data.user.created_at,
+          };
+          return {
+            user: pendingUser,
+            session: null,
+            emailConfirmationRequired: true,
+          };
+        }
+
+        // When autoconfirm is enabled or session is active, retrieve genuine profile
+        let assignedUsername = cleanUsername;
+        let assignedDisplayName = cleanDisplayName;
+        try {
+          const profile = await this.getProfile(data.user.id);
+          if (profile) {
+            assignedUsername = profile.username;
+            assignedDisplayName = profile.display_name;
+          }
+        } catch {
+          // fallback
+        }
+
         const newUser: User = {
           id: data.user.id,
           email: data.user.email || cleanEmail,
-          username: cleanUsername,
-          displayName: cleanDisplayName,
+          username: assignedUsername,
+          displayName: assignedDisplayName,
           createdAt: data.user.created_at,
         };
         const session: Session = {
           user: newUser,
-          token: data.session?.access_token || 'sb_token_' + data.user.id,
-          expiresAt: data.session?.expires_at ? data.session.expires_at * 1000 : Date.now() + 86400000 * 7,
+          token: data.session.access_token,
+          expiresAt: data.session.expires_at ? data.session.expires_at * 1000 : Date.now() + 86400000 * 7,
         };
         this.setSession(session);
-        return { user: newUser, session };
+        return { user: newUser, session, emailConfirmationRequired: false };
       }
     }
 
@@ -265,10 +395,7 @@ class LocalService {
         shelves_public: true,
         stats_public: false,
       },
-      avatar_config: {
-        ...DEFAULT_AVATAR_CONFIG,
-        configured: false,
-      },
+      avatar_config: initialAvatarConfig,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -288,7 +415,18 @@ class LocalService {
     };
     this.setSession(session);
 
-    return { user: newUser, session };
+    return { user: newUser, session, emailConfirmationRequired: false };
+  }
+
+  public async resendConfirmationEmail(email: string): Promise<void> {
+    const cleanEmail = email.trim().toLowerCase();
+    if (isSupabaseConfigured && supabase) {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: cleanEmail,
+      });
+      if (error) throw error;
+    }
   }
 
   public async login(
@@ -322,7 +460,24 @@ class LocalService {
       });
       if (error) throw error;
       if (data.user) {
+        if (!data.session?.access_token) {
+          throw new Error('Authentication completed but no session was established.');
+        }
+
         const p = await this.getProfile(data.user.id);
+
+        // Sync initial avatar archetype from signup metadata if DB profile still has default
+        if (
+          data.user.user_metadata?.avatar_config &&
+          (!p?.avatar_config?.configured || p.avatar_config.baseId !== data.user.user_metadata.avatar_config.baseId)
+        ) {
+          try {
+            await supabase.from('profiles').update({ avatar_config: data.user.user_metadata.avatar_config }).eq('id', data.user.id);
+          } catch {
+            // sync warning
+          }
+        }
+
         const user: User = {
           id: data.user.id,
           email: data.user.email || cleanIdentifier.toLowerCase(),
@@ -332,8 +487,8 @@ class LocalService {
         };
         const session: Session = {
           user,
-          token: data.session?.access_token || 'sb_token_' + data.user.id,
-          expiresAt: data.session?.expires_at ? data.session.expires_at * 1000 : Date.now() + 86400000 * 7,
+          token: data.session.access_token,
+          expiresAt: data.session.expires_at ? data.session.expires_at * 1000 : Date.now() + 86400000 * 7,
         };
         this.setSession(session);
         return { user, session };
@@ -604,6 +759,14 @@ class LocalService {
           `);
 
         if (!error && data && data.length > 0) {
+          for (const w of data) {
+            if (w.id && w.legacy_code) {
+              this.workIdToLegacyMap.set(w.id, w.legacy_code);
+              this.legacyToWorkIdMap.set(w.legacy_code, w.id);
+            }
+          }
+          this.mappingLoaded = true;
+
           const mapped: Book[] = data.map((w: any) => {
             // Select canonical edition deterministically; fallback to first available edition
             const canonicalEdition =
@@ -677,14 +840,31 @@ class LocalService {
   }
 
   public async getUserShelves(userId: string): Promise<ShelfItem[]> {
-    if (isSupabaseConfigured && supabase) {
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    if (isUUID && isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase
           .from('shelves')
-          .select('*')
+          .select('id, user_id, work_id, edition_id, status, started_at, finished_at, progress_pages, created_at, works(legacy_code)')
           .eq('user_id', userId);
+
         if (!error && data) {
-          return data as ShelfItem[];
+          return data.map((row: any) => {
+            const legacyCode = row.works?.legacy_code || this.workIdToLegacyMap.get(row.work_id) || row.work_id;
+            return {
+              id: row.id,
+              user_id: row.user_id,
+              book_id: legacyCode,
+              status: row.status as ShelfStatus,
+              started_at: row.started_at || undefined,
+              finished_at: row.finished_at || undefined,
+              progress_pages: row.progress_pages || 0,
+              created_at: row.created_at,
+            };
+          });
+        }
+        if (error) {
+          console.warn('Supabase getUserShelves query warning:', error.message);
         }
       } catch (err) {
         console.warn('Supabase getUserShelves fallback:', err);
@@ -700,35 +880,58 @@ class LocalService {
   }
 
   public async setBookShelf(userId: string, bookId: string, status: ShelfStatus): Promise<ShelfItem> {
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const payload: any = {
-          user_id: userId,
-          book_id: bookId,
-          status,
-        };
-        if (status === 'currently_reading') payload.started_at = new Date().toISOString();
-        if (status === 'read') payload.finished_at = new Date().toISOString();
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
 
-        await supabase
-          .from('shelves')
-          .upsert(payload, { onConflict: 'user_id,book_id' });
-      } catch (err) {
-        console.warn('Supabase setBookShelf remote upsert warning:', err);
+    // If authenticated Supabase user, persist to remote database
+    if (isUUID && isSupabaseConfigured && supabase) {
+      const workUuid = await this.getWorkUuidForBookId(bookId);
+      if (!workUuid) {
+        throw new Error(`Cannot shelve volume: could not resolve canonical work for identifier "${bookId}".`);
+      }
+
+      const todayDate = new Date().toISOString().split('T')[0];
+      const payload: any = {
+        user_id: userId,
+        work_id: workUuid,
+        status,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (status === 'currently_reading') {
+        payload.started_at = todayDate;
+        payload.finished_at = null;
+      } else if (status === 'read') {
+        payload.finished_at = todayDate;
+      } else if (status === 'want_to_read' || status === 'abandoned') {
+        payload.finished_at = null;
+      }
+
+      const { error } = await supabase
+        .from('shelves')
+        .upsert(payload, { onConflict: 'user_id,work_id' });
+
+      if (error) {
+        console.error('Supabase setBookShelf remote upsert error:', error);
+        throw new Error(`Sanctuary archive error: ${error.message}`);
       }
     }
 
+    // Keep safeStorage cache synchronized for instant UI rendering and guest mode
     const all: ShelfItem[] = JSON.parse(safeStorage.getItem(STORAGE_KEYS.SHELVES) || '[]');
     const existingIndex = all.findIndex(s => s.user_id === userId && s.book_id === bookId);
 
     let updated: ShelfItem;
     if (existingIndex >= 0) {
       all[existingIndex].status = status;
-      if (status === 'currently_reading' && !all[existingIndex].started_at) {
-        all[existingIndex].started_at = new Date().toISOString();
-      }
-      if (status === 'read' && !all[existingIndex].finished_at) {
-        all[existingIndex].finished_at = new Date().toISOString();
+      if (status === 'currently_reading') {
+        if (!all[existingIndex].started_at) {
+          all[existingIndex].started_at = new Date().toISOString().split('T')[0];
+        }
+        delete all[existingIndex].finished_at;
+      } else if (status === 'read') {
+        all[existingIndex].finished_at = new Date().toISOString().split('T')[0];
+      } else if (status === 'want_to_read' || status === 'abandoned') {
+        delete all[existingIndex].finished_at;
       }
       updated = all[existingIndex];
     } else {
@@ -737,8 +940,8 @@ class LocalService {
         user_id: userId,
         book_id: bookId,
         status,
-        started_at: status === 'currently_reading' ? new Date().toISOString() : undefined,
-        finished_at: status === 'read' ? new Date().toISOString() : undefined,
+        started_at: status === 'currently_reading' ? new Date().toISOString().split('T')[0] : undefined,
+        finished_at: status === 'read' ? new Date().toISOString().split('T')[0] : undefined,
         progress_pages: 0,
         created_at: new Date().toISOString(),
       };
@@ -747,6 +950,30 @@ class LocalService {
 
     safeStorage.setItem(STORAGE_KEYS.SHELVES, JSON.stringify(all));
     return updated;
+  }
+
+  public async removeBookShelf(userId: string, bookId: string): Promise<void> {
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+
+    if (isUUID && isSupabaseConfigured && supabase) {
+      const workUuid = await this.getWorkUuidForBookId(bookId);
+      if (workUuid) {
+        const { error } = await supabase
+          .from('shelves')
+          .delete()
+          .eq('user_id', userId)
+          .eq('work_id', workUuid);
+
+        if (error) {
+          console.error('Supabase removeBookShelf error:', error);
+          throw new Error(`Sanctuary archive error: ${error.message}`);
+        }
+      }
+    }
+
+    const all: ShelfItem[] = JSON.parse(safeStorage.getItem(STORAGE_KEYS.SHELVES) || '[]');
+    const filtered = all.filter(s => !(s.user_id === userId && s.book_id === bookId));
+    safeStorage.setItem(STORAGE_KEYS.SHELVES, JSON.stringify(filtered));
   }
 }
 
